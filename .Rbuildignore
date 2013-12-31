@@ -1,0 +1,10 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+Slides
+R-Scripts
+Articles
+Articles-orig
+Book
+PSA.bib
+psa.dev.R
+README.md

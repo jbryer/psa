@@ -1,5 +1,7 @@
 # Introduction to Propensity Score Methods with R
-### Pre-conference workshop for the 2013 useR! conference
+
+### Pre-conference workshop for the 2013 useR! conference [Slides/useR 2013/Slides.pdf](Download Slides)
+### NEAIR Conference Talk [Slides/NEAIR2013 Slides/Slides.pdf](Download Slides)
 
 [Jason Bryer](http://jason.bryer.org) ([jason@bryer.org](mailto:jason@bryer.org))
 

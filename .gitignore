@@ -3,3 +3,22 @@
 .RData
 
 /.DS_Store
+
+/Slides/useR 2013/Slides.aux
+/Slides/useR 2013/Slides.log
+/Slides/useR 2013/Slides.nav
+/Slides/useR 2013/Slides.out
+/Slides/useR 2013/Slides.snm
+/Slides/useR 2013/Slides.tex
+/Slides/useR 2013/Slides.toc
+/Slides/useR 2013/Slides.tpbuild
+/Slides/useR 2013/Slides.vrb
+/Slides/useR 2013/Sweave.sty
+
+/Slides/NEAIR2013 Slides/Slides.log
+/Slides/NEAIR2013 Slides/Slides.snm
+/Slides/NEAIR2013 Slides/Slides.tex
+/Slides/NEAIR2013 Slides/Slides.toc
+/Slides/NEAIR2013 Slides/Slides.tpbuild
+/Slides/NEAIR2013 Slides/Slides.vrb
+/Slides/NEAIR2013 Slides/Sweave.sty
