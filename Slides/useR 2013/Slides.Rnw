@@ -1,0 +1,601 @@
+%\documentclass[handout]{beamer}
+%\documentclass[handout,10pt,slidestop,mathserif]{beamer}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{2 on 1}
+\documentclass[10pt,slidestop,mathserif,c]{beamer}
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+
+\usepackage{tabularx}
+\usepackage{verbatim}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage[noae]{Sweave}
+\usepackage{moreverb}
+\usepackage{pgf}
+\usepackage{tikz}
+\usepackage{MnSymbol}
+\usepackage[noae]{Sweave}
+\SweaveOpts{prefix.string=figures/Slides}
+
+\newcommand{\putat}[3]{\begin{picture}(0,0)(0,0)\put(#1,#2){#3}\end{picture}}
+  
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }%
+  \item[]}{\end{list}}
+
+%% Define a new "leo" style for the package that will use a smaller font.
+\makeatletter
+\def\url@leostyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\tiny\ttfamily}}}
+\makeatother
+
+\title{Introduction to Propensity Score Analysis with R}
+\subtitle{useR! 2013 Pre-Conference Tutorial}
+\author[Bryer \& Pruzek]{
+Jason M. Bryer \inst{1,2}\\\href{mailto:jason@bryer.org}{jason@bryer.org} \and
+\\\ \\Robert M. Pruzek \inst{2}\\\href{maileto:rpruzek@albany.edu}{rpruzek@albany.edu}
+}
+\institute[Excelsior and UAlbany]{
+  \begin{tabular}[h]{cc}
+      \inst{1} Excelsior College &  \inst{2} University at Albany \\
+      Albany, NY 12203 &  Albany, NY, 12222 \\
+      \multicolumn{2}{c}{} \\
+      \multicolumn{2}{c}{\url{http://github.com/jbryer/IntroPSAwithR}}
+  \end{tabular}      
+}
+\date[Jul 9, 2013]{July 9, 2013}
+
+\begin{document}
+
+%\AtBeginSection[]
+%{
+%   \begin{frame}
+%       \frametitle{Agenda}
+%       \tableofcontents[currentsection,currentsubsections]
+%   \end{frame}
+%}
+
+<<echo=FALSE,results=hide>>=
+options(width=70)
+options(digits=2)
+options(continue="   ")
+options(warn=-1)
+
+require(devtools)
+require(ggplot2)
+require(multilevelPSA)
+require(Matching)
+require(MatchIt)
+require(multilevelPSA)
+require(party)
+require(PSAgraphics)
+require(granovaGG)
+require(rbound)
+require(rpart)
+require(TriMatch)
+
+data(pisana)
+data(tutoring)
+@
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\frame{\frametitle{Agenda}\tableofcontents[hideothersubsections]}
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>{Agenda}
+\tableofcontents[currentsection,currentsubsection, 
+    hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
+%%%%%%%%%% Introduction
+
+\section{Randomized Experiments}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{The Randomized Experiment}
+    
+    Considered to be the \textit{gold standard} for estimating causal effects.
+    
+    \begin{itemize}
+        \item Effects can be estimated using simple means between groups, or blocks in randomized block design.
+        \item Randomization presumes unbiasedness and balance between groups.
+    \end{itemize}
+    \ \\ \ \\
+    However, randomization is often not feasible for many reasons, especially in educational contexts.
+    \pause
+    \ \\ \ \\
+    The strong ignorability assumption states that:
+    $$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \upModels \; { T }_{ i }|{ X }_{ i }=x$$
+    for all ${X}_{i}$.
+    
+\end{frame}
+
+\begin{frame}
+    \frametitle{Rubin Causal Model\footnote{See Rubin, 1974, 1977, 1978, 1980, and Holland, 1986}}
+    \begin{itemize}
+        \item The causal effect of a treatment is the difference in an individual's outcome under the situation they were given the treatment and not (referred to as a counterfactual).
+        $${\delta}_{i} ={ Y }_{ i1 }-{ Y }_{ i0 }$$
+        \item However, it is impossible to directly observe ${\delta}_{i}$ (referred to as \textit{The Fundamental Problem of Causal Inference}, Holland 1986).
+        \item Rubin frames this problem as a ``missing data problem."
+    \end{itemize}
+    
+\end{frame}
+
+
+
+\section{Defining Propensity Scores}
+
+\begin{frame}
+    \frametitle{Propensity Score Analysis}
+    Propensity score analysis (PSA) is a quasi-experimental design used to estimate causal effects in observational studies (i.e. studies where students are not randomized to treatment). PSA is conducted in two phases:
+    \begin{description}
+        \item[Phase I] (Also referred to as the design phase) In phase one we are concerned with adjusting for selection bias. We model treatment placement using observed variables (see next slide). The propensity score is the probability of a student being in the treatment. With estimated propensity scores, clusters or matches are created for phase II.
+        \item[Phase II] With matches or clusters made in phase I, we compare the difference between matches or clusters on the outcome measure of interest.
+    \end{description}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Propensity Score Analysis}
+    The propensity score is the "conditional probability of assignment to a particular treatment given a vector of observed covariates" (Rosenbaum \& Rubin, 1983, p. 41). The probability of being in the treatment:
+    $$\pi ({ X }_{ i }) \; \equiv \; Pr({ T }_{ i }=1|{ X }_{ i })$$
+    
+    The balancing property under exogeneity:
+    $${ T }_{ i } \; \upModels { X }_{ i } \;| \; \pi ({ X }_{ i })$$
+    
+    We can then restate the ignorability assumption with the propensity score: 
+    $$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \upModels \; { T }_{ i } \; | \; \pi({ X }_{ i })$$
+\end{frame}
+    
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Treatment Effects}    
+    The average treatment effect (ATE) is defined as:
+    $$E({ r }_{ 1 })-E({ r }_{ 0 })$$
+    where $E(.)$ is the expectation in the population. For a set of covariates, $X$, and outcomes $Y$ where 0 denotes control and 1 treatment, we define ATE as:
+    $$ATE=E(Y_{1}-Y_{0}|X)=E(Y_{1}|X)-E(Y_{0}|X)$$
+    The Average treatment effect on the treated (ATT), is defined as:
+    $$ATT=E(Y_{1}-Y_{0}|X,C=1)=E(Y_{1}|X,C=1)-E(Y_{0}|X,C=1)$$
+\end{frame}
+
+\section{Different Methods of PSA}
+
+\begin{frame}
+    \frametitle{Propensity score methods}
+    \begin{description}
+        \item[Matching] Each treatment unit is paired with a comparison unit based upon the pre-treatment covariates.
+        \item[Stratification] Treatment and comparison units are divided into strata (or subclasses) so that treated and comparison units are similar within each strata. Cochran (1968) observed that creating five subclassifications (stratum) removes at least 90\% of the bias in the estimated treatment effect.
+        \item[Weighting] Each observation is weighted by the inverse of the probability of being in that group.
+        $$\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( \frac { { T }_{ i }{ Y }_{ i } }{ \pi ({ X }_{ i }) } -\frac { (1-{ T }_{ i }){ Y }_{ i } }{ 1-\pi ({ X }_{ i }) }  \right)  } $$
+    \end{description}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Steps for Implementing Matching Methods}
+    Stuart and Rubin (2008) outline the following steps for matching, but the same approach can be used for stratification and weighting as well.
+    \begin{enumerate}
+        \item Choose the covariates to be used.
+        \item Define a distance measure (i.e. what constitutes similar).
+        \item Choose the matching algorithm.
+        \item Diagnose the matches (or strata) obtained (iterating through steps 2 and 3 as well).
+        \item Estimate the treatment effect using the matches (or strata) found in step 4.
+    \end{enumerate}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Matching Methods}
+    There are many choices and approaches to matching, including:
+    \begin{itemize}
+        \item Propensity score matching.
+        \item Limited exact matching.
+        \item Full matching.
+        \item Nearest neighbor matching.
+        \item Optimal/Genetic matching.
+        \item Mahalanobis distance matching (for quantiative covariates only).
+%        $$\sqrt { { \left( { X }_{ i }-{ X }_{ j } \right)  }^{ T }{ S }^{ -1 }\left( { X }_{ i }-{ X }_{ j } \right)  } $$ where S is the covariance matrix.
+        \item Matching with and without replacement.
+        \item One-to-one or one-to-many matching.
+    \end{itemize}
+    \ \\
+    Which matching method should you use?
+    \pause
+    \begin{center} \textbf{Whichever one gives the best balance!} \end{center}
+    See Rosenbaum (2012), \textit{Testing one hypothesis twice in observational studies}.
+\end{frame}
+
+\section{The Lalonde Example}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{National Supported Work}
+    
+    The National Supported Work (NSW) Demonstration was a federally and privately funded randomized experiment done in the 1970s to estimate the effects of a job training program for disadvantaged workers.
+    
+    \begin{itemize}
+        \item Participants were randomly selected to participate in the training program.
+        \item Both groups were followed up to determine the effect of the training on wages.
+        \item Analysis of the mean differences (unbiased given randomization), was approximately \$800.
+    \end{itemize}
+    
+    Lalonde (1986) used data from the Panel Survey of Income Dynamics (PSID) and the Current Population Survey (CPS) to investigate whether non-experimental methods would result in similar results to the randomized experiment. He found results ranging from \$700 to \$16,000.
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{National Supported Work (cont.)}
+    Dehejia and Wahba (1999) later used propensity score matching to analyze the data. The found that,
+    \begin{itemize}
+        \item Comparison groups selected by Lalonde were very dissimilar to the treated group.
+        \item By restricting the comparison group to those that were similar to the treated group, they could replicate the original NSW results.
+        \item Using the CPS data, the range of treatment effect was between \$1,559 to \$1,681. The experimental results for the sample sample was approximately \$1,800.
+    \end{itemize}
+
+    The covariates available include: age, eduction level, high school degree, marital status, race, ethnicity, and earning sin 1974 and 1975.
+    \ \\ \ \\
+    Outcome of interest is earnings in 1978.
+    
+<<echo=TRUE,results=hide>>=
+data(lalonde, package='Matching')
+@
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile,shrink=.8]
+    \frametitle{Estimating Propensity Scores}
+<<>>=
+lalonde.formu <- treat~age + educ  + black + hisp + married + nodegr + re74 + re75
+glm1 <- glm(lalonde.formu, family=binomial, data=lalonde)
+summary(glm1)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Estimating Propensity Scores}
+<<>>=
+ps <- fitted(glm1)  # Propensity scores
+Y  <- lalonde$re78  # Dependent variable, real earnings in 1978
+Tr <- lalonde$treat # Treatment indicator
+rr <- Match(Y=Y, Tr=Tr, X=ps, M=1, ties=FALSE)
+summary(rr) # The default estimate is ATT here
+@
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Visualizing Results}
+<<granovaggds,fig=TRUE,width=10,height=10,include=FALSE,echo=TRUE>>=
+matches <- data.frame(Treat=lalonde[rr$index.treated,'re78'], 
+Control=lalonde[rr$index.control,'re78'])
+print(granovagg.ds(matches))
+@
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \begin{center}
+        \includegraphics{figures/Slides-granovaggds}
+    \end{center}
+\end{frame}
+
+%%%%% Stratification
+
+\begin{frame}[containsverbatim,fragile,shrink=.8]
+    \frametitle{Stratification (5 Strata)}
+<<circpsa5,fig=TRUE,width=10,height=8,include=FALSE,echo=TRUE>>=
+strata <- cut(ps, quantile(ps, seq(0, 1, 1/5)), include.lowest=TRUE, labels=letters[1:5])
+circ.psa(lalonde$re78, lalonde$treat, strata, revc=TRUE)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Stratification (5 Strata)}
+    \begin{center}
+        \includegraphics{figures/Slides-circpsa5}
+    \end{center}    
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile,shrink=.8]
+    \frametitle{Stratification (10 Strata)}
+<<circpsa10,fig=TRUE,width=10,height=8,include=FALSE,echo=TRUE>>=
+strata10 <- cut(ps, quantile(ps, seq(0, 1, 1/10)), include.lowest=TRUE, labels=letters[1:10])
+circ.psa(lalonde$re78, lalonde$treat, strata10, revc=TRUE)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Stratification (10 Strata)}
+    \begin{center}
+        \includegraphics{figures/Slides-circpsa10}
+    \end{center}    
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile,shrink=.8]
+    \frametitle{Loess Regression}
+<<loessplot,fig=TRUE,width=12,height=8,include=FALSE,echo=FALSE,results=hide>>=
+psadf <- data.frame(ps, Y, Tr)
+print(loess.plot(psadf[psadf$Y < 30000,]$ps, response=psadf[psadf$Y < 30000,]$Y, 
+		   treatment=as.logical(psadf[psadf$Y < 30000,]$Tr)))
+@
+    \begin{center}
+        \includegraphics{figures/Slides-loessplot}
+    \end{center}    
+\end{frame}
+
+
+%%%%% Checking Balance
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Checking Balance: Continuous Covariates}
+<<boxpsa,fig=TRUE,width=10,height=6,include=FALSE,echo=TRUE>>=
+box.psa(lalonde$age, lalonde$treat, strata, xlab="Strata", 
+balance=FALSE)
+@
+    \begin{center}
+        \includegraphics{figures/Slides-boxpsa}
+    \end{center}
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Checking Balance: Categorical Covariates}
+<<catpsa,fig=TRUE,width=10,height=6,include=FALSE,echo=TRUE,results=hide>>=
+cat.psa(lalonde$married, lalonde$treat, strata, xlab='Strata', 
+balance=FALSE)
+@
+    \begin{center}
+        \includegraphics{figures/Slides-catpsa}
+    \end{center}
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Checking Balance: Covariate Balance Plot}
+<<cvbalpsa,fig=TRUE,width=10,height=8,include=FALSE,echo=FALSE,results=hide>>=
+covars <- all.vars(lalonde.formu)
+covars <- lalonde[,covars[2:length(covars)]]
+cv.bal.psa(covars, lalonde$treat, ps, strata)
+@
+    \begin{center}
+        \includegraphics{figures/Slides-cvbalpsa}
+    \end{center}
+\end{frame}
+
+
+%%%%%%%%%% Multilevel PSA
+\section{Multilevel PSA}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Multilevel PSA}
+    The use of PSA for clustered, or multilevel data, has been limited (Thoemmes \& Felix, 2011). Bryer and Pruzek (2012, 2013) have introduced an approach to analyzing multilevel or clustered data using stratification methods and implemented in the \texttt{multilevelPSA} R package.
+    \begin{itemize}
+        \item Exact and partially exact matching methods implicitly adjust for clustering. That is, the covariates chosen to exactly match are, in essence, clustering variables.
+        \item Exact matching only applies to phase I of PSA. How are the clusters related to outcome of interest.
+    \end{itemize}  
+    The \texttt{multilevelPSA} uses stratification methods (e.g. quintiles, classification trees) by:
+    \begin{itemize}
+        \item Estimate separate propensity scores for each cluster.
+        \item Identify strata within each cluster (e.g. leaves of classification trees, quintiles).
+        \item Estimate ATE (or ATT) within each cluster.
+        \item Aggregate estimated ATE to provide an overall ATE estimate.
+        \item Several functions to summarize and visualize results and check balance.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{The Programme of International Student Assessment (PISA)}
+    \begin{itemize}
+        \item International assessment conducted by the Organization for Economic Co-operation and Development (OECD).
+        \item Assesses students towards the end of secondary school (approximately 15-year-old children) in math, reading, and science.
+        \item Collects a robust set of background information from students, parents, teachers, and schools.
+        \item Assess both private and public school students in many countries.
+        \item We will use PISA to estimate the effects of private school attendance on PISA outcomes.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Phase I of Multilevel PSA}
+    The \texttt{multilevelPSA} provides two functions, \texttt{mlpsa.ctree} and \texttt{mlpsa.logistic}, that will estimate propensity scores using classification trees and logistic regression, respectively. Since logistic regression requires a complete dataset (i.e. no missing values), we will use classification trees in this example.
+<<mlpsasetup,echo=TRUE,results=hide>>=
+data(pisana)
+data(pisa.colnames)
+data(pisa.psa.cols)
+student = pisana
+mlctree = mlpsa.ctree(student[,c('CNT','PUBPRIV',pisa.psa.cols)], 
+					  formula=PUBPRIV ~ ., level2='CNT')
+student.party = getStrata(mlctree, student, level2='CNT')
+student.party$mathscore = apply(
+student.party[,paste0('PV', 1:5, 'MATH')], 1, sum) / 5
+@
+    To assess what covariates were used in each tree model, as well as the relative importance, we can create a heat map of covariate usage by level.
+<<mlpsatreeplot,fig=TRUE,width=10,height=8,include=FALSE,echo=TRUE>>=
+print(tree.plot(mlctree, 
+level2Col=student$CNT, 
+colLabels=pisa.colnames[,c('Variable','ShortDesc')]))
+@
+    
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Covariate Heat Map}
+    \begin{center}
+        \includegraphics{figures/Slides-mlpsatreeplot}
+    \end{center}
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Phase II of Multilevel PSA}
+    The \texttt{mlpsa} function will compare the outcome of interest.
+<<>>=
+results.psa.math = mlpsa(response=student.party$mathscore, 
+						 treatment=student.party$PUBPRIV, strata=student.party$strata, 
+						 level2=student.party$CNT, minN=5)
+results.psa.math$overall.wtd
+results.psa.math$overall.ci
+results.psa.math$level2.summary[,c('level2','Private','Private.n',
+'Public','Public.n','diffwtd','ci.min','ci.max')]
+@
+    The multilevel PSA assessment plot is an extension of the \texttt{circ.psa} plot in \texttt{PSAgraphics} introduced by Helmreich and Pruzek (2009).
+<<mlpsaplot,fig=TRUE,width=10,height=8,include=FALSE,echo=TRUE,results=hide>>=
+print(plot(results.psa.math))
+@   
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Multilevel PSA Assessment Plot}
+    \begin{center}
+        \includegraphics{figures/Slides-mlpsaplot}
+    \end{center}
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Multilevel PSA Difference Plot}
+<<mlpsadiffplot,fig=TRUE,width=10,height=6,include=FALSE,echo=FALSE,results=hide>>=
+print(mlpsa.difference.plot(results.psa.math, 
+sd=mean(student.party$mathscore, na.rm=TRUE)))
+@
+    \begin{center}
+        \includegraphics{figures/Slides-mlpsadiffplot}
+    \end{center}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Matching of Non-Binary Treatments}
+
+<<echo=FALSE,results=hide>>=
+
+require(TriMatch)
+
+data(tutoring)
+formu <- ~ Gender + Ethnicity + Military + ESL + EdMother + EdFather + Age +
+	       Employment + Income + Transfer + GPA
+
+tutoring.tpsa <- trips(tutoring, tutoring$treat, formu)
+tutoring.matched.n <- trimatch(tutoring.tpsa, method=OneToN, M1=5, M2=3)
+@
+
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Matching of Non-Binary Treatments}
+    
+    \begin{itemize}
+        \item The \texttt{TriMatch} package provides functions for finding matched triplets.
+        \item Estimates propensity scores for three separate logistic regression models (one for each pair of groups, that is, treat1-to-control, treat2-to-control, and treat1-to-treat2).
+        \item Finds matched triplets that minimize the total distance (i.e. sum of the standardized distance between propensity scores within the three modesl). within a caliper.
+        \item Provides multiple methods for determining which matched triplets are retained:
+            \begin{itemize}
+                \item Optimal which attempts to retain all treatment units.
+                \item Full which retains all matched triplets within the specified caliper (.25 by default as suggested by Rosenbaum).
+                \item Analog of the one-to-many for matched triplets. Specify how many times each treat1 and treat2 unit can be matched.
+                \item Unique which allows each unit to be matched once, and only once.
+            \end{itemize}
+        \item Functions for conducting repeated measures ANOVA and Freidman Ranksum Tests are provided.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Example: Tutoring}
+    Students can opt to utilize tutoring services to supplement math courses. Of those who used tutoring services, approximately 58\% of students used the tutoring service once, whereas the remaining 42\% used it more than once. Outcome of interest is course grade.
+    \begin{description}
+        \item[Military] Active military status.
+        \item[Income] Income level.
+        \item[Employment] Employment level.
+        \item[NativeEnglish] Is English their native language
+        \item[EdLevelMother] Education level of their mother.
+        \item[EdLevelFather] Education level of their father.
+        \item[Ethnicity] American Indian or Alaska Native, Asian, Black or African American, Hispanic, Native Hawaiian or Other Pacific Islander, Two or more races, Unknown, White
+        \item[Gender] Male, Female
+        \item[Age] Age at course start.
+        \item[GPA] Student GPA at the beginning of the course.
+    \end{description}
+
+\end{frame}
+
+%\begin{frame}
+%    \frametitle{New Student Outreach: Covariates}
+%    Newly enrolled students received outreach contacts until they registered for a course or six months have passed, whichever came first. Outreach was conducted by two academic advisors and a comparison group was drawn from students who enrolled prior to the start of the outreach program. Outcome of interest is number of credits attempted within the first seven months of enrollment.
+%    \begin{description}
+%        \item[Military] Active military status.
+%        \item[Income] Income level.
+%        \item[Employment] Employment level.
+%        \item[NativeEnglish] Is English their native language: Yes (345), No (29)
+%        \item[EdLevelMother] Education level of their mother.
+%        \item[EdLevelFather] Education level of their father.
+%        \item[Ethnicity] American Indian or Alaska Native, Asian, Black or African American, Hispanic, Native Hawaiian or Other Pacific Islander, Two or more races, Unknown, White
+%        \item[Gender] Male (109), Female (265)
+%        \item[Age] Age (mean=35.5, SD=9.7)
+%    \end{description}
+%
+%\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{PSA for Non-Binary Treatments}
+    \begin{itemize}
+        \item The \texttt{TriMatch} algorithm works as follows:
+        \begin{enumerate}
+            \item Estimate three separate propensity score models for each pair of groups (i.e. Control-to-Treat1, Control-to-Treat2, Treat1-to-Treat2).
+            \item Determine the matching order. The default is to start with the largest of two treatments, then the other treatment, followed by the control.
+            \item For each unit in group 1, find all units from group 2 within a certain threshold (i.e. difference between PSs is within a specified caliper).
+            \item For each unit in group 2, find all units from group 3 within a certain threshold.
+            \item Calculate the distance (difference) between each unit 3 found and the original unit 1. Eliminate candidates that exceed the caliper.
+            \item Calculate a total distance (sum of the three distances) and retain the smallest unique \textit{M} group 1 units (by default \textit{M}=2)
+        \end{enumerate}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Matching Triplets} 
+<<triangleplot,fig=TRUE,width=10,height=8,include=FALSE,echo=FALSE>>=
+print(plot(tutoring.matched.n, rows=c(50), draw.segments=TRUE))
+@
+\begin{center}
+    \includegraphics{figures/Slides-triangleplot}
+\end{center}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Checking Balance}
+<<balanceplot,fig=TRUE,width=10,height=8,include=FALSE,echo=FALSE>>=
+print(multibalance.plot(tutoring.tpsa, grid=TRUE))
+@
+\begin{center}
+    \includegraphics{figures/Slides-balanceplot}
+\end{center}
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Results}
+<<boxdiff,fig=TRUE,width=10,height=8,include=FALSE,echo=FALSE>>=
+print(boxdiff.plot(tutoring.matched.n, tutoring$Grade))
+@
+\begin{center}
+    \includegraphics{figures/Slides-boxdiff}
+\end{center}
+\end{frame}
+
+
+\begin{frame}[c]
+	\LARGE{Thank You}\\[.2in]
+	\normalsize
+	Jason Bryer (jason@bryer.org)\\
+	\url{http://www.bryer.org}
+\end{frame}
+
+\end{document}
