@@ -22,18 +22,20 @@ The proposed workshop will provide participants with a theoretical overview of p
 * Phase II of PSA - Estimating effects re: response variables
 	* Dependent sample tests and confidence intervals. 
 	* Visualizing results
-	* Sensitivity analysis
+* Sensitivity analysis
+* PSA with Missing Data
+* Bootstrapping for PSA
+* Analysis of non-binary treatments (i.e. three group analysis)
 * Analysis of multilevel data
-* PSA with non-binary treatments
 
 ## R Packages
-
-There are a number of R packages available for conducting propensity score analysis. We will utilize the following R packages:
 
 * [`MatchIt`](http://gking.harvard.edu/gking/matchit) (Ho, Imai, King, & Stuart, 2011) Nonparametric Preprocessing for Parametric Causal Inference
 * [`Matching`](http://sekhon.berkeley.edu/matching/) (Sekhon, 2011) Multivariate and Propensity Score Matching Software for Causal Inference
 * [`party`](http://cran.r-project.org/web/packages/party/index.html) (Hothorn, Hornik, & Zeileis, 2006) A Laboratory for Recursive Partytioning
 * [`multilevelPSA`](http://jason.bryer.org/multilevelPSA) (Bryer & Pruzek, 2011) Multilevel Propensity Score Analysis
+* [`PSAboot`](http://jason.bryer.org/PSAboot) (Bryer, 2013) Bootstrapping for Propensity Score Analysis
+* [`TriMatch`](http://jason.bryer.org/TriMatch) (Bryer, 2013) Propensity Score Matching for Non-Binary Treatments
 * [`PSAgraphics`](http://www.jstatsoft.org/v29/i06/paper) (Helmreich & Pruzek, 2009) An R Package to Support Propensity Score Analysis
 * [`rpart`](http://cran.r-project.org/web/packages/rpart/index.html) (Therneau, Atkinson, & Ripley, 2012) Recursive Partitioning
 * [`rbounds`](http://www.personal.psu.edu/ljk20/rbounds%20vignette.pdf) (Keele, 2010) An Overview of rebounds: An R Package for Rosenbaum bounds sensitivity analysis with matched data.
