@@ -1,12 +1,7 @@
 # Introduction to Propensity Score Methods with R
 
-##### Slides
-
-* Workshop at University at Albany, Division of Educational Psychology & Methodology -- April 30 and May 7, 2014 [Download Slides](Slides/UAlbany2014/Slides.pdf)  
-* NEAIR Conference Talk -- November 11, 2013 [Download Slides](Slides/NEAIR2013Slides/Slides.pdf)
-* Pre-conference workshop for the 2013 useR! conference -- July 9, 2013 [Download Slides](Slides/useR 2013/Slides.pdf)  
-
-[Jason Bryer](http://jason.bryer.org) ([jason@bryer.org](mailto:jason@bryer.org))
+Contact: [Jason Bryer](http://jason.bryer.org) ([jason@bryer.org](mailto:jason@bryer.org))  
+Early draft of the [Applied Propensity Score Analysis with R](http://jason.bryer.org/psabook).
 
 ## Overview
 
@@ -31,6 +26,12 @@ This workshop will provide participants with a theoretical overview of propensit
 	* Bootstrapping for PSA
 	* Analysis of non-binary treatments
 	* Analysis of multilevel data
+
+## Slides
+
+* Workshop at University at Albany, Division of Educational Psychology & Methodology -- April 30 and May 7, 2014 [Download Slides](Slides/UAlbany2014/Slides.pdf?raw=true)  
+* NEAIR Conference Talk -- November 11, 2013 [Download Slides](Slides/NEAIR2013Slides/Slides.pdf?raw=true)
+* Pre-conference workshop for the 2013 useR! conference -- July 9, 2013 [Download Slides](Slides/useR 2013/Slides.pdf?raw=true)  
 
 ## R Scripts
 
