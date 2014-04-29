@@ -51,3 +51,7 @@
 /Slides/useR2013/Sweave.sty
 
 /data/.DS_Store
+
+/_book/
+
+/book/.rmdbuild
