@@ -1,7 +1,7 @@
 # Introduction to Propensity Score Methods with R
 
 Contact: [Jason Bryer](http://jason.bryer.org) ([jason@bryer.org](mailto:jason@bryer.org))  
-Early draft of the [Applied Propensity Score Analysis with R](http://jason.bryer.org/psabook).
+Early draft of the [Applied Propensity Score Analysis with R](http://jason.bryer.org/psabook) book.
 
 ## Overview
 
@@ -32,6 +32,25 @@ This workshop will provide participants with a theoretical overview of propensit
 * Workshop at University at Albany, Division of Educational Psychology & Methodology -- April 30 and May 7, 2014 [Download Slides](Slides/UAlbany2014/Slides.pdf?raw=true)  
 * NEAIR Conference Talk -- November 11, 2013 [Download Slides](Slides/NEAIR2013Slides/Slides.pdf?raw=true)
 * Pre-conference workshop for the 2013 useR! conference -- July 9, 2013 [Download Slides](Slides/useR 2013/Slides.pdf?raw=true)  
+
+## Software
+
+Before getting started, you should download and install R and RStudio.
+
+* [R](http://cran.r-project.org)
+* [Rtools](http://cran.r-project.org/bin/windows/Rtools/) (Windows Only)
+* [RStudio](http://www.rstudio.com/ide/download/desktop)
+
+This workshop assumes minimal knowledge of R and will not cover the basics. If you are new to R, there are many great resources for learning.
+
+* [Quick-R](http://statmethods.net/) - A great general purpose reference website covering basic and advanced R topics.
+* [R in Action](http://www.manning.com/kabacoff/) - This book by Kabacoff is originated from the Quick-R website and is a fantastic book for learning R.
+* [ggplot2](http://ggplot2.org/) - Most of the visualizations in this workshop were created with the `ggplot2` package which is an implementation of Wilkinson's (2005) [Grammar of Graphics](http://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448).
+* [The Art of R Programming](http://www.amazon.com/The-Art-Programming-Statistical-Software/dp/1593273843/ref=sr_1_6?ie=UTF8&qid=1398807573&sr=8-6&keywords=r) - This is a nice companion book to Kabacoff's *R in Action* and may be preferred if you come to R with a programming background.
+* [OpenIntro Statistics](http://www.openintro.org/stat/) - This is a free and opensource introductory statistics textbook that uses R for all its examples and exercises.
+* [The R Journal](http://journal.r-project.org/) - Journal that publishes articles related to R.
+* [Journal of Statistical Software](http://www.jstatsoft.org/) - An American Statistical Association journal focused on statistical software that regularly publishes articles about R packages.
+* [R FOR SAS AND SPSS USERS](https://science.nature.nps.gov/im/datamgmt/statistics/R/documents/R_for_SAS_SPSS_users.pdf) - If you already know SAS or SPSS, Muenchen's book is very well regarded for learning R.
 
 ## R Scripts
 
