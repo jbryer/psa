@@ -1,21 +1,4 @@
 ################################################################################
-## Install packages
-
-install.packages(c('devtools','ggplot2','granova','granovaGG','gridExtra',
-				   'Matching','MatchIt','party','PSAgraphics','rbounds','rpart'), 
-				 repos='http://cran.r-project.org')
-# Both the multilevelPSA and TriMatch packages are available on CRAN, but we
-# will install the latest versions from Github.
-# install.packages(c('multilevelPSA','TriMatch'), repos='http://cran.r-project.org')
-devtools::install_github('multilevelPSA', 'jbryer')
-devtools::install_github('TriMatch', 'jbryer')
-# The pisa package is a large (~80MB) data package. It is required to reproduce 
-# the full international analysis of private and public schools in the 
-# multilevelPSA package. Alternatively, the North American data is included in 
-# the multilevelPSA package. See demo(pisa)
-# devtools::install_github('pisa', 'jbryer')
-
-################################################################################
 ## Load packages and data
 
 require(ggplot2)
@@ -29,6 +12,7 @@ require(rbounds)
 require(rpart)
 require(multilevelPSA)
 require(TriMatch)
+require(PSAboot)
 # require(pisa)
 
 data(lalonde, package='Matching')

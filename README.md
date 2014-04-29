@@ -1,7 +1,10 @@
 # Introduction to Propensity Score Methods with R
 
-### Pre-conference workshop for the 2013 useR! conference [Slides/useR 2013/Slides.pdf](Download Slides)
-### NEAIR Conference Talk [Slides/NEAIR2013 Slides/Slides.pdf](Download Slides)
+##### Slides
+
+* Workshop at University at Albany, Division of Educational Psychology & Methodology -- April 30 and May 7, 2014 [Download Slides](Slides/UAlbany2014/Slides.pdf)  
+* NEAIR Conference Talk -- November 11, 2013 [Download Slides](Slides/NEAIR2013Slides/Slides.pdf)
+* Pre-conference workshop for the 2013 useR! conference -- July 9, 2013 [Download Slides](Slides/useR 2013/Slides.pdf)  
 
 [Jason Bryer](http://jason.bryer.org) ([jason@bryer.org](mailto:jason@bryer.org))
 
@@ -9,7 +12,7 @@
 
 The use of propensity score methods (Rosenbaum & Rubin, 1983) for estimating causal effects in observational studies or certain kinds of quasi-experiments has been increasing in the social sciences (Thoemmes & Kim, 2011) and in medical research (Austin, 2008) in the last decade. Propensity score analysis (PSA) attempts to adjust selection bias that occurs due to the lack of randomization. Analysis is typically conducted in two phases where in phase I, the probability of placement in the treatment is estimated to identify matched pairs or clusters so that in phase II, comparisons on the dependent variable can be made between matched pairs or within clusters. R (R Core Team, 2012) is ideal for conducting PSA given its wide availability of the most current statistical methods vis-à-vis add-on packages as well as its superior graphics capabilities.
 
-The proposed workshop will provide participants with a theoretical overview of propensity score methods as well as illustrations and discussion of PSA applications. Methods used in phase I of PSA (i.e. models or methods for estimating propensity scores) include logistic regression, classification trees, and matching. Discussions on appropriate comparisons and estimations of effect size and confidence intervals in phase II will also be covered. The use of graphics for diagnosing covariate balance as well as summarizing overall results will be emphasized. Lastly, the extension of PSA methods for multilevel data will also be presented.
+This workshop will provide participants with a theoretical overview of propensity score methods as well as illustrations and discussion of PSA applications. Methods used in phase I of PSA (i.e. models or methods for estimating propensity scores) include logistic regression, classification trees, and matching. Discussions on appropriate comparisons and estimations of effect size and confidence intervals in phase II will also be covered. The use of graphics for diagnosing covariate balance as well as summarizing overall results will be emphasized. Lastly, the extension of PSA methods for multilevel data will also be presented.
 
 
 ## Outline
@@ -22,23 +25,38 @@ The proposed workshop will provide participants with a theoretical overview of p
 * Phase II of PSA - Estimating effects re: response variables
 	* Dependent sample tests and confidence intervals. 
 	* Visualizing results
-* Sensitivity analysis
-* PSA with Missing Data
-* Bootstrapping for PSA
-* Analysis of non-binary treatments (i.e. three group analysis)
-* Analysis of multilevel data
+* Advanced Topics
+	* Sensitivity analysis
+	* PSA with Missing Data
+	* Bootstrapping for PSA
+	* Analysis of non-binary treatments
+	* Analysis of multilevel data
+
+## R Scripts
+
+The following R scripts will outline how to conduct propensity score analysis.
+
+* [Setup.R](R-Scripts/Setup.R) - Install R packages. This script generally needs to be run once per R installation.
+* [IntroPSA.R](R-Scripts/IntroPSA.R) - Conducts propensity score analysis and matching, summarizes results, and evaluates balance.
+* [Sensitivity.R](R-Scripts/Sensitivity.R) - Conduct a sensitivity analysis.
+* [Missingness.R](R-Scripts/Missingness.R) - How to evaluate whether data is missing at random.
+* [BootstrappingPSA.R](R-Scripts/BootstrappingPSA.R) - Boostrapping PSA.
+* [NonBinaryPSA.R](R-Scripts/NonBinaryPSA.R) - Analysis of three groups (two treatments and one control)
+* [MultilevelPSA.R](R-Scripts/MultilevelPSA.R) - Multilevel propensity score analysis.
 
 ## R Packages
 
+There are a number of R packages available for conducting propensity score analysis. These are the packages this workshop will make use of:
+
 * [`MatchIt`](http://gking.harvard.edu/gking/matchit) (Ho, Imai, King, & Stuart, 2011) Nonparametric Preprocessing for Parametric Causal Inference
 * [`Matching`](http://sekhon.berkeley.edu/matching/) (Sekhon, 2011) Multivariate and Propensity Score Matching Software for Causal Inference
-* [`party`](http://cran.r-project.org/web/packages/party/index.html) (Hothorn, Hornik, & Zeileis, 2006) A Laboratory for Recursive Partytioning
 * [`multilevelPSA`](http://jason.bryer.org/multilevelPSA) (Bryer & Pruzek, 2011) Multilevel Propensity Score Analysis
+* [`party`](http://cran.r-project.org/web/packages/party/index.html) (Hothorn, Hornik, & Zeileis, 2006) A Laboratory for Recursive Partytioning
 * [`PSAboot`](http://jason.bryer.org/PSAboot) (Bryer, 2013) Bootstrapping for Propensity Score Analysis
-* [`TriMatch`](http://jason.bryer.org/TriMatch) (Bryer, 2013) Propensity Score Matching for Non-Binary Treatments
 * [`PSAgraphics`](http://www.jstatsoft.org/v29/i06/paper) (Helmreich & Pruzek, 2009) An R Package to Support Propensity Score Analysis
-* [`rpart`](http://cran.r-project.org/web/packages/rpart/index.html) (Therneau, Atkinson, & Ripley, 2012) Recursive Partitioning
 * [`rbounds`](http://www.personal.psu.edu/ljk20/rbounds%20vignette.pdf) (Keele, 2010) An Overview of rebounds: An R Package for Rosenbaum bounds sensitivity analysis with matched data.
+* [`rpart`](http://cran.r-project.org/web/packages/rpart/index.html) (Therneau, Atkinson, & Ripley, 2012) Recursive Partitioning
+* [`TriMatch`](http://jason.bryer.org/TriMatch) (Bryer, 2013) Propensity Score Matching for Non-Binary Treatments
 
 ## References
 
