@@ -14,7 +14,6 @@ require(multilevelPSA)
 require(tree)
 require(TriMatch)
 require(PSAboot)
-# require(pisa)
 
 data(lalonde, package='Matching')
 data(lindner, package='PSAgraphics')
