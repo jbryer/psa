@@ -65,19 +65,6 @@
   \titlepage
 \end{frame}
 
-%\frame{\frametitle{Agenda}\tableofcontents[hideothersubsections]}
-\frame{\frametitle{Agenda}\tableofcontents}
-
-%\AtBeginSubsection[]
-%{
-%\begin{frame}<beamer>{Agenda}
-%\tableofcontents[currentsection,currentsubsection, 
-% %   hideothersubsections, 
-%    sectionstyle=show/shaded,
-%]
-%\end{frame}
-%}
-
 \begin{frame}
     \frametitle{Getting Started}
     \begin{itemize}
@@ -91,7 +78,7 @@
 
         \pause
         \ \\
-        Other (shameless) plugs!
+        \textbf{Other (shameless) plugs!}
 
         \item Join the Albany R Users Group at \url{http://www.meetup.com/Albany-R-Users-Group/}
         \item I will be teaching EPSY 887 Data Science in the Fall \url{https://github.com/jbryer/EPSY887DataScience}
@@ -100,9 +87,22 @@
     \pause
     
     \begin{center}\bf{Thanks to Hirah Mir and Heidi Andrade for making this workshop possible!}\end{center}
-            
-        
 \end{frame}
+
+
+%\frame{\frametitle{Agenda}\tableofcontents[hideothersubsections]}
+\frame{\frametitle{Agenda}\tableofcontents}
+
+%\AtBeginSubsection[]
+%{
+%\begin{frame}<beamer>{Agenda}
+%\tableofcontents[currentsection,currentsubsection, 
+% %   hideothersubsections, 
+%    sectionstyle=show/shaded,
+%]
+%\end{frame}
+%}
+
 
 \begin{frame}[containsverbatim,fragile]
     \frametitle{Popularity of Propensity Score Analysis}
@@ -325,10 +325,10 @@ Number of Fisher Scoring iterations: 4
 > summary(rr) # The default estimate is ATT here
 \end{Sinput}
 \begin{Soutput}
-Estimate...  2726.3 
-SE.........  633.85 
-T-stat.....  4.3011 
-p.val......  1.6992e-05 
+Estimate...  2672.2 
+SE.........  642.04 
+T-stat.....  4.162 
+p.val......  3.1542e-05 
 
 Original number of observations..............  445 
 Original number of treated obs...............  185 
@@ -348,19 +348,19 @@ Matched number of observations  (unweighted).  185
 \end{Sinput}
 \begin{Soutput}
                               Summary Statistics
-n                                        1.8e+02
-Treat mean                               6.3e+03
-Control mean                             3.6e+03
-mean(D = Treat - Control)                2.7e+03
-SD(D)                                    8.6e+03
-Effect Size                              3.2e-01
-r(Treat, Control)                        5.4e-02
-r(Treat + Control, D)                    5.8e-01
-Lower 95% Confidence Interval            1.5e+03
-Upper 95% Confidence Interval            4.0e+03
-t (D-bar)                                4.3e+00
-df.t                                     1.8e+02
-p-value (t-statistic)                    0.0e+00
+n                                         185.00
+Treat mean                               6349.15
+Control mean                             3676.94
+mean(D = Treat - Control)                2672.20
+SD(D)                                    8756.41
+Effect Size                                 0.30
+r(Treat, Control)                           0.07
+r(Treat + Control, D)                       0.52
+Lower 95% Confidence Interval            1402.06
+Upper 95% Confidence Interval            3942.35
+t (D-bar)                                   4.15
+df.t                                      184.00
+p-value (t-statistic)                       0.00
 \end{Soutput}
 \end{Schunk}
 \end{frame}
@@ -675,3 +675,88 @@ $CI.95
 > student = pisana
 > mlctree = mlpsa.ctree(student[,c('CNT','PUBPRIV',pisa.psa.cols)], 
    					  formula=PUBPRIV ~ ., level2='CNT')
+> student.party = getStrata(mlctree, student, level2='CNT')
+> student.party$mathscore = apply(
+   student.party[,paste0('PV', 1:5, 'MATH')], 1, sum) / 5
+\end{Sinput}
+\end{Schunk}
+    To assess what covariates were used in each tree model, as well as the relative importance, we can create a heat map of covariate usage by level.
+\begin{Schunk}
+\begin{Sinput}
+> print(tree.plot(mlctree, 
+   level2Col=student$CNT, 
+   colLabels=pisa.colnames[,c('Variable','ShortDesc')]))
+\end{Sinput}
+\end{Schunk}
+    
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Covariate Heat Map}
+    \begin{center}
+        \includegraphics{figures/Slides-mlpsatreeplot}
+    \end{center}
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Phase II of Multilevel PSA}
+    The \texttt{mlpsa} function will compare the outcome of interest.
+\begin{Schunk}
+\begin{Sinput}
+> results.psa.math = mlpsa(response=student.party$mathscore, 
+   						 treatment=student.party$PUBPRIV, strata=student.party$strata, 
+   						 level2=student.party$CNT, minN=5)
+> results.psa.math$overall.wtd
+\end{Sinput}
+\begin{Soutput}
+[1] -28
+\end{Soutput}
+\begin{Sinput}
+> results.psa.math$overall.ci
+\end{Sinput}
+\begin{Soutput}
+[1] -31 -25
+\end{Soutput}
+\begin{Sinput}
+> results.psa.math$level2.summary[,c('level2','Private','Private.n',
+   'Public','Public.n','diffwtd','ci.min','ci.max')]
+\end{Sinput}
+\begin{Soutput}
+  level2 Private Private.n Public Public.n diffwtd ci.min ci.max
+1    CAN     579      1625    513    21093   -65.8    -72  -59.6
+2    MEX     430      4044    423    34090    -6.6    -10   -3.1
+3    USA     505       345    485     4888   -20.4    -32   -8.8
+\end{Soutput}
+\end{Schunk}
+    The multilevel PSA assessment plot is an extension of the \texttt{circ.psa} plot in \texttt{PSAgraphics} introduced by Helmreich and Pruzek (2009).
+\begin{Schunk}
+\begin{Sinput}
+> print(plot(results.psa.math))
+\end{Sinput}
+\end{Schunk}
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Multilevel PSA Assessment Plot}
+    \begin{center}
+        \includegraphics{figures/Slides-mlpsaplot}
+    \end{center}
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Multilevel PSA Difference Plot}
+    \begin{center}
+        \includegraphics{figures/Slides-mlpsadiffplot}
+    \end{center}
+\end{frame}
+
+
+
+\begin{frame}[c]
+	\LARGE{Thank You}\\[.2in]
+	\normalsize
+	Jason Bryer (jason@bryer.org)\\
+	\url{http://www.bryer.org}
+\end{frame}
+
+\end{document}

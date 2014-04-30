@@ -52,6 +52,8 @@ This workshop assumes minimal knowledge of R and will not cover the basics. If y
 * [Journal of Statistical Software](http://www.jstatsoft.org/) - An American Statistical Association journal focused on statistical software that regularly publishes articles about R packages.
 * [R FOR SAS AND SPSS USERS](https://science.nature.nps.gov/im/datamgmt/statistics/R/documents/R_for_SAS_SPSS_users.pdf) - If you already know SAS or SPSS, Muenchen's book is very well regarded for learning R.
 * [R Bloggers](http://www.r-bloggers.com/) - This is an aggregate of many blogs about R and an excellent resource for learning about new developments around R.
+* [Twitter](https://twitter.com/hashtag/rstats) - The `#Rstats` hashtag on Twitter is a great way to see what people are saying about R.
+* [StackOverflow](http://stackoverflow.com/tags/R) - This website is a great place to go to ask questions and get help on R related topics.
 
 ## R Scripts
 

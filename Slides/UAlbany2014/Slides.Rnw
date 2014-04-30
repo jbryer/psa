@@ -87,19 +87,6 @@ data(tutoring)
   \titlepage
 \end{frame}
 
-%\frame{\frametitle{Agenda}\tableofcontents[hideothersubsections]}
-\frame{\frametitle{Agenda}\tableofcontents}
-
-%\AtBeginSubsection[]
-%{
-%\begin{frame}<beamer>{Agenda}
-%\tableofcontents[currentsection,currentsubsection, 
-% %   hideothersubsections, 
-%    sectionstyle=show/shaded,
-%]
-%\end{frame}
-%}
-
 \begin{frame}
     \frametitle{Getting Started}
     \begin{itemize}
@@ -113,7 +100,7 @@ data(tutoring)
 
         \pause
         \ \\
-        Other (shameless) plugs!
+        \textbf{Other (shameless) plugs!}
 
         \item Join the Albany R Users Group at \url{http://www.meetup.com/Albany-R-Users-Group/}
         \item I will be teaching EPSY 887 Data Science in the Fall \url{https://github.com/jbryer/EPSY887DataScience}
@@ -122,9 +109,22 @@ data(tutoring)
     \pause
     
     \begin{center}\bf{Thanks to Hirah Mir and Heidi Andrade for making this workshop possible!}\end{center}
-            
-        
 \end{frame}
+
+
+%\frame{\frametitle{Agenda}\tableofcontents[hideothersubsections]}
+\frame{\frametitle{Agenda}\tableofcontents}
+
+%\AtBeginSubsection[]
+%{
+%\begin{frame}<beamer>{Agenda}
+%\tableofcontents[currentsection,currentsubsection, 
+% %   hideothersubsections, 
+%    sectionstyle=show/shaded,
+%]
+%\end{frame}
+%}
+
 
 \begin{frame}[containsverbatim,fragile]
     \frametitle{Popularity of Propensity Score Analysis}
