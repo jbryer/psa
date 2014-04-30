@@ -103,16 +103,17 @@ data(tutoring)
 \begin{frame}
     \frametitle{Getting Started}
     \begin{itemize}
-        \item All the course materials can be downloaded at \url{https://github.com/jbryer/psa}. Click the "Download ZIP" button on the right side.
+        \item All the course materials can be downloaded at \url{https://psa.bryer.org}. Click the "Download ZIP" button on the right side.
         \item You will need to download and install the following software:
         \begin{itemize}
             \item R: \url{http://cran.r-project.org}
             \item Rstudio: \url{http://www.rstudio.com}
             \item Rtools (Windows only): \url{http://cran.r-project.org/bin/windows/Rtools/}
         \end{itemize}
-        \item These workshop materials are being translated in book format. You can view and/or contribute on Github at \url{http://jason.bryer.org/psabook/}
 
         \pause
+        \ \\
+        Other (shameless) plugs!
 
         \item Join the Albany R Users Group at \url{http://www.meetup.com/Albany-R-Users-Group/}
         \item I will be teaching EPSY 887 Data Science in the Fall \url{https://github.com/jbryer/EPSY887DataScience}
@@ -126,7 +127,7 @@ data(tutoring)
 \end{frame}
 
 \begin{frame}[containsverbatim,fragile]
-    \frametitle{Number of Publications by Year}
+    \frametitle{Popularity of Propensity Score Analysis}
 <<popularity,echo=FALSE,fig=TRUE,width=11,height=8,include=FALSE>>=
 require(gdata)
 require(ggplot2)
@@ -197,7 +198,6 @@ print(p)
         \item However, it is impossible to directly observe ${\delta}_{i}$ (referred to as \textit{The Fundamental Problem of Causal Inference}, Holland 1986).
         \item Rubin frames this problem as a ``missing data problem."
     \end{itemize}
-    
 \end{frame}
 
 

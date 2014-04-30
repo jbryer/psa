@@ -14,29 +14,34 @@ require(multilevelPSA)
 require(tree)
 require(TriMatch)
 require(PSAboot)
-# require(pisa)
 
-data(lalonde, package='Matching')
-data(lindner, package='PSAgraphics')
+data(tutoring)
+str(tutoring)
 
-str(lalonde)
-str(lindner)
+# The tutoring example has treatment with three levels: Treat1, Treat2, and Control.
+# We'll convert this to a two level treatment for this example. 
+tutoring$treat2 <- tutoring$treat != 'Control'
+table(tutoring$treat, tutoring$treat2, useNA='ifany')
 
 ################################################################################
 ## Phase I
 
 ## Using logistic regression for estimating propensity scores 
-lalonde.formu <- treat ~ age+ educ + black + hisp + married + nodegr + re74 + re75
-lalonde.glm <- glm(lalonde.formu, family=binomial, data=lalonde)
+tutoring.formu <- treat2 ~ Gender + Ethnicity + Military + ESL + EdMother +
+	EdFather + Age + Employment + Income + Transfer + GPA
+tutoring.glm <- glm(tutoring.formu, family=binomial, data=tutoring)
 
-summary(lalonde.glm)
+summary(tutoring.glm)
 
 # try the stepAIC in the MASS package
 ?stepAIC
 
-ps <- fitted(lalonde.glm)  # Propensity scores
-Y  <- lalonde$re78  # Dependent variable, real earnings in 1978
-Tr <- lalonde$treat # Treatment indicator
+ps <- fitted(tutoring.glm)  # Propensity scores
+Y  <- tutoring$Grade  # Dependent variable, real earnings in 1978
+Tr <- tutoring$treat2 # Treatment indicator
+
+# Check the distributions of propensity scores to ensure we have good overlap
+ggplot(data.frame(ps=ps, Y=Y, Tr=Tr), aes(x=ps, color=Tr)) + geom_density()
 
 ## Matching
 # one-to-one matching with replacement (the "M=1" option).
@@ -52,7 +57,7 @@ length(unique(rr$index.control))
 ls(rr2)
 
 ## Using the Matchit package
-matchit.out <- matchit(lalonde.formu, data=lalonde)
+matchit.out <- matchit(tutoring.formu, data=tutoring)
 summary(matchit.out)
 
 # Same as above but calculate average treatment effect
@@ -61,25 +66,27 @@ summary(rr.ate) # Here the estimate is ATE
 
 ## Genetic Matching
 rr.gen <- GenMatch(Tr=Tr, X=ps, 
-				   BalanceMatrix=lalonde[,all.vars(lalonde.formu)[-1]],
-				   estimand='ATE', M=1, pop.size=16)
+				   BalanceMatrix=model.matrix(tutoring.formu, tutoring)[,-1],
+				   estimand='ATE', M=1, pop.size=16) #pop.size=16 only for speed, should be larger
 rr.gen.mout <- Match(Y=Y, Tr=Tr, X=ps, estimand='ATE', Weight.matrix=rr.gen)
 summary(rr.gen.mout)
 
 ## Partial exact matching
-rr2 <- Matchby(Y=Y, Tr=Tr, X=ps, by=factor(lalonde$nodegr))
+rr2 <- Matchby(Y=Y, Tr=Tr, X=ps, by=factor(tutoring$Course))
 summary(rr2)
 
 ## Partial exact matching on two covariates
-rr3 <- Matchby(Y=Y, Tr=Tr, X=ps, by=lalonde[,c('nodegr','married')])
+rr3 <- Matchby(Y=Y, Tr=Tr, X=ps, by=tutoring[,c('Course','Gender')])
 summary(rr3)
 
 ## Stratification using a classification tree
-rpart.fit <- rpart(lalonde.formu, data=lalonde)
+rpart.fit <- rpart(tutoring.formu, data=tutoring)
 print(rpart.fit)
-plot(rpart.fit); text(rpart.fit)
+par(xpd = TRUE) # This fixes an issue that would clip the text
+plot(rpart.fit, uniform=TRUE); text(rpart.fit, use.n=TRUE, all=TRUE, cex=.8)
+par(xpd = FALSE) # Reset to default value
 strata.rpart <- rpart.fit$where
-ps.rpart <- predict(rpart.fit, lalonde)
+ps.rpart <- predict(rpart.fit, tutoring)
 
 # We see the results are the same vis-à-vis stratification perspective, but the
 # interpretation is a bit different. The predict function gives the class
@@ -87,25 +94,25 @@ ps.rpart <- predict(rpart.fit, lalonde)
 # this example, whereas the "where" object give the class label.
 table(strata.rpart, ps.rpart) 
 
-table(lalonde$treat, strata.rpart, useNA='ifany')
+table(tutoring$treat2, strata.rpart, useNA='ifany')
 
 ## Stratification using the party package (conditional inference trees)
-ctree.fit <- ctree(lalonde.formu, data=lalonde)
+ctree.fit <- ctree(tutoring.formu, data=tutoring)
 print(ctree.fit)
 plot(ctree.fit)
 strata.ctree <- where(ctree.fit)
 ps.ctree <- predict(ctree.fit)
-table(lalonde$treat, strata.ctree, useNA='ifany')
+table(tutoring$treat2, strata.ctree, useNA='ifany')
 
 ## Using the tree package
-tree.fit <- tree(lalonde.formu, data=lalonde)
+tree.fit <- tree(tutoring.formu, data=tutoring)
 print(tree.fit)
 strata.tree <- tree.fit$where
 ps.tree <- predict(tree.fit)
-table(lalonde$treat, strata.tree, useNA='ifany')
+table(tutoring$treat2, strata.tree, useNA='ifany')
 
-tmp <- data.frame(treat=factor(lalonde$treat),
-				  ps.lr=fitted(lalonde.glm),
+tmp <- data.frame(treat=factor(tutoring$treat2),
+				  ps.lr=fitted(tutoring.glm),
 				  ps.tree=predict(tree.fit),
 				  ps.rpart=predict(rpart.fit),
 				  strata.rpart=factor(rpart.fit$where),
@@ -129,29 +136,30 @@ ggplot(tmp, aes(x=ps.lr, y=ps.tree, color=strata.tree)) + geom_point() +
 strata <- cut(ps, quantile(ps, seq(0, 1, 1/5)), include.lowest=TRUE, 
 			  labels=letters[1:5])
 table(strata, useNA='ifany')
-table(lalonde$treat, strata, useNA='ifany')
+table(tutoring$treat2, strata, useNA='ifany')
 
 ## Stratification using 10 strata
 strata10 <- cut(ps, quantile(ps, seq(0, 1, 1/10)), include.lowest=TRUE, 
 				labels=letters[1:10])
-table(lalonde$treat, strata10, useNA='ifany')
+table(tutoring$treat2, strata10, useNA='ifany')
 
 
 ################################################################################
 ## Checking balance
 
-match.age <- data.frame(Treat=lalonde[rr$index.treated,'age'], 
-						Control=lalonde[rr$index.control,'age'])
+match.age <- data.frame(Treat=tutoring[rr$index.treated,'Age'], 
+						Control=tutoring[rr$index.control,'Age'])
 t.test(match.age$Treat, match.age$Control, paired=TRUE)
 
-mb <- MatchBalance(lalonde.formu, data=lalonde, match.out=rr, nboots=100)
+mb <- MatchBalance(tutoring.formu, data=tutoring, match.out=rr, nboots=100)
 
-box.psa(lalonde$age, lalonde$treat, strata, xlab="Strata", balance=FALSE)
-cat.psa(lalonde$nodegr, lalonde$treat, strata, xlab='Strata', balance=FALSE)
+box.psa(tutoring$Age, tutoring$treat2, strata, xlab="Strata", balance=FALSE)
+cat.psa(tutoring$Gender, tutoring$treat2, strata, xlab='Strata', balance=FALSE)
+cat.psa(tutoring$Ethnicity, tutoring$treat2, strata, xlab='Strata', balance=FALSE)
 
-covars <- all.vars(lalonde.formu)
-covars <- lalonde[,covars[2:length(covars)]]
-cv.bal.psa(covars, lalonde$treat, ps, strata)
+covars <- all.vars(tutoring.formu)
+covars <- cv.trans.psa(tutoring[,covars[2:length(covars)]])[[1]]
+cv.bal.psa(covars, tutoring$treat2, ps, strata)
 
 ################################################################################
 ## Phase II
@@ -159,15 +167,12 @@ cv.bal.psa(covars, lalonde$treat, ps, strata)
 loess.psa(response=Y, treatment=Tr, propensity=ps) #from PSAgraphics
 loess.plot(ps, response=Y, treatment=as.logical(Tr), 
 		   method='loess', plot.strata=10) #from multilevelPSA
-# log transform the outcome variable
-loess.plot(ps, response=log(Y+1), treatment=as.logical(Tr), 
-		   plot.strata=10, method='loess') #from multilevelPSA
 
 ## For matching methods
 matches <- cbind(Treat=rr$index.treated, Control=rr$index.control)
 head(matches)
-matches <- data.frame(Treat=lalonde[rr$index.treated,'re78'], 
-					  Control=lalonde[rr$index.control,'re78'])
+matches <- data.frame(Treat=tutoring[rr$index.treated,'Grade'], 
+					  Control=tutoring[rr$index.control,'Grade'])
 head(matches)
 t.test(x=matches$Treat, y=matches$Control, paired=TRUE)
 
@@ -176,14 +181,14 @@ granovagg.ds(matches) #ggplot2 version
 
 ## For stratification methods
 # Five strata
-circ.psa(lalonde$re78, lalonde$treat, strata, revc=TRUE)
+circ.psa(tutoring$Grade, tutoring$treat2, strata, revc=TRUE)
 # Ten strata
-circ.psa(lalonde$re78, lalonde$treat, strata10, revc=TRUE)
+circ.psa(tutoring$Grade, tutoring$treat2, strata10, revc=TRUE)
 # Classification tree
-circ.psa(lalonde$re78, lalonde$treat, strata.rpart, revc=TRUE)
+circ.psa(tutoring$Grade, tutoring$treat2, strata.rpart, revc=TRUE)
 
 ## With the MatchIt package
-matchit.df <- data.frame(treat=lalonde[row.names(matchit.out$match.matrix),'re78'], 
-						 control=lalonde[matchit.out$match.matrix[,1],'re78'])
+matchit.df <- data.frame(treat=tutoring[row.names(matchit.out$match.matrix),'Grade'], 
+						 control=tutoring[matchit.out$match.matrix[,1],'Grade'])
 t.test(matchit.df$treat, matchit.df$control, paired=TRUE)
 

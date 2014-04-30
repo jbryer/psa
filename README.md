@@ -51,13 +51,15 @@ This workshop assumes minimal knowledge of R and will not cover the basics. If y
 * [The R Journal](http://journal.r-project.org/) - Journal that publishes articles related to R.
 * [Journal of Statistical Software](http://www.jstatsoft.org/) - An American Statistical Association journal focused on statistical software that regularly publishes articles about R packages.
 * [R FOR SAS AND SPSS USERS](https://science.nature.nps.gov/im/datamgmt/statistics/R/documents/R_for_SAS_SPSS_users.pdf) - If you already know SAS or SPSS, Muenchen's book is very well regarded for learning R.
+* [R Bloggers](http://www.r-bloggers.com/) - This is an aggregate of many blogs about R and an excellent resource for learning about new developments around R.
 
 ## R Scripts
 
 The following R scripts will outline how to conduct propensity score analysis.
 
 * [Setup.R](R-Scripts/Setup.R) - Install R packages. This script generally needs to be run once per R installation.
-* [IntroPSA.R](R-Scripts/IntroPSA.R) - Conducts propensity score analysis and matching, summarizes results, and evaluates balance.
+* [IntroPSA.R](R-Scripts/IntroPSA.R) - Conducts propensity score analysis and matching, summarizes results, and evaluates balance using the National Supported Work Demonstration and Current Population Survey (aka lalonde data).
+* [IntroPSA-Tutoring.R](R-Scripts/IntroPSA.R) - Conducts propensity score analysis and matching, summarizes results, and evaluates balance using data from a study examining student use of tutoring services in an online introductory writing class (from the `TriMatch` package).
 * [Sensitivity.R](R-Scripts/Sensitivity.R) - Conduct a sensitivity analysis.
 * [Missingness.R](R-Scripts/Missingness.R) - How to evaluate whether data is missing at random.
 * [BootstrappingPSA.R](R-Scripts/BootstrappingPSA.R) - Boostrapping PSA.
