@@ -5,7 +5,7 @@ require(Rgitbook)
 require(ggplot2)
 theme_update(panel.background=element_rect(size=1, color='grey70', fill=NA) )
 
-initGitbook('book'); setwd('..')
+#initGitbook('book'); setwd('..')
 
 buildGitbook('book')
 openGitbook()
