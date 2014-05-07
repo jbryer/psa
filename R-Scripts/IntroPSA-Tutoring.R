@@ -56,6 +56,9 @@ length(unique(rr2$index.control))
 length(unique(rr$index.control))
 ls(rr2)
 
+rr3 <- Match(Y=Y, Tr=Tr, X=ps, M=1, ties=TRUE, replace=FALSE, estimand='ATT')
+summary(rr3) # The default estimate is ATT here
+
 ## Using the Matchit package
 matchit.out <- matchit(tutoring.formu, data=tutoring)
 summary(matchit.out)
@@ -68,7 +71,7 @@ summary(rr.ate) # Here the estimate is ATE
 rr.gen <- GenMatch(Tr=Tr, X=ps, 
 				   BalanceMatrix=model.matrix(tutoring.formu, tutoring)[,-1],
 				   estimand='ATE', M=1, pop.size=16) #pop.size=16 only for speed, should be larger
-rr.gen.mout <- Match(Y=Y, Tr=Tr, X=ps, estimand='ATE', Weight.matrix=rr.gen)
+rr.gen.mout <- Match(Y=Y, Tr=Tr, X=ps, M=1, ties=FALSE, estimand='ATE', Weight.matrix=rr.gen)
 summary(rr.gen.mout)
 
 ## Partial exact matching
@@ -87,6 +90,12 @@ plot(rpart.fit, uniform=TRUE); text(rpart.fit, use.n=TRUE, all=TRUE, cex=.8)
 par(xpd = FALSE) # Reset to default value
 strata.rpart <- rpart.fit$where
 ps.rpart <- predict(rpart.fit, tutoring)
+
+# Let's try the logistic regression again
+glm.out2 <- glm(treat2 ~ Gender + Ethnicity + Military + ESL + EdMother + EdFather + 
+					Age + Employment + Income + Transfer + GPA + Transfer * Gender,
+				data=tutoring, family=binomial)
+summary(glm.out2)
 
 # We see the results are the same vis-à-vis stratification perspective, but the
 # interpretation is a bit different. The predict function gives the class
@@ -185,7 +194,7 @@ circ.psa(tutoring$Grade, tutoring$treat2, strata, revc=TRUE)
 # Ten strata
 circ.psa(tutoring$Grade, tutoring$treat2, strata10, revc=TRUE)
 # Classification tree
-circ.psa(tutoring$Grade, tutoring$treat2, strata.rpart, revc=TRUE)
+circ.psa(tutoring$Grade, tutoring$treat2, strata.tree, revc=TRUE)
 
 ## With the MatchIt package
 matchit.df <- data.frame(treat=tutoring[row.names(matchit.out$match.matrix),'Grade'], 

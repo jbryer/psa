@@ -115,7 +115,7 @@ data(tutoring)
 %\frame{\frametitle{Agenda}\tableofcontents[hideothersubsections]}
 \frame{\frametitle{Agenda}\tableofcontents}
 
-%\AtBeginSubsection[]
+%\AtBeginSection[]
 %{
 %\begin{frame}<beamer>{Agenda}
 %\tableofcontents[currentsection,currentsubsection, 
@@ -445,8 +445,118 @@ cv.bal.psa(covars, lalonde$treat, ps, strata)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Advanced PSA (May 7, 2014)}
 
+\AtBeginSubsection[]
+{
+\begin{frame}<beamer>{Agenda}
+\tableofcontents[currentsection,currentsubsection, 
+ %   hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Sensitivity Analysis}
+% Some of this section is from http://sekhon.berkeley.edu/causalinf/fa2013/Section/Section11Slides.pdf
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Sensitivity Analysis}
+    \begin{itemize}
+        \item An observational study is free of hidden bias if the propensity scores for each subject depend only on the observed covariates.
+        \item That is, the \textit{p}-value is valid \textit{if} there are no unobserved confounders.
+        \item However, there are very likely covariates that would better model treatment. These introduce hidden bias.
+        \item Hidden bias exists if two subjects have the same covariates, but different propensity scores.
+        \begin{center}
+        $X_a = X_b$ but ${ \pi  }_{ a }\neq { \pi  }_{ b }$ for some a and b.
+        \end{center}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Sensitivity Analysis}
+    Each person in the treatment is matched to exactly one person in the control. The odds of being in the treatment for persons a and b are:
+    
+    \begin{center}
+    $O_a = \frac{  \pi_a }{ 1 - \pi_a }$ and $O_b = \frac{  \pi_b }{ 1 - \pi_b }$
+    \end{center}
+    
+    The ratio of these odds, $\Gamma$, measures the bias after matching.
+    
+     $$\Gamma =\frac { { O }_{ a } }{ { O }_{ b } } =\frac { { { \pi  }_{ a } / ( }{ 1-{ \pi  }_{ a }) } }{ { { \pi  }_{ b } / (1-{ \pi  }_{ b }) } } $$
+   
+   This is the ratio of the odds the treated unit being in the treatment group to the matched control unit being in the treatment group.
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Sensitivity Analysis}
+    
+    Sensitivity analysis tests whether the results hold for various ranges of $\Gamma$. That is, we test how large the differences in $\pi$ (i.e. propensity scores) would have to be to change our basic inference. Let $p_a$ and $p_b$ be the probability of each unit of the matched pair being treated, conditional on exactly one being treated. For example:
+    
+    \begin{itemize}
+        \item If $\Gamma = 1$, the treatment and control unit within each pair has the same value of treatment assignment ($p_a = 0.5$ and $p_b = 0.5$).
+        \item If $\frac{1}{2} \le \Gamma \le 2$, no unit can be more than twice as likely as its match to get treated ($0.33 \le p_a$, $p_b \le 0.66$).
+        \item If $\frac{1}{3} \le \Gamma \le 3$, no unit can be more than three times as likely as its match to get treated ($0.25 \le p_a$, $p_b \le 0.75$)
+    \end{itemize}
+    To get the bounds:
+    $$ \frac{1}{\Gamma +1 } \le p_a, p_b \le \frac{\Gamma}{\Gamma +1} $$
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Wilcoxon Signed Rank Test}
+    \begin{enumerate}
+        \item Drop pairs where the matches have the same outcome.
+        \item Calculate the difference in outcomes within each pair.
+        \item Rank the pairs from smallest absolute difference to largest absolute difference (i.e. the smallest = 1).
+        \item Take the sum of the ranks where the treated unit had the higher outcome.
+        $$ W=\left| \sum _{ 1 }^{ { N }_{ r } }{ sgn({ x }_{ T,i }-{ x }_{ C,i })\cdot { R }_{ i } }  \right|  $$
+        Where $N$ is the number of ranked pairs; $R_i$ is the rank for pair \textit{r}; $x_{T,i}$ and $x_{C,i}$ are the outcomes for the $i^{th}$ treated and control pair, respectively.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Sensitivity Analysis}
+    The process for sensitivity analysis:
+    \begin{itemize}
+        \item Select a series of values for $\Gamma$. For social science research, values between 1 and 2 is an appropriate start.
+        \item For each $\Gamma$, estimate the \textit{p}-values to see how the \textit{p}-values increase for larger values of $\Gamma$.
+        \item For binary outcomes, use McNemar's test, for all others use Wilcoxon sign rank test and teh Hodges-Lehmann point estimate. See Keele (2010) for more information.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Sensitivity Analysis}
+    
+    Children of parents who had worked in a factory where lead was used in making batteries were matched by age, exposure to traffic, and neighborhood with children whose parents did not work in lead-related industries. Whole blood was assessed for lead content yielding measurements in mg/dl
+<<rboundsSetup>>=    
+require(rbounds)
+trt <- c(38, 23, 41, 18, 37, 36, 23, 62, 31, 34, 24, 14, 21, 17, 
+         16, 20, 15, 10, 45, 39, 22, 35, 49, 48, 44, 35, 43, 39,
+         34, 13, 73, 25, 27)
+ctrl <- c(16, 18, 18, 24, 19, 11, 10, 15, 16, 18, 18, 13, 19, 
+          10, 16, 16, 24, 13, 9, 14, 21, 19, 7, 18, 19, 12, 
+          11, 22, 25, 16, 13, 11, 13)
+@
+\end{frame}
+
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Sensitivity Analysis}
+<<psens>>=
+psens(trt, ctrl)
+@
+\end{frame}
+
+\begin{frame}[containsverbatim,fragile]
+    \frametitle{Sensitivity Analysis}
+<<psens>>=
+hlsens(trt, ctrl)
+@
+\end{frame}
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
