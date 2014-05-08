@@ -32,8 +32,8 @@ for(i in missing.cols) {
 }
 
 # The proportion of missing values for the first covariate
-prop.table(table(is.na(lalonde.mar[,missing.cols[1]]), lalonde.mar$treat, useNA='ifany'))
-prop.table(table(is.na(lalonde.nmar[,missing.cols[1]]), lalonde.nmar$treat, useNA='ifany'))
+prop.table(table(is.na(lalonde.mar[,missing.cols[1]]), Tr, useNA='ifany'))
+prop.table(table(is.na(lalonde.nmar[,missing.cols[1]]), Tr, useNA='ifany'))
 
 # Create a shadow matrix. This is a logical vector where each cell is TRUE if the
 # value is missing in the original data frame.

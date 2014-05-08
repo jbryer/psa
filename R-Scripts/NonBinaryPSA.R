@@ -1,6 +1,7 @@
 ## Matching of non-binary treatments
 
 require(TriMatch)
+require(psych)
 
 data(tutoring)
 str(tutoring)

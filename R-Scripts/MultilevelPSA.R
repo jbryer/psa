@@ -32,12 +32,15 @@ results.psa.math <- mlpsa(response=pisana.party$mathscore,
 						  strata=pisana.party$strata, 
 						  level2=pisana.party$CNT, minN=5)
 summary(results.psa.math)
+View(summary(results.psa.math))
 ls(results.psa.math)
 
 results.psa.math$level2.summary[,c('level2','n','Private','Private.n','Public',
 								   'Public.n','diffwtd','ci.min','ci.max','df')]
 View(results.psa.math$level2.summary)
 results.psa.math$overall.ci
+# Effect Size
+results.psa.math$overall.ci / sd(pisana.party$mathscore)
 
 # These are the two main plots
 plot(results.psa.math)
