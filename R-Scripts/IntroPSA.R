@@ -1,19 +1,20 @@
 ################################################################################
 ## Load packages and data
 
-require(ggplot2)
-require(granova)
-require(granovaGG)
-require(Matching)
-require(MatchIt)
-require(party)
-require(PSAgraphics)
-require(rbounds)
-require(rpart)
-require(multilevelPSA)
-require(tree)
-require(TriMatch)
-require(PSAboot)
+library(ggplot2)
+library(granova)
+library(granovaGG)
+library(Matching)
+library(MatchIt)
+library(party)
+library(PSAgraphics)
+library(rbounds)
+library(rpart)
+library(multilevelPSA)
+library(tree)
+library(TriMatch)
+library(PSAboot)
+library(reshape)
 
 data(lalonde, package='Matching')
 data(lindner, package='PSAgraphics')
@@ -28,6 +29,14 @@ str(lindner)
 lalonde.formu <- treat ~ age+ educ + black + hisp + married + nodegr + re74 + re75
 lalonde.glm <- glm(lalonde.formu, family=binomial, data=lalonde)
 
+lalonde.formu2 <- treat ~  nodegr + re75
+lalonde.glm2 <- glm(lalonde.formu2, data=lalonde, family=binomial)
+df <- data.frame(ps1=fitted(lalonde.glm), ps2=fitted(lalonde.glm2), Tr=lalonde$treat)
+
+ggplot(df, aes(x=ps2)) + geom_histogram() + facet_wrap(~ Tr, ncol=1)
+
+ggplot(df, aes(x=ps1)) + geom_histogram() + facet_wrap(~ Tr, ncol=1)
+
 summary(lalonde.glm)
 
 # try the stepAIC in the MASS package
@@ -40,9 +49,33 @@ Tr <- lalonde$treat # Treatment indicator
 ## Matching
 # one-to-one matching with replacement (the "M=1" option).
 # Estimating the treatment effect on the treated (default is ATT).
-rr <- Match(Y=Y, Tr=Tr, X=ps, M=1, ties=FALSE, replace=FALSE, estimand='ATT')
-summary(rr) # The default estimate is ATT here
-ls(rr)
+rr.att <- Match(Y=Y, Tr=Tr, X=ps, M=1, estimand='ATT')
+summary(rr.att) # The default estimate is ATT here
+ls(rr.att)
+
+rr.ate <- Match(Y=Y, Tr=Tr, X=ps, M=1, estimand='ATE')
+summary(rr.ate)
+ls(rr.ate)
+
+rr.att$est
+rr.ate$est
+rr$estimand
+rr.ate$estimand
+head(rr$index.control)
+head(rr.ate$index.control)
+head(rr$index.treated)
+head(rr.ate$index.treated)
+length(rr$index.control)
+length(rr.ate$index.control)
+
+rr.ate$est
+df.ate <- data.frame(control=Y[rr.ate$index.control], treated=Y[rr.ate$index.treated])
+t.test(df.ate$treated, df.ate$control, paired=TRUE)
+
+rr.att$est
+df.att <- data.frame(control=Y[rr.att$index.control], treated=Y[rr.att$index.treated])
+t.test(df.att$treated, df.att$control, paired=TRUE)
+
 
 rr2 <- Match(Y=Y, Tr=Tr, X=ps, M=1, ties=TRUE, replace=TRUE, estimand='ATT')
 summary(rr2) # The default estimate is ATT here

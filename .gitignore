@@ -1,7 +1,7 @@
 .Rproj.user
 .Rhistory
 .RData
-
+^.*\.DS_Store
 /.DS_Store
 
 /Slides/useR 2013/Slides.aux
@@ -60,3 +60,5 @@
 /Articles/
 
 /Propensity Score Analysis Workshop.docx
+
+R-Scripts/.DS_Store

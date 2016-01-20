@@ -1,0 +1,13 @@
+Package: psa
+Title: Applied Propensity Score Analysis with R.
+Version: 0.9.0
+Authors@R: person("Jason", "Bryer", email = "jason@bryer.org", role = c("aut", "cre"))
+Description: This package is to complement the (work-in-progress) book,
+    Applied Propensity Score Analysis with R, and to provide utility functions for
+    analyzing, vizualizing, and evaluating propensity score analysis, using matching
+    and stratification methods.
+Depends:
+    R (>= 3.2.3)
+License: GPL-2
+LazyData: true
+RoxygenNote: 5.0.1

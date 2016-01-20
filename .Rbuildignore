@@ -1,10 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-Slides
-R-Scripts
+^.*\.docx$
+_books
 Articles
-Articles-orig
-Book
-PSA.bib
-psa.dev.R
+Article-orig
+book
+R-Scripts
+Slides
+build.R
 README.md

@@ -38,19 +38,17 @@
 \makeatother
 
 \title{Propensity Score Analysis with R}
-\subtitle{Workshop for Division of Education of Educational Psychology \& Methodology, University at Albany}
-\author[Bryer]{Jason M. Bryer \inst{1,2}\\\href{mailto:jason@bryer.org}{jason@bryer.org}}
-\institute[Excelsior and UAlbany]{
-  \begin{tabular}[h]{cc}
-      \inst{1} Excelsior College &  \inst{2} University at Albany \\
-      Albany, NY 12203 &  Albany, NY, 12222 \\
-      \multicolumn{2}{c}{} \\
-      \multicolumn{2}{c}{\url{http://github.com/jbryer/psa}}
+\subtitle{Albany R Meetup}
+\author[Bryer]{Jason M. Bryer\\\href{mailto:jason@bryer.org}{jason@bryer.org}}
+\institute[Excelsior]{Excelsior College\\
+      Albany, NY 12203 \\
+      \url{http://github.com/jbryer/psa}}
   \end{tabular}      
 }
-\date[April 30 \& May 7, 2014]{April 30 \& May 7, 2014}
+\date[Sept 16, 2015]{September 16, 2015}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 %\AtBeginSection[]
 %{
@@ -98,17 +96,8 @@ data(tutoring)
             \item Rtools (Windows only): \url{http://cran.r-project.org/bin/windows/Rtools/}
         \end{itemize}
 
-        \pause
-        \ \\
-        \textbf{Other (shameless) plugs!}
-
-        \item Join the Albany R Users Group at \url{http://www.meetup.com/Albany-R-Users-Group/}
-        \item I will be teaching EPSY 887 Data Science in the Fall \url{https://github.com/jbryer/EPSY887DataScience}
     \end{itemize}
         
-    \pause
-    
-    \begin{center}\bf{Thanks to Hirah Mir and Heidi Andrade for making this workshop possible!}\end{center}
 \end{frame}
 
 
@@ -167,7 +156,7 @@ print(p)
 
 %%%%%%%%%% Introduction
 
-\section{Introduction to PSA (April 30, 2014)}
+\section{Introduction to PSA}
 
 \subsection{Randomized Experiments}
 
@@ -435,7 +424,7 @@ cv.bal.psa(covars, lalonde$treat, ps, strata)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Advanced PSA (May 7, 2014)}
+\section{Advanced PSA}
 
 \AtBeginSubsection[]
 {
@@ -725,6 +714,7 @@ student.party[,paste0('PV', 1:5, 'MATH')], 1, sum) / 5
 @
     To assess what covariates were used in each tree model, as well as the relative importance, we can create a heat map of covariate usage by level.
 <<mlpsatreeplot,fig=TRUE,width=10,height=8,include=FALSE,echo=TRUE>>=
+library(reshape)
 print(tree.plot(mlctree, 
 level2Col=student$CNT, 
 colLabels=pisa.colnames[,c('Variable','ShortDesc')]))

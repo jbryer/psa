@@ -17,6 +17,7 @@ lalonde.nmar <- X
 
 missing.rate <- .2 # What percent of rows will have missing data
 missing.cols <- c('nodegr', 're75') # The columns we will add missing values to
+missing.ratio <- 1.5 # Ratio of missingness for treatment-to-control
 
 # Vectors indiciating which rows are treatment and control.
 treat.rows <- which(lalonde$treat == 1)
@@ -27,13 +28,13 @@ control.rows <- which(lalonde$treat == 0)
 set.seed(2112)
 for(i in missing.cols) {
 	lalonde.mar[sample(nrow(lalonde), nrow(lalonde) * missing.rate), i] <- NA
-	lalonde.nmar[sample(treat.rows, length(treat.rows) * missing.rate * 2), i] <- NA
+	lalonde.nmar[sample(treat.rows, length(treat.rows) * missing.rate * missing.ratio), i] <- NA
 	lalonde.nmar[sample(control.rows, length(control.rows) * missing.rate), i] <- NA
 }
 
 # The proportion of missing values for the first covariate
-prop.table(table(is.na(lalonde.mar[,missing.cols[1]]), Tr, useNA='ifany'))
-prop.table(table(is.na(lalonde.nmar[,missing.cols[1]]), Tr, useNA='ifany'))
+prop.table(table(is.na(lalonde.mar[,missing.cols[1]]), Tr, useNA='ifany'), 2)
+prop.table(table(is.na(lalonde.nmar[,missing.cols[1]]), Tr, useNA='ifany'), 2)
 
 # Create a shadow matrix. This is a logical vector where each cell is TRUE if the
 # value is missing in the original data frame.
@@ -45,8 +46,8 @@ names(shadow.matrix.mar) <- names(shadow.matrix.nmar) <- paste0(names(shadow.mat
 
 # Impute the missing values using the mice package
 set.seed(2112)
-mice.mar <- mice(lalonde.mar, m=1)
-mice.nmar <- mice(lalonde.nmar, m=1)
+mice.mar <- mice(lalonde.mar, m=1, printFlag=FALSE)
+mice.nmar <- mice(lalonde.nmar, m=1, printFlag=FALSE)
 
 # Get the imputed data set.
 complete.mar <- complete(mice.mar)
