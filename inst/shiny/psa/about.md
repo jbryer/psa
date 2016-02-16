@@ -1,7 +1,13 @@
 **Author:** Jason Bryer, Ph.D.  
 **Email:** [jason@bryer.org](mailto:jason@bryer.org)  
-**Webiste:** [github.com/jbryer/psa](www.github.com/jbryer/psa)
+**Website:** [github.com/jbryer/psa](www.github.com/jbryer/psa)
 
+This package was designed primarily for teaching purposes and is not provide an exhaustive treatment of conducting propensity score analysis. This shiny application is included in the `psa` R package and can be run locally using the following commands:
+
+```
+devtools::install_github('jbryer/psa')
+psa::psa_shiny()
+```
 
 ### R Packages
 

@@ -4,8 +4,8 @@
 \alias{MatchBalance}
 \title{Calculates balance statistics for matching.}
 \usage{
-MatchBalance(df, formu, formu.Y, exact.covs, tolerance = 0.25, n.levels = 2,
-  ...)
+MatchBalance(df, formu, formu.Y, exact.covs, index.treated, index.control,
+  tolerance = 0.25, n.levels = 2, ...)
 }
 \arguments{
 \item{df}{data frame with data to match.}
@@ -19,6 +19,14 @@ covariates. Used to estimate covariate importance.}
 \item{exact.covs}{character vector of covariates to match exactly on. For 
 quantitative variables with more than two unique values, matches will 
 be made within quintiles.}
+
+\item{index.treated}{a vector of integers corresponding to the rows in \code{df}
+for the matched treated units. That is, \code{index.treated[i]} is matched
+to \code{index.control[i]}.}
+
+\item{index.control}{a vector of integers corresponding to the rows in \code{df}
+for the matched control units. That is, \code{index.treated[i]} is matched
+to \code{index.control[i]}.}
 
 \item{tolerance}{the maximum standard deviation the difference between matches
 on a quantitative covariate can be to be considered matched.}

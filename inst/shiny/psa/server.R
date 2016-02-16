@@ -1,4 +1,4 @@
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
 	filedata <- reactive({
 		infile <- input$file
 		if(is.null(infile)) {
@@ -103,6 +103,7 @@ shinyServer(function(input, output) {
 	)
 	
 	output$tabs <- renderUI({
+		selected.tab <- isolate(input$tabs)
 		df <- NULL
 		
 		input$refresh
@@ -291,6 +292,7 @@ shinyServer(function(input, output) {
 		
 		##### Build the tabs
 		mytabs <- list(
+			id = 'tabs',
 			tabPanel('Overview', br(), includeMarkdown('overview.md'),
 					 hr(),
 			{
@@ -314,6 +316,7 @@ shinyServer(function(input, output) {
 				if(!is.null(df) & !is.null(lr.out)) {
 					tabPanel('Balance',
 							 plotOutput('cv.bal.psa'),
+							 hr(),
 							 plotOutput('balancePlot')
 					)
 				} else { NULL }
@@ -352,6 +355,8 @@ shinyServer(function(input, output) {
 				} else { NULL }
 			}
 		)
+		
+		updateTabsetPanel(session, 'tabs', selected.tab)
 		# Clean up the NULL tabs
 		mytabs <- mytabs[!sapply(mytabs, is.null)]
 		return(do.call(tabsetPanel, mytabs))
