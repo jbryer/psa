@@ -6,6 +6,18 @@ formu.lalonde <- treat ~ age + I(age^2) + educ + I(educ^2) + hisp + married + no
 	re74  + I(re74^2) + re75 + I(re75^2) + u74 + u75
 formu.Y.lalonde <- update.formula(formu.lalonde, re78 ~ .)
 
+mb0.lalonde <- MatchBalance(df = lalonde, formu=formu.lalonde)
+summary(mb0.lalonde)
+plot(mb0.lalonde)
+
+mb1.lalonde <- MatchBalance(df=lalonde, formu=formu.lalonde, exact.covs=c('educ'))
+summary(mb1.lalonde)
+plot(mb1.lalonde)
+
+mb2.lalonde <- MatchBalance(df=lalonde, formu=formu.lalonde, exact.covs=c('educ','u75'))
+summary(mb2.lalonde)
+plot(mb2.lalonde)
+
 ##### Using lindner
 data(lindner, package='PSAgraphics')
 formu.lindner <- abcix ~ stent + height + female + diabetic + acutemi + ejecfrac + ves1proc
