@@ -1,5 +1,8 @@
 #' Summary method for MatchBalance.
 #' 
+#' @param object result from \code{\link{MatchBalance}}
+#' @param print whether to print the result or to return using \code{invisible}.
+#' @param ... currently unused.
 #' @method summary MatchBalance
 #' @export
 summary.MatchBalance <- function(object, print=TRUE, ...) {

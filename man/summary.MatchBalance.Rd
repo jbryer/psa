@@ -6,6 +6,13 @@
 \usage{
 \method{summary}{MatchBalance}(object, print = TRUE, ...)
 }
+\arguments{
+\item{object}{result from \code{\link{MatchBalance}}}
+
+\item{print}{whether to print the result or to return using \code{invisible}.}
+
+\item{...}{currently unused.}
+}
 \description{
 Summary method for MatchBalance.
 }

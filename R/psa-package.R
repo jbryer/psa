@@ -1,3 +1,7 @@
+utils::globalVariables(c('grid.layout','grid.newpage','pushViewport','viewport',
+						 'align.plots','index','covariate','value','percent',
+						 'std.estimate','Covariate','p.value','ci.min','ci.max'))
+
 #' Applied Propensity Score Analysis with R
 #' 
 #' @name psa-package
@@ -18,7 +22,7 @@ NA
 
 #' Student data file.
 #' 
-#' @name student
+#' @name students
 #' @docType data
 #' @format a data frame with 374 ovservations of 17 variables.
 #' @keywords datasets
@@ -40,6 +44,7 @@ NA
 #' @format a data frame with 20 observations of 2 variables.
 #' @keywords datasets
 NA
+
 
 .onAttach <- function(libname, pkgname) {
 }

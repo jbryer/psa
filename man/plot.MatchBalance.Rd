@@ -11,6 +11,12 @@
 \item{x}{results of \code{\link{MatchBalance}}.}
 
 \item{min.label.gap}{the minimum gap between x-axis labels on the top panel.}
+
+\item{importance}{include importance metric (t-statistic) in axis labels.}
+
+\item{importance.sep}{a character used to separate the covariate label and importance metric.}
+
+\item{...}{currently unused.}
 }
 \value{
 Returns a list invisibly with ggplot2 objects of the three panels.

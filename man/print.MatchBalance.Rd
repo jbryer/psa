@@ -6,6 +6,11 @@
 \usage{
 \method{print}{MatchBalance}(x, ...)
 }
+\arguments{
+\item{x}{result of \code{\link{MatchBalance}}.}
+
+\item{...}{currently unused.}
+}
 \description{
 Print method for MatchBalance.
 }

@@ -2,6 +2,9 @@
 #' 
 #' @param x results of \code{\link{MatchBalance}}.
 #' @param min.label.gap the minimum gap between x-axis labels on the top panel.
+#' @param importance include importance metric (t-statistic) in axis labels.
+#' @param importance.sep a character used to separate the covariate label and importance metric.
+#' @param ... currently unused.
 #' @return Returns a list invisibly with ggplot2 objects of the three panels.
 #' @method plot MatchBalance
 #' @export
