@@ -1,8 +1,0 @@
-{
-	"plugins": ["mathjax"],
-	"links": {
-		"about": "http://jason.bryer.org/about.html",
-		"issues": null,
-		"contribute": false
-	}
-}

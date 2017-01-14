@@ -67,3 +67,4 @@ lindner.csv
 Slides/Albany R Meetup/Slides.tpbuild
 config.R
 inst/shiny/psa/rsconnect
+.DS_Store

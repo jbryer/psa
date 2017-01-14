@@ -1,0 +1,32 @@
+--- 
+title: "Applied Propensity Score Analysis with R"
+author: "Jason Bryer"
+date: "Last updated `r format(Sys.Date(), '%B %d, %Y')`"
+site: bookdown::bookdown_site
+output: 
+  bookdown::gitbook:
+    split_by: chapter
+    split_bib: false
+    config:
+      sharing:
+        facebook: false
+        twitter: false
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+github-repo: jbryer/psa
+description: "Introduction to propensity score anaylsis using R."
+---
+
+# Preface {-}
+
+
+## Colophon
+
+This book was created using the `bookdown` R package [@xie2016]. The book is available online at [http://jason.bryer.org/psa/](http://jason.bryer.org/psa/) and the source is available at [https://github.com/jbryer/psa](https://github.com/jbryer/psa).
+
+```{r appendix-colophon}
+devtools::session_info()
+```
+

@@ -1,0 +1,138 @@
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Evaluating the Balance of Propensity Score Matching}
+-->
+
+# Evaluating the Balance of Propensity Score Matching
+
+### Jason Bryer, Ph.D. 
+#### Project website: [jason.bryer.org/psa](http://jason.bryer.org/psa)
+#### Bug Reports: [github.com/jbryer/psa/issues](https://github.com/jbryer/psa/issues)
+
+
+```{r setup, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+library(knitr)
+opts_chunk$set(comment='')
+options(width=100, digits=3)
+library(psa)
+library(ggplot2)
+library(Matching)
+set.seed(2112)
+```
+
+Propensity score matching (PSM; Rosenbaum & Rubin, 1983) is a quasi-experimental design used to reduce selection bias based upon observed covariates. The quality of the causal estimates from PSM is, in large part, dependent on the quality of the matches. This vignette outlines a new function, `MatchBalance`, and corresponding `plot` and `summary` methods used to evaluate how well balance is achieved in PSM. Additionally, it simplifies the process of determining which covariates to use for partial exact matching which mimics the randomized block design.
+
+The propensity score is the conditional probability of treatment given a set of observed covariates. The propensity score is often estimated using logistic regression, although other classification procedures are often used. The advantage of using propensity scores for matching is that they reduce the dimensionality of the problem. That is, the propensity score is a proxy for the full matrix of covariates, thereby reducing the M-diminsions, where M is the number of covariates, to one-dimension. More specifically,
+
+$$ \pi \left( { X }_{ i } \right) \equiv Pr\left( { T }_{ i }=1|{ X }_{ i } \right)  $$
+
+Where $\pi$ is the propensity score, $X_i$ is a vector of covariates for $i^{th}$ observation, $T_i$ is the treatment indication for the $i^{th}$ obsevation.
+
+PSM is a matching method that utilizes the propensity scores to find matches. Although there are many approaches to finding matches using propensity scores, we will focus on the simplest approach of using Euclidean distances within a caliper. Using this approach, the matching algorithm will attempt to minimize the difference between propensity scores for all match pairs, assuming that the distance is less than some caliper (usually 0.25 standard deviations). It should be noted that there are some limitations to this approach, most notably that the order of data will often effect the matches. For example, consider the following three observations:
+
+i | T | $\pi$
+--|---|-------
+1 | 1 | 0.20
+2 | 0 | 0.25
+3 | 1 | 0.30
+
+Here, we have two treatment observations and one control observation. Notice that,
+
+$$ \left| \pi_{1} - \pi_{2} \right| = \left| \pi_{2} - \pi_{3} \right| = 0.05 $$
+
+Also consider that one-to-one matching is specified whereby each treatment unit is matched to one and only one control unit. If the matching algorithm visits $i=1$ first, then it will match the observation one to observation two, and observation three would be matched to some other observation potentially with a difference in propensity scores greater than 0.05. However, if the matching algorithm happens to visit observation three before observation one, then observation three would be matched to observation two. One solution to this problem is to the bootstrap to randomly shuffle the data so that multiple matched sets can found. For more on this procedure, see the [`PSAboot` package](http://jason.bryer.org/PSAboot).
+
+Another issue with using propensity scores for matching is that under certain circumstances, matching using the propensity scores may actually increase bias (King & Nielsen, 2016). To demonstrate this issue, we will first similuate a data set with two covariates from a random uniform distribution for the treatment observations and jitter those points for the control observations.
+
+```{r}
+set.seed(2112)
+n <- 20
+jitter.factor <- 1000
+x <- runif(n)
+y <- runif(n)
+df <- data.frame(treat = c(rep(TRUE, n), rep(FALSE, n)),
+				 id = c(1:n, 1:n),
+				 x = c(x, jitter(x, factor=jitter.factor)),
+				 y = c(y, jitter(y, factor=jitter.factor)),
+				 stringsAsFactors = FALSE)
+```
+
+```{r, echo=FALSE,results='asis',warning=FALSE,message=FALSE}
+#kable(df)
+```
+
+```{r}
+ggplot(df, aes(x=x, y=y, color=treat)) + geom_point() +
+	geom_line(aes(group=id), color='black')
+```
+
+The scatter plot shows all the observations for the two covariates and connects the control observations to the treatment observations from which they were "jittered" from. The question that arised is: If we are to estimate the propensity scores using logistic regression with `x` and `y`, would PSM provide the same matches?
+
+Here, we will estimate the propensity scores using logistic regression and using the `Match` from the `Matching` package (Sekhon, 2011).
+
+```{r}
+lr.out <- glm(treat ~ x + y, data=df, family=binomial)
+df$ps <- fitted(lr.out)
+match.out <- Match(Tr=df$treat, X=df$ps, Weight=1)
+```
+
+The figure below is a scatter plot now connecting the matched observations with a blue dashed line. In several instances we see that the matching using the propensity scores does not find the optimal match. King and Neilsen provide two approaches to address this problem. First, use another distance metric such as Mahalanobis. This approach is fine if all the covariates are quantitative and few. The second approach is to block on as many covariates as appropriate without substantial prunning of observations.
+
+```{r}
+df$match.group <- -1
+df[match.out$index.treated,]$match.group <- 1:length(match.out$index.treated)
+df[match.out$index.control,]$match.group <- 1:length(match.out$index.treated)
+
+ggplot(df, aes(x=x, y=y, color=treat)) + geom_point() +
+	geom_line(aes(group=id), color='grey90') + 
+	geom_line(aes(group=match.group), color='blue', linetype=2) +
+	scale_color_hue(na.value='black')
+```
+
+
+
+```{r}
+data(lalonde, package='Matching')
+formu.lalonde <- treat ~ age + I(age^2) + educ + I(educ^2) + hisp + married + nodegr + 
+	re74  + I(re74^2) + re75 + I(re75^2) + u74 + u75
+```
+
+
+```{r, fig.width=13, fig.height=7}
+mb0.lalonde <- psa::MatchBalance(df = lalonde, formu = formu.lalonde)
+summary(mb0.lalonde)
+plot(mb0.lalonde)
+```
+
+
+```{r, fig.width=13, fig.height=7}
+mb1.lalonde <- psa::MatchBalance(df = lalonde, formu = formu.lalonde,
+								 exact.covs = c('educ'))
+summary(mb1.lalonde)
+plot(mb1.lalonde)
+```
+
+
+```{r, fig.width=13, fig.height=7}
+mb2.lalonde <- psa::MatchBalance(df = lalonde, formu = formu.lalonde,
+								 exact.covs = c('educ','u75'))
+summary(mb2.lalonde)
+plot(mb2.lalonde)
+```
+
+
+```{r, fig.width=13, fig.height=7}
+mb3.lalonde <- psa::MatchBalance(df = lalonde, formu = formu.lalonde,
+								 exact.covs = c('educ','u75','re75'))
+summary(mb3.lalonde)
+plot(mb3.lalonde)
+```
+
+
+# References
+
+King, G., & Nielsen, R. (2016). Why propensity scores should not be used for matching. Retrieved from http://gking.harvard.edu/publications/why-propensity-scores-should-not-be-used-formatching
+
+Rosenbaum, P.R., & Rubin, D.B. (1983). The central role of the propensity score in observational studies for causal effects. *Biometrika, 70*(1). 41-55.
+
+Sekhon, J.S. (2011). Multivariate and propensity score matching software with automated balance optimization: The matching package for R. *Journal of Statistical Software, 42*(7), 1-52. Retrieved from http://www.jstatsoft.org/v42/i07/.

@@ -1,0 +1,10 @@
+`r if (knitr:::is_html_output()) '# References {-}'`
+
+```{r include=FALSE}
+pkgs <- c('granova', 'granovaGG', 'Matching', 'MatchIt', 'mice', 
+          'multilevelPSA', 'party', 'PSAboot', 'PSAgraphics', 'rbounds',
+		  'TriMatch')
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown', pkgs
+), 'packages.bib')
+```

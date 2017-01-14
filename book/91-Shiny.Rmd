@@ -1,0 +1,10 @@
+# Shiny Application
+
+```{r shiny, eval=FALSE}
+library(psa)
+psa_shiny()
+```
+
+```{r shiny-screenshot, echo=FALSE, fig.cap='PSA Shiny Application', out.width='100%'}
+knitr::include_graphics("figures/psashinyapp.png")
+```

@@ -1,0 +1,10 @@
+book_filename: "AppliedPSAwithR"
+chapter_name: "Chapter "
+edit:
+  link: https://github.com/jbryer/psa/book/edit/master/inst/examples/%s
+  text: "Edit"
+bibliography: ["book.bib", "packages.bib"]
+biblio-style: apalike
+link-citations: yes
+before_chapter_script: "chapter_setup.R"
+after_chapter_script: "chapter_cleanup.R"
