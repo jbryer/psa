@@ -8,6 +8,7 @@ bookdown::gitbook:
         <li><a href="http://jason.bryer.org" target="blank">Jason Bryer, Ph.D.</a></li>
     edit:
       link: https://github.com/jbryer/psa/book/edit/master/%s
+  output_dir: ../docs/
 bookdown::pdf_book:
   includes:
     in_header: preamble.tex

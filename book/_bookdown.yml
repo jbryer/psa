@@ -8,3 +8,4 @@ biblio-style: apalike
 link-citations: yes
 before_chapter_script: "chapter_setup.R"
 after_chapter_script: "chapter_cleanup.R"
+output_dir: ../docs

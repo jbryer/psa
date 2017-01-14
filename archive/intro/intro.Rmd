@@ -1,0 +1,42 @@
+```{r knitsetup, echo=FALSE, results='hide', warning=FALSE, message=FALSE, cache=FALSE}
+opts_knit$set(base.dir='./', fig.path='', out.format='md')
+opts_chunk$set(prompt=TRUE, comment='', results='markup')
+# See yihui.name/knitr/options for more Knitr options.
+##### Put other setup R code here
+
+require(gdata)
+require(ggplot2)
+
+psm <- read.xls('Data/WebOfScienceResults.xlsx', sheet=1)
+psa <- read.xls('Data/WebOfScienceResults.xlsx', sheet=2)
+ps <- read.xls('Data/WebOfScienceResults.xlsx', sheet=3)
+
+psm$Term <- 'Propensity Score Matching'
+psa$Term <- 'Propensity Score Analysis'
+ps$Term <- 'Propensity Score'
+
+df <- rbind(psm, psa, ps)
+
+df.label <- df[df$Year == max(df$Year),]
+df.label$y <- df.label$Articles
+df.label[1,]$y <- df.label[1,]$y + 30
+df.label[2,]$y <- df.label[2,]$y - 30
+
+```
+
+Introduction
+========================================================
+
+The use of propensity score analysis in the medical `r citep(c(bib['Austin2007'], bib['Austin2008a'], bib['Austin2008b'], bib['WeitzenEtAl2004'])) ` and social science `r citep(bib['ThoemmesKim2011']) ` literature has been increasing substantially over the last decade. A search of [Web of Science](http://wokinfo.com/) for "propensity score" reveal that there were `r prettyNum(ps[1,]$Articles, big.mark=',')` articles published in `r ps[1,]$Year`. The figure below shows the steady increase in the number of published articles with "propensity score", "propensity score analysis", and "propensity score matching" since 1993.
+
+```{r popularity, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=6}
+ggplot(df, aes(x=Year, y=Articles, group=Term, color=Term)) + 
+	geom_path() + 
+	geom_text(data=df.label, aes(label=Articles, y=y), hjust=-0.05, show_guide=FALSE) +
+	scale_color_hue('Search Term') +
+	ylab("Number of Publications") + xlab("Year of Publication") +
+	ggtitle('Number of PSA Publications by Year\n(source: Web of Science)') +
+	theme(legend.position="bottom") + 
+	scale_x_continuous(breaks=seq(min(df$Year), max(df$Year), by=1))
+```
+

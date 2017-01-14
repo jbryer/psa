@@ -71,7 +71,7 @@ plot(bplots, cols=3, byrow=FALSE)
 (sout <- summary(tutoring.matched, tutoring$Grade))
 ls(sout)
 
-boxdiff.plot(tutoring.matched, tutoring$Grade, ordering=c('Treatment2','Treatment1','Control'))
+# TODO: boxdiff.plot(tutoring.matched, tutoring$Grade, ordering=c('Treatment2','Treatment1','Control'))
 parallel.plot(tutoring.matched, tutoring$Grade)
 
 # The Loess plot is imperfect with three sets of propensity scores. There is a

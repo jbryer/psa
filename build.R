@@ -1,3 +1,5 @@
+# setwd("~/Dropbox/Projects/psa")
+
 install.packages(c('devtools','ggplot2','reshape2','Matching','MatchIt',
 				   'PSAgraphics','granovaGG','party','shiny','cowplot'))
 devtools::install_github('rstudio/rsconnect')
@@ -5,8 +7,11 @@ devtools::install_github('rstudio/bookdown')
 
 # For the book
 library(bookdown)
-setwd("~/Dropbox/Projects/psa/book")
-bookdown::render_book("index.Rmd", "bookdown::gitbook")
+setwd('book')
+bookdown::render_book(input = "index.Rmd", 
+					  output_format = "bookdown::gitbook",
+					  output_dir = '../docs')
+
 #bookdown::render_book("index.Rmd", "bookdown::pdf_book")
 
 # For the R package
