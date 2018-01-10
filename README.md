@@ -29,9 +29,9 @@ This workshop will provide participants with a theoretical overview of propensit
 * Advanced Topics
 	* Sensitivity analysis
 	* PSA with Missing Data
-	* Bootstrapping for PSA (using the [`PSAboot` package](http://jason.bryer.org/PSAboot/)))
+	* Bootstrapping for PSA (using the [`PSAboot` package](http://jason.bryer.org/PSAboot/))
 	* Analysis of non-binary treatments (using the [`TriMatch` package](http://jason.bryer.org/TriMatch/))
-	* Analysis of multilevel data (using the [`multilevelPSA` package](http://jason.bryer.org/multilevelPSA/)))
+	* Analysis of multilevel data (using the [`multilevelPSA` package](http://jason.bryer.org/multilevelPSA/))
 
 ## Slides
 
