@@ -5,7 +5,7 @@ bookdown::gitbook:
       before: |
         <li><a href="./">Applied PSA with R</a></li>
       after: |
-        <li><a href="http://jason.bryer.org" target="blank">Jason Bryer, Ph.D.</a></li>
+        <li><a href="https://www.bryer.org" target="blank">Jason Bryer, Ph.D.</a></li>
     edit:
       link: https://github.com/jbryer/psa/book/edit/master/%s
   output_dir: ../docs/

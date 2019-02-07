@@ -53,7 +53,7 @@
 /data/.DS_Store
 
 /_book/
-
+/book/_bookdown_files
 /book/.rmdbuild
 
 /Articles-orig/
