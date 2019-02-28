@@ -8,7 +8,8 @@ top and right, respectively.}
 loess.plot(x, response, treatment, responseTitle = "",
   treatmentTitle = "Treatment", percentPoints.treat = 0.1,
   percentPoints.control = 0.01, points.treat.alpha = 0.1,
-  points.control.alpha = 0.1, plot.strata, plot.strata.alpha = 0.2, ...)
+  points.control.alpha = 0.1, plot.strata, plot.strata.alpha = 0.2,
+  ...)
 }
 \arguments{
 \item{x}{vector of propensity scores.}
@@ -65,4 +66,3 @@ loess.plot(st$ps, response=st$math, treatment=st$treat, percentPoints.control = 
 \seealso{
 plot.mlpsa
 }
-

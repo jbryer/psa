@@ -9,4 +9,3 @@
 Data from a study examining the effects of tutoring on English grades.
 }
 \keyword{datasets}
-

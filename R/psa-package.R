@@ -17,6 +17,9 @@ utils::globalVariables(c('grid.layout','grid.newpage','pushViewport','viewport',
 #' @import granovaGG
 #' @import party
 #' @import shiny
+#' @import dplyr
+#' @import grid
+#' @import plyr
 #' @importFrom cowplot plot_grid
 NA
 
@@ -37,11 +40,11 @@ NA
 NA
 
 #' Number of articles related to propensity score analysis in the Web of Science
-#' database.
+#' and Google Scholar database.
 #' 
-#' @name wos
+#' @name psa_citations
 #' @docType data
-#' @format a data frame with 20 observations of 2 variables.
+#' @format a data frame with 92 observations of 4 variables.
 #' @keywords datasets
 NA
 

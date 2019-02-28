@@ -16,4 +16,3 @@ Applied Propensity Score Analysis with R
 \keyword{propensity}
 \keyword{psa}
 \keyword{score}
-

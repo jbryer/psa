@@ -16,17 +16,21 @@ bookdown::render_book(input = "index.Rmd",
 
 # For the R package
 library(devtools)
+
+source('data-raw/psa_citations.R') # Build the psa_citations data file
 document()
+
 install(build_vignettes = FALSE)
 install(build_vignettes = TRUE)
 build()
+
 check()
 
 
 # Load package and list available functions
 library(psa)
 ls('package:psa')
-
+data(package = 'psa')
 
 # Shiny App from installed package
 psa::psa_shiny()

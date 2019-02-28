@@ -9,4 +9,3 @@
 Student data file.
 }
 \keyword{datasets}
-

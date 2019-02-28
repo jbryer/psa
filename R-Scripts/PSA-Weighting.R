@@ -52,10 +52,10 @@ ggplot(dat) +
 
 # Calculate weights
 dat <- dat %>% mutate(
-	ate_weight = (treatment / ps) + ((1 - treatment) / (1 - ps)),
-	att_weight = ((ps * treatment) / ps) + ((ps * (1 - treatment)) / (1 - ps)),
-	atc_weight = (((1 - ps) * treatment) / ps) + (((1 - ps) * (1 - treatment)) / (1 - ps)),
-	atm_weight = pmin(ps, 1 - ps) / (treatment * ps + (1 - treatment) * (1 - ps))
+	ate_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATE'),
+	att_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATT'),
+	atc_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATC'),
+	atm_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATM')
 )
 dat
 

@@ -1,15 +1,21 @@
 Package: psa
 Title: Applied Propensity Score Analysis with R
-Version: 0.9.0
-Authors@R: person("Jason", "Bryer", email = "jason@bryer.org", role = c("aut", "cre"))
+Version: 0.9.1
+Date: 2019-02-26
+Type: Package
+Author: Jason Bryer <jason@bryer.org>
+Maintainer: Jason Bryer <jason@bryer.org>
+URL: http://github.com/jbryer/psa
+BugReports: https://github.com/jbryer/psa/issues
 Description: This package is to complement the (work-in-progress) book,
     Applied Propensity Score Analysis with R, and to provide utility functions for
     analyzing, vizualizing, and evaluating propensity score analysis, using matching
     and stratification methods.
 Depends: R (>= 3.2.0)
-Imports: MatchIt, Matching, PSAgraphics, cowplot, ggplot2, granovaGG, party, reshape2, shiny
-Suggests: knitr
+Imports: MatchIt, Matching, PSAgraphics, cowplot, ggplot2, granovaGG, party, reshape2, shiny, dplyr, grid, plyr, psych
+Suggests: knitr, lubridate, scholar, stargazer, Mvnorm
 License: GPL-2
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
+Encoding: UTF-8

@@ -24,4 +24,3 @@ Returns a list invisibly with ggplot2 objects of the three panels.
 \description{
 Plot method for MatchBalance.
 }
-

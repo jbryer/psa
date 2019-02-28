@@ -16,4 +16,3 @@
 \description{
 Summary method for MatchBalance.
 }
-

@@ -5,7 +5,7 @@ library(ggplot2)
 library(psych)
 library(gridExtra)
 # devtools::install_github("thomasp85/patchwork")
-library(patchwork)
+# library(patchwork)
 library(purrr)
 library(dplyr)
 

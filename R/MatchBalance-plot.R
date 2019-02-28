@@ -8,9 +8,10 @@
 #' @return Returns a list invisibly with ggplot2 objects of the three panels.
 #' @method plot MatchBalance
 #' @export
-plot.MatchBalance <- function(x, min.label.gap=0.05, 
-							  importance=TRUE,
-							  importance.sep=ifelse(ncol(x$df.matrix) > 10, ' ', '\n'), 
+plot.MatchBalance <- function(x, 
+							  min.label.gap = 0.05, 
+							  importance = TRUE,
+							  importance.sep = ifelse(ncol(x$df.matrix) > 10, ' ', '\n'), 
 							  ...) {
 	col.percents <- x$covariate.matched
 	row.percents <- x$observation.matched
@@ -85,13 +86,14 @@ plot.MatchBalance <- function(x, min.label.gap=0.05,
 		x.labels <- rev(row.names(var.imp))
 	}
 	
-	pmain <- ggplot(df.cov.bal.melted, aes(x=index, y=covariate, fill=value)) + 
+	pmain <- ggplot(df.cov.bal.melted, aes(x = index, y = covariate, fill = value)) + 
 		geom_tile() +
-		scale_fill_gradientn(colors=c('white','white','white','maroon', 'maroon'),
-							 values=c(0, tolerance, tolerance, tolerance.max, tolerance.max,
-							 		 max(df.cov.bal.melted$value)),
-							 rescaler = function(x,...) x,
-							 oob      = identity) +
+		scale_fill_gradientn(colors = c('white','white','white','maroon', 'maroon'),
+							 values = c(0, tolerance, tolerance, tolerance.max, tolerance.max,
+							 		    max(df.cov.bal.melted$value)),
+							 rescaler = function(x,...) x
+							 # oob      = identity
+							 ) +
 		theme(legend.position="none", axis.text.x=element_blank(),
 			  axis.ticks.x=element_blank(),
 			  axis.text.y=element_blank(), 

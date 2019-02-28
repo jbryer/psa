@@ -59,4 +59,3 @@ An object of class \code{MatchBalance} with the following elements:
 \description{
 Calculates balance statistics for matching.
 }
-

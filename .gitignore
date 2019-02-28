@@ -3,7 +3,8 @@
 .RData
 ^.*\.DS_Store
 /.DS_Store
-
+/inst/slides/Intro_PSA_cache
+/inst/slides/Intro_PSA_files
 /Slides/useR 2013/Slides.aux
 /Slides/useR 2013/Slides.log
 /Slides/useR 2013/Slides.nav
