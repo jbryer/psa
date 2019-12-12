@@ -1,6 +1,7 @@
 # Introduction to Propensity Score Methods with R
 
 Contact: [Jason Bryer](https://www.bryer.org/) ([jason@bryer.org](mailto:jason@bryer.org))  
+[Intro to PSA Slides](http://jbryer.github.io/psa/slides/Intro_PSA.html).  
 Early draft of the [Applied Propensity Score Analysis with R](library) book.
 
 Run the PSA Shiny App:
