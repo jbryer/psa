@@ -1,7 +1,8 @@
 # setwd("~/Dropbox/Projects/psa")
 
-install.packages(c('devtools','ggplot2','reshape2','Matching','MatchIt',
-				   'PSAgraphics','granovaGG','party','shiny','cowplot'))
+install.packages(c('devtools','tidyverse',
+				   'Matching','MatchIt','PSAgraphics','granovaGG',
+				   'party','shiny','cowplot'))
 devtools::install_github('rstudio/rsconnect')
 devtools::install_github('rstudio/bookdown')
 

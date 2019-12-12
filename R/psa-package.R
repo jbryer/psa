@@ -10,16 +10,15 @@ utils::globalVariables(c('grid.layout','grid.newpage','pushViewport','viewport',
 #' @author \email{jason@@bryer.org}
 #' @keywords package psa matching propensity score analysis
 #' @import ggplot2
+#' @import grid
 #' @import reshape2
+#' @import dplyr
+#' @import party
 #' @import Matching
 #' @import MatchIt
 #' @import PSAgraphics
 #' @import granovaGG
-#' @import party
 #' @import shiny
-#' @import dplyr
-#' @import grid
-#' @import plyr
 #' @importFrom cowplot plot_grid
 NA
 

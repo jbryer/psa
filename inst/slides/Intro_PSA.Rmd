@@ -1,0 +1,833 @@
+---
+title: "Propensity Score Analysis with R"
+author: "Jason Bryer, Ph.D."
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  ioslides_presentation: 
+    smaller: yes
+    widescreen: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+<style>
+div.footnotes {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+  width: 80%;
+  font-size: 0.6em;
+}
+.forceBreak { -webkit-column-break-after: always; break-after: column; }
+</style>
+<!-- Use for forced two column break: <p class="forceBreak"></p> -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('slide:not(.backdrop):not(.title-slide)').append('<div class=\"footnotes\">');
+
+  $('footnote').each(function(index) {
+    var text  = $(this).html();
+    var fnNum = (index+1).toString();
+    $(this).html(fnNum.sup());
+
+    var footnote   = fnNum + '. ' + text + '<br/>';
+    var oldContent = $(this).parents('slide').children('div.footnotes').html();
+    var newContent = oldContent + footnote;
+    $(this).parents('slide').children('div.footnotes').html(newContent);
+  });
+});
+</script>
+
+```{r setup, results = 'hide', echo=FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(fig.width = 10, fig.height = 5)
+options(width=70)
+options(digits=2)
+options(continue="   ")
+options(warn=-1)
+
+library(multilevelPSA)
+library(Matching)
+library(MatchIt)
+library(multilevelPSA)
+library(party)
+library(PSAgraphics)
+library(granovaGG)
+library(rbounds)
+library(rpart)
+library(TriMatch)
+library(psa)
+library(gridExtra)
+library(psych)
+library(tidyverse)
+
+theme_set(theme_bw())
+
+data(pisana)
+data(tutoring)
+```
+
+
+## Agenda
+
+* Overview of causal inference
+	* Counterfactuals
+	* Randomized control trials
+	* Rubin's Causal Model
+* Propensity Score Analysis in two Phases
+	* Various types of treatment effects
+	* Matching
+	* Stratification
+	* Weighting
+	* Evaluating Balance
+* Sensitivity Analysis
+* Matching for Non-Binary Treatments
+* Multilevel PSA
+
+
+## Popularity of Propensity Score Analysis {.centered}
+
+```{r popularity,echo=FALSE}
+data(psa_citations)
+
+ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) + 
+	geom_path() + geom_point() +
+	scale_color_brewer('Search Term', palette = 'Set1') +
+	ylab('Number of Citations') +
+	theme_bw() +
+	ggtitle('Number of Citations for Propensity Score Analysis',
+			subtitle = 'Source: Web of Science and Google Scholar')
+```
+
+## Counterfactuals {.centered}
+
+```{r causalityFig, echo=FALSE}
+knitr::include_graphics('Causality.png', dpi=300)
+```
+
+## The Randomized Experiment
+
+Considered to be the *gold standard* for estimating causal effects.
+
+* Effects can be estimated using simple means between groups, or blocks in randomized block design.
+* Randomization presumes unbiasedness and balance between groups.
+
+However, randomization is often not feasible for many reasons, especially in educational contexts.
+
+The strong ignorability assumption states that:
+
+$$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \unicode{x2AEB} \; { T }_{ i }|{ X }_{ i }=x$$
+
+for all ${X}_{i}$.
+
+
+## RCT Example
+
+```{r, echo=FALSE}
+set.seed(123)
+```
+
+```{r}
+set.seed(2112)
+pop.mean <- 100
+pop.sd <- 15
+pop.es <- .3
+n <- 30
+thedata <- data.frame(
+	id = 1:30,
+	center = rnorm(n, mean = pop.mean, sd = pop.sd),
+	stringsAsFactors = FALSE
+)
+val <- pop.sd * pop.es / 2
+thedata$placebo <- thedata$center - val
+thedata$treatment <- thedata$center + val
+thedata$diff <- thedata$treatment - thedata$placebo
+thedata$RCT_Assignment <- sample(c('placebo', 'treatment'), n, replace = TRUE)
+thedata$RCT_Value <- as.numeric(apply(thedata, 1, 
+					FUN = function(x) { return(x[x['RCT_Assignment']]) }))
+head(thedata, n = 3)
+tab.out <- describeBy(thedata$RCT_Value, group = thedata$RCT_Assignment, mat = TRUE, skew = FALSE)
+```
+
+## True Counterfactual
+
+```{r, echo=FALSE, fig.width=5}
+p1 <- ggplot(thedata) + 
+	geom_segment(aes(x = placebo, xend = treatment, y = id, yend = id)) +
+	geom_point(aes(x = placebo, y = id), color = 'blue') +
+	geom_point(aes(x = treatment, y = id), color = 'red') +
+	ylab('') + xlab('Outcome') +
+	xlim(pop.mean - 3 * pop.sd, pop.mean + 3 * pop.sd) +
+	ggtitle(paste0('True Counterfactual Difference = ', mean(thedata$diff)))
+p1b <- p1 +
+	geom_vline(xintercept = mean(thedata$treatment), color = 'red') +
+	geom_vline(xintercept = mean(thedata$placebo), color = 'blue')
+p2 <- ggplot(thedata, aes(x = RCT_Value, color = RCT_Assignment, y = id)) +
+	geom_point() +
+	scale_color_manual(values = c('placebo' = 'blue', 'treatment' = 'red')) +
+	theme(legend.position = 'none') +
+	ylab('') + xlab('Outcome') +
+	xlim(pop.mean - 3 * pop.sd, pop.mean + 3 * pop.sd) +
+	ggtitle('Observed values in an RCT')
+p2b <- p2 + 
+	geom_vline(data = tab.out, aes(xintercept = mean, color = group1)) +
+	ggtitle(paste0('RCT Difference = ', round(diff(tab.out$mean), digits = 2)))
+grid.arrange(p1, nrow = 1)
+```
+
+## True Counterfactual (left) vs. One RCT (right)
+
+```{r, echo=FALSE}
+grid.arrange(p1, p2, nrow = 1)
+```
+
+## True Counterfactual (left) vs. One RCT (right)
+
+```{r, echo=FALSE}
+grid.arrange(p1b, p2b, nrow = 1)
+```
+
+## Distribution of Differences from 1,000 RCTs
+
+```{r, echo=FALSE}
+sim.diff <- numeric(1000)
+for(i in seq_along(sim.diff)) {
+	treats <- sample(c(T,F), n, replace = TRUE)
+	sim.diff[i] <- mean(thedata[treats,]$treatment) - mean(thedata[!treats,]$placebo)
+}
+ggplot(data.frame(x = sim.diff), aes(x = x)) + 
+	geom_histogram(alpha = 0.5, bins = 20) +
+	geom_vline(xintercept = mean(thedata$diff), color = 'red') +
+	geom_vline(xintercept = mean(sim.diff)) +
+	xlab('RCT Different') + ylab('Count')
+```
+
+## Rubin Causal Model<footnote>See Rubin, 1974, 1977, 1978, 1980, and Holland, 1986</footnote> {.columns-2}
+
+* The causal effect of a treatment is the difference in an individual's outcome under the situation they were given the treatment and not (referred to as a counterfactual).
+
+$${\delta}_{i} ={ Y }_{ i1 }-{ Y }_{ i0 }$$
+
+* However, it is impossible to directly observe ${\delta}_{i}$ (referred to as *The Fundamental Problem of Causal Inference*, Holland 1986).
+
+* Rubin frames this problem as a "missing data problem."
+
+<p class="forceBreak"></p>
+
+
+<img src='Causality2.png' width='500' alt="Causality - Missing Values" />
+
+
+## Propensity Score Analysis
+
+The propensity score is the "conditional probability of assignment to a particular treatment given a vector of observed covariates" (Rosenbaum \& Rubin, 1983, p. 41). The probability of being in the treatment:
+$$\pi ({ X }_{ i }) \; \equiv \; Pr({ T }_{ i }=1|{ X }_{ i })$$
+
+The balancing property under exogeneity:
+
+$${ T }_{ i } \; \unicode{x2AEB} { X }_{ i } \;| \; \pi ({ X }_{ i })$$
+
+We can then restate the ignorability assumption with the propensity score: 
+
+$$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \unicode{x2AEB} \; { T }_{ i } \; | \; \pi({ X }_{ i })$$
+
+## Treatment Effects
+
+The average treatment effect (ATE) is defined as:
+
+$$E({ r }_{ 1 })-E({ r }_{ 0 })$$
+
+where $E(.)$ is the expectation in the population. For a set of covariates, $X$, and outcomes $Y$ where 0 denotes control and 1 treatment, we define ATE as:
+
+$$ATE=E(Y_{1}-Y_{0}|X)=E(Y_{1}|X)-E(Y_{0}|X)$$
+
+The Average treatment effect on the treated (ATT), is defined as:
+
+$$ATT=E(Y_{1}-Y_{0}|X,C=1)=E(Y_{1}|X,C=1)-E(Y_{0}|X,C=1)$$
+
+
+## Propensity score methods
+
+* **Matching** - Each treatment unit is paired with a comparison unit based upon the pre-treatment covariates.
+* **Stratification** Treatment and comparison units are divided into strata (or subclasses) so that treated and comparison units are similar within each strata. Cochran (1968) observed that creating five subclassifications (stratum) removes at least 90\% of the bias in the estimated treatment effect.
+* **Weighting** Each observation is weighted by the inverse of the probability of being in that group.
+
+$$\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( \frac { { T }_{ i }{ Y }_{ i } }{ \pi ({ X }_{ i }) } -\frac { (1-{ T }_{ i }){ Y }_{ i } }{ 1-\pi ({ X }_{ i }) }  \right)  } $$
+
+## Steps for Implementing Matching Methods
+
+Stuart and Rubin (2008) outline the following steps for matching, but the same approach can be used for stratification and weighting as well.
+
+1. Choose the covariates to be used.
+2. Define a distance measure (i.e. what constitutes similar).
+3. Choose the matching algorithm.
+4. Diagnose the matches (or strata) obtained (iterating through steps 2 and 3 as well).
+5. Estimate the treatment effect using the matches (or strata) found in step 4.
+
+
+
+## Matching Methods
+
+There are many choices and approaches to matching, including:
+
+* Propensity score matching.
+* Limited exact matching.
+* Full matching.
+* Nearest neighbor matching.
+* Optimal/Genetic matching.
+* Mahalanobis distance matching (for quantitative covariates only).
+* Matching with and without replacement.
+* One-to-one or one-to-many matching.
+
+**Which matching method should you use?**
+
+*Whichever one gives the best balance!*
+
+See Rosenbaum (2012), *Testing one hypothesis twice in observational studies*.
+
+
+## Simulated Example
+
+```{r, echo=FALSE}
+cols <- c('#fc8d62', '#66c2a5')
+set.seed(2112) 
+```
+
+```{r simulationSetup, cache=TRUE}
+n <- 1000
+treatment.effect <- 2
+X <- mvtnorm::rmvnorm(n,
+					  mean = c(0.5, 1),
+					  sigma = matrix(c(2, 1, 1, 1), ncol = 2) )
+dat <- tibble(
+	x1 = X[, 1],
+	x2 = X[, 2],
+	treatment = as.numeric(- 0.5 + 0.25 * x1 + 0.75 * x2 + rnorm(n, 0, 1) > 0),
+	outcome = treatment.effect * treatment + rnorm(n, 0, 1)
+)
+
+head(dat)
+```
+
+##
+
+```{r}
+ggplot(dat, aes(x = x1, y = x2, color = factor(treatment))) + 
+	geom_point() + scale_color_manual('Treatment', values = cols)
+```
+
+## Estimate Propensity Scores
+
+```{r}
+lr.out <- glm(treatment ~ x1 + x2, data = dat, family = binomial(link='logit'))
+dat$ps <- fitted(lr.out) # Get the propensity scores
+summary(lr.out)
+```
+
+## Distribution of Propensity Scores
+
+```{r, fig.height=3}
+dat2 <- dat %>% tidyr::spread(treatment, ps, sep = '_p')
+ggplot(dat) +
+	geom_histogram(data = dat[dat$treatment == 1,], aes(x = ps, y = ..count..),
+				   bins = 50, fill = cols[2]) +
+	geom_histogram(data = dat[dat$treatment == 0,], aes(x = ps, y = -..count..),
+				   bins = 50, fill = cols[1]) +
+	geom_hline(yintercept = 0, lwd = 0.5) +
+	scale_y_continuous(label = abs) 
+```
+
+## Propensity Score Weights
+
+```{r}
+dat <- dat %>% mutate(
+	ate_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATE'),
+	att_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATT'),
+	atc_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATC'),
+	atm_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATM')
+)
+dat
+```
+
+## Average Treatment Effect (ATE)
+
+```{r, echo = FALSE}
+ggplot() +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, y = ..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, weight = ate_weight, y = ..count..),
+				   bins = 50, 
+				   fill = cols[2], alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, y = -..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, weight = ate_weight, y = -..count..),
+				   bins = 50, 
+				   fill = cols[1], alpha = 0.5) +
+	ggtitle('Average Treatment Effect (ATE)')
+```
+
+## Average Treatment Effect Among the Treated (ATT)
+
+```{r, echo=FALSE}
+ggplot() +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, y = ..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, weight = att_weight, y = ..count..),
+				   bins = 50, 
+				   fill = cols[2], alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, y = -..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, weight = att_weight, y = -..count..),
+				   bins = 50, 
+				   fill = cols[1], alpha = 0.5) +
+	ggtitle('Average Treatment Effect Among the Treated (ATT)')
+```
+
+## Average Treatment Effect Among the Control (ATC)
+
+```{r, echo=FALSE}
+ggplot() +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, y = ..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, weight = atc_weight, y = ..count..),
+				   bins = 50, 
+				   fill = cols[2], alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, y = -..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, weight = atc_weight, y = -..count..),
+				   bins = 50, 
+				   fill = cols[1], alpha = 0.5) +
+	ggtitle('Average Treatment Effect Among the Control (ATC)')
+```
+
+## Average Treatment Effect Among the Evenly Matched (ACM)
+
+```{r, echo=FALSE}
+ggplot() +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, y = ..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, weight = atm_weight, y = ..count..),
+				   bins = 50, 
+				   fill = cols[2], alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, y = -..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, weight = atm_weight, y = -..count..),
+				   bins = 50, 
+				   fill = cols[1], alpha = 0.5) +
+	ggtitle('Average Treatment Effect Among the Evenly Matched (ACM)')
+```
+
+## National Supported Work
+
+The National Supported Work (NSW) Demonstration was a federally and privately funded randomized experiment done in the 1970s to estimate the effects of a job training program for disadvantaged workers.
+
+
+* Participants were randomly selected to participate in the training program.
+* Both groups were followed up to determine the effect of the training on wages.
+* Analysis of the mean differences (unbiased given randomization), was approximately \$800.
+
+
+Lalonde (1986) used data from the Panel Survey of Income Dynamics (PSID) and the Current Population Survey (CPS) to investigate whether non-experimental methods would result in similar results to the randomized experiment. He found results ranging from \$700 to \$16,000.
+
+
+## National Supported Work (cont.)
+
+Dehejia and Wahba (1999) later used propensity score matching to analyze the data. The found that,
+
+* Comparison groups selected by Lalonde were very dissimilar to the treated group.
+* By restricting the comparison group to those that were similar to the treated group, they could replicate the original NSW results.
+* Using the CPS data, the range of treatment effect was between \$1,559 to \$1,681. The experimental results for the sample sample was approximately \$1,800.
+
+
+The covariates available include: age, education level, high school degree, marital status, race, ethnicity, and earning sin 1974 and 1975.
+
+Outcome of interest is earnings in 1978.
+
+```{r echo=TRUE,results='hide'}
+data(lalonde, package='Matching')
+```
+
+
+## Estimating Propensity Scores
+
+```{r }
+lalonde.formu <- treat~age + educ  + black + hisp + married + nodegr + re74 + re75
+glm1 <- glm(lalonde.formu, family=binomial, data=lalonde)
+summary(glm1)
+```
+
+
+## Estimating Propensity Scores
+
+```{r }
+ps <- fitted(glm1)  # Propensity scores
+Y  <- lalonde$re78  # Dependent variable, real earnings in 1978
+Tr <- lalonde$treat # Treatment indicator
+rr <- Match(Y=Y, Tr=Tr, X=ps, M=1, ties=FALSE)
+summary(rr) # The default estimate is ATT here
+```
+
+
+## Visualizing Results
+
+```{r granovaggds,fig=TRUE,width=10,height=4.5,echo=TRUE,results='hide',swarning=FALSE,message=FALSE}
+matches <- data.frame(Treat=lalonde[rr$index.treated,'re78'],
+					  Control=lalonde[rr$index.control,'re78'])
+granovagg.ds(matches[,c('Control','Treat')], xlab = 'Treat', ylab = 'Control')
+```
+
+
+## Stratification (5 Strata)
+
+```{r circpsa5,fig=TRUE,width=10,height=6,echo=TRUE,warning=FALSE,message=FALSE}
+strata <- cut(ps, quantile(ps, seq(0, 1, 1/5)), include.lowest=TRUE, labels=letters[1:5])
+circ.psa(lalonde$re78, lalonde$treat, strata, revc=TRUE)
+```
+
+
+## Stratification (10 Strata)
+
+```{r circpsa10,fig=TRUE,width=10,height=6,echo=TRUE}
+strata10 <- cut(ps, quantile(ps, seq(0, 1, 1/10)), include.lowest=TRUE, labels=letters[1:10])
+circ.psa(lalonde$re78, lalonde$treat, strata10, revc=TRUE)
+```
+
+
+## Loess Regression
+
+```{r loessplot,fig=TRUE,width=12,height=8,echo=FALSE,results='hide'}
+psadf <- data.frame(ps, Y, Tr)
+loess.plot(psadf[psadf$Y < 30000,]$ps, response=psadf[psadf$Y < 30000,]$Y, 
+		   treatment=as.logical(psadf[psadf$Y < 30000,]$Tr))
+```
+
+
+
+## Checking Balance: Continuous Covariates
+
+```{r boxpsa,fig=TRUE,width=10,height=6,echo=TRUE}
+box.psa(lalonde$age, lalonde$treat, strata, xlab="Strata", 
+balance=FALSE)
+```
+
+
+
+## Checking Balance: Categorical Covariates
+
+```{r catpsa,fig=TRUE,width=10,height=6,echo=TRUE,results='hide'}
+cat.psa(lalonde$married, lalonde$treat, strata, xlab='Strata', 
+balance=FALSE)
+```
+
+
+## Checking Balance: Covariate Balance Plot
+
+```{r cvbalpsa,fig=TRUE,width=10,height=8,echo=FALSE,results='hide'}
+covars <- all.vars(lalonde.formu)
+covars <- lalonde[,covars[2:length(covars)]]
+cv.bal.psa(covars, lalonde$treat, ps, strata)
+```
+
+<!-- Some of this section is from http://sekhon.berkeley.edu/causalinf/fa2013/Section/Section11Slides.pdf -->
+
+
+## Sensitivity Analysis
+
+* An observational study is free of hidden bias if the propensity scores for each subject depend only on the observed covariates.
+* That is, the *p*-value is valid *if* there are no unobserved confounders.
+* However, there are very likely covariates that would better model treatment. These introduce hidden bias.
+* Hidden bias exists if two subjects have the same covariates, but different propensity scores.
+
+$X_a = X_b$ but ${ \pi  }_{ a }\neq { \pi  }_{ b }$ for some a and b.
+
+
+
+## Sensitivity Analysis
+
+Each person in the treatment is matched to exactly one person in the control. The odds of being in the treatment for persons a and b are:
+
+
+$O_a = \frac{  \pi_a }{ 1 - \pi_a }$ and $O_b = \frac{  \pi_b }{ 1 - \pi_b }$
+
+The ratio of these odds, $\Gamma$, measures the bias after matching.
+
+$$\Gamma =\frac { { O }_{ a } }{ { O }_{ b } } =\frac { { { \pi  }_{ a } / ( }{ 1-{ \pi  }_{ a }) } }{ { { \pi  }_{ b } / (1-{ \pi  }_{ b }) } } $$
+   
+This is the ratio of the odds the treated unit being in the treatment group to the matched control unit being in the treatment group.
+
+
+
+## Sensitivity Analysis
+
+Sensitivity analysis tests whether the results hold for various ranges of $\Gamma$. That is, we test how large the differences in $\pi$ (i.e. propensity scores) would have to be to change our basic inference. Let $p_a$ and $p_b$ be the probability of each unit of the matched pair being treated, conditional on exactly one being treated. For example:
+
+* If $\Gamma = 1$, the treatment and control unit within each pair has the same value of treatment assignment ($p_a = 0.5$ and $p_b = 0.5$).
+* If $\frac{1}{2} \le \Gamma \le 2$, no unit can be more than twice as likely as its match to get treated ($0.33 \le p_a$, $p_b \le 0.66$).
+* If $\frac{1}{3} \le \Gamma \le 3$, no unit can be more than three times as likely as its match to get treated ($0.25 \le p_a$, $p_b \le 0.75$)
+
+To get the bounds:
+
+$$ \frac{1}{\Gamma +1 } \le p_a, p_b \le \frac{\Gamma}{\Gamma +1} $$
+
+
+## Wilcoxon Signed Rank Test
+
+* Drop pairs where the matches have the same outcome.
+* Calculate the difference in outcomes within each pair.
+* Rank the pairs from smallest absolute difference to largest absolute difference (i.e. the smallest = 1).
+* Take the sum of the ranks where the treated unit had the higher outcome.
+$$ W=\left| \sum _{ 1 }^{ { N }_{ r } }{ sgn({ x }_{ T,i }-{ x }_{ C,i })\cdot { R }_{ i } }  \right|  $$
+Where $N$ is the number of ranked pairs; $R_i$ is the rank for pair *r*; $x_{T,i}$ and $x_{C,i}$ are the outcomes for the $i^{th}$ treated and control pair, respectively.
+
+
+
+## Sensitivity Analysis
+
+The process for sensitivity analysis:
+
+* Select a series of values for $\Gamma$. For social science research, values between 1 and 2 is an appropriate start.
+* For each $\Gamma$, estimate the *p*-values to see how the *p*-values increase for larger values of $\Gamma$.
+* For binary outcomes, use McNemar's test, for all others use Wilcoxon sign rank test and the Hodges-Lehmann point estimate. See Keele (2010) for more information.
+
+
+
+## Sensitivity Analysis
+
+Children of parents who had worked in a factory where lead was used in making batteries were matched by age, exposure to traffic, and neighborhood with children whose parents did not work in lead-related industries. Whole blood was assessed for lead content yielding measurements in mg/dl
+
+```{r rboundsSetup}
+require(rbounds)
+trt <- c(38, 23, 41, 18, 37, 36, 23, 62, 31, 34, 24, 14, 21, 17, 
+ 16, 20, 15, 10, 45, 39, 22, 35, 49, 48, 44, 35, 43, 39,
+ 34, 13, 73, 25, 27)
+ctrl <- c(16, 18, 18, 24, 19, 11, 10, 15, 16, 18, 18, 13, 19, 
+  10, 16, 16, 24, 13, 9, 14, 21, 19, 7, 18, 19, 12, 
+  11, 22, 25, 16, 13, 11, 13)
+```
+
+
+
+
+## Sensitivity Analysis
+
+```{r psens}
+psens(trt, ctrl)
+```
+
+
+
+## Sensitivity Analysis
+
+```{r hlsens}
+hlsens(trt, ctrl)
+```
+
+
+
+```{r echo=FALSE,results='hide'}
+require(TriMatch)
+data(tutoring)
+formu <- ~ Gender + Ethnicity + Military + ESL + EdMother + EdFather + Age +
+	   Employment + Income + Transfer + GPA
+
+tutoring.tpsa <- trips(tutoring, tutoring$treat, formu)
+tutoring.matched.n <- trimatch(tutoring.tpsa, method=OneToN, M1=5, M2=3)
+```
+
+
+
+## Matching of Non-Binary Treatments
+
+
+* The `TriMatch` package provides functions for finding matched triplets.
+* Estimates propensity scores for three separate logistic regression models (one for each pair of groups, that is, treat1-to-control, treat2-to-control, and treat1-to-treat2).
+* Finds matched triplets that minimize the total distance (i.e. sum of the standardized distance between propensity scores within the three models). within a caliper.
+* Provides multiple methods for determining which matched triplets are retained:
+
+* Optimal which attempts to retain all treatment units.
+* Full which retains all matched triplets within the specified caliper (.25 by default as suggested by Rosenbaum).
+* Analog of the one-to-many for matched triplets. Specify how many times each treat1 and treat2 unit can be matched.
+* Unique which allows each unit to be matched once, and only once.
+* Functions for conducting repeated measures ANOVA and Freidman Ranksum Tests are provided.
+
+
+## Example: Tutoring
+
+Students can opt to utilize tutoring services to supplement math courses. Of those who used tutoring services, approximately 58% of students used the tutoring service once, whereas the remaining 42% used it more than once. Outcome of interest is course grade.
+
+* **Military** Active military status.
+* **Income** Income level.
+* **Employment** Employment level.
+* **NativeEnglish** Is English their native language
+* **EdLevelMother** Education level of their mother.
+* **EdLevelFather** Education level of their father.
+* **Ethnicity** American Indian or Alaska Native, Asian, Black or African American, Hispanic, Native Hawaiian or Other Pacific Islander, Two or more races, Unknown, White
+* **Gender** Male, Female
+* **Age** Age at course start.
+* **GPA** Student GPA at the beginning of the course.
+
+
+
+
+
+## New Student Outreach: Covariates
+
+Newly enrolled students received outreach contacts until they registered for a course or six months have passed, whichever came first. Outreach was conducted by two academic advisors and a comparison group was drawn from students who enrolled prior to the start of the outreach program. Outcome of interest is number of credits attempted within the first seven months of enrollment.
+
+
+
+## PSA for Non-Binary Treatments
+
+The `TriMatch` algorithm works as follows:
+
+1. Estimate three separate propensity score models for each pair of groups (i.e. Control-to-Treat1, Control-to-Treat2, Treat1-to-Treat2).
+2. Determine the matching order. The default is to start with the largest of two treatments, then the other treatment, followed by the control.
+3. For each unit in group 1, find all units from group 2 within a certain threshold (i.e. difference between PSs is within a specified caliper).
+4. For each unit in group 2, find all units from group 3 within a certain threshold.
+5. Calculate the distance (difference) between each unit 3 found and the original unit 1. Eliminate candidates that exceed the caliper.
+6. Calculate a total distance (sum of the three distances) and retain the smallest unique *M* group 1 units (by default *M*=2)
+
+
+## Matching Triplets
+
+```{r triangleplot,fig=TRUE,width=10,height=8,echo=FALSE}
+plot(tutoring.matched.n, rows=c(50), draw.segments=TRUE)
+```
+
+
+## Checking Balance
+
+```{r balanceplot,fig=TRUE,width=10,height=8,echo=FALSE}
+multibalance.plot(tutoring.tpsa, grid=TRUE)
+```
+
+
+## Results
+
+```{r boxdiff,fig=TRUE,width=10,height=8,echo=FALSE}
+boxdiff.plot(tutoring.matched.n, tutoring$Grade)
+```
+\begin{center}
+\includegraphics{figures/Slides-boxdiff}
+\end{center}
+
+
+
+
+## Multilevel PSA
+
+The use of PSA for clustered, or multilevel data, has been limited (Thoemmes \& Felix, 2011). Bryer and Pruzek (2012, 2013) have introduced an approach to analyzing multilevel or clustered data using stratification methods and implemented in the `multilevelPSA` R package.
+
+* Exact and partially exact matching methods implicitly adjust for clustering. That is, the covariates chosen to exactly match are, in essence, clustering variables.
+* Exact matching only applies to phase I of PSA. How are the clusters related to outcome of interest.
+  
+The `multilevelPSA` uses stratification methods (e.g. quintiles, classification trees) by:
+
+* Estimate separate propensity scores for each cluster.
+* Identify strata within each cluster (e.g. leaves of classification trees, quintiles).
+* Estimate ATE (or ATT) within each cluster.
+* Aggregate estimated ATE to provide an overall ATE estimate.
+* Several functions to summarize and visualize results and check balance.
+
+
+
+
+## The Programme of International Student Assessment (PISA)
+
+* International assessment conducted by the Organization for Economic Co-operation and Development (OECD).
+* Assesses students towards the end of secondary school (approximately 15-year-old children) in math, reading, and science.
+* Collects a robust set of background information from students, parents, teachers, and schools.
+* Assess both private and public school students in many countries.
+* We will use PISA to estimate the effects of private school attendance on PISA outcomes.
+
+
+## Phase I of Multilevel PSA
+
+The `multilevelPSA` provides two functions, `mlpsa.ctree` and `mlpsa.logistic`, that will estimate propensity scores using classification trees and logistic regression, respectively. Since logistic regression requires a complete dataset (i.e. no missing values), we will use classification trees in this example.
+```{r mlpsasetup, echo=TRUE, results='hide', cache=TRUE}
+data(pisana)
+data(pisa.colnames)
+data(pisa.psa.cols)
+student = pisana
+mlctree = mlpsa.ctree(student[,c('CNT','PUBPRIV',pisa.psa.cols)], 
+					  formula=PUBPRIV ~ ., level2='CNT')
+student.party = getStrata(mlctree, student, level2='CNT')
+student.party$mathscore = apply(
+student.party[,paste0('PV', 1:5, 'MATH')], 1, sum) / 5
+```
+
+To assess what covariates were used in each tree model, as well as the relative importance, we can create a heat map of covariate usage by level.
+
+
+
+## Covariate Heat Map
+
+```{r mlpsatreeplot,fig=TRUE,echo=TRUE, cache=TRUE}
+tree.plot(mlctree, level2Col=student$CNT, colLabels=pisa.colnames[,c('Variable','ShortDesc')])
+```
+
+
+## Phase II of Multilevel PSA
+
+The `mlpsa` function will compare the outcome of interest.
+
+```{r }
+results.psa.math = mlpsa(response=student.party$mathscore, 
+						 treatment=student.party$PUBPRIV, strata=student.party$strata, 
+						 level2=student.party$CNT, minN=5)
+results.psa.math$overall.wtd
+results.psa.math$overall.ci
+results.psa.math$level2.summary[,c('level2','Private','Private.n',
+'Public','Public.n','diffwtd','ci.min','ci.max')]
+```
+
+## Multilevel PSA Assessment Plot
+The multilevel PSA assessment plot is an extension of the `circ.psa` plot in `PSAgraphics` introduced by Helmreich and Pruzek (2009).
+
+```{r mlpsaplot,fig=TRUE,width=10,height=6,echo=TRUE,results='hide'}
+plot(results.psa.math)
+```   
+
+
+## Multilevel PSA Difference Plot
+
+```{r mlpsadiffplot,echo=FALSE,results='hide'}
+mlpsa.difference.plot(results.psa.math, sd=mean(student.party$mathscore, na.rm=TRUE))
+```
+
+
+## Shiny Application
+
+```{r, eval=FALSE}
+psa::psa_shiny()
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics('shiny_screenshot.png', dpi=350)
+```
+
+## Thank You!
+
+### Jason Bryer, Ph.D.  
+
+Email: jason@bryer.org  
+Twitter: [@jbryer](https://twitter.com/jbryer)  
+Website:  https://www.bryer.org  
+Github: https://github.com/jbryer  

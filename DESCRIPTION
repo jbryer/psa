@@ -12,7 +12,7 @@ Description: This package is to complement the (work-in-progress) book,
     analyzing, vizualizing, and evaluating propensity score analysis, using matching
     and stratification methods.
 Depends: R (>= 3.2.0)
-Imports: MatchIt, Matching, PSAgraphics, cowplot, ggplot2, granovaGG, party, reshape2, shiny, dplyr, grid, plyr, psych
+Imports: MatchIt, Matching, PSAgraphics, cowplot, ggplot2, granovaGG, party,reshape2, shiny, dplyr, grid, psych
 Suggests: knitr, lubridate, scholar, stargazer, Mvnorm
 License: GPL-2
 LazyData: true
