@@ -5,11 +5,20 @@
 \title{Loess plot with density distributions for propensity scores and outcomes on
 top and right, respectively.}
 \usage{
-loess.plot(x, response, treatment, responseTitle = "",
-  treatmentTitle = "Treatment", percentPoints.treat = 0.1,
-  percentPoints.control = 0.01, points.treat.alpha = 0.1,
-  points.control.alpha = 0.1, plot.strata, plot.strata.alpha = 0.2,
-  ...)
+loess.plot(
+  x,
+  response,
+  treatment,
+  responseTitle = "",
+  treatmentTitle = "Treatment",
+  percentPoints.treat = 0.1,
+  percentPoints.control = 0.01,
+  points.treat.alpha = 0.1,
+  points.control.alpha = 0.1,
+  plot.strata,
+  plot.strata.alpha = 0.2,
+  ...
+)
 }
 \arguments{
 \item{x}{vector of propensity scores.}

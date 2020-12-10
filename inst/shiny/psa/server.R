@@ -220,8 +220,16 @@ shinyServer(function(input, output, session) {
 			})
 			
 			output$ds.plot <- renderPlot(
-				granovagg.ds(data.frame(control=df[match.out$index.control,input$outcome],
-										treated=df[match.out$index.treated,input$outcome]))
+				# granovagg.ds(data.frame(control=df[match.out$index.control,input$outcome],
+				# 						treated=df[match.out$index.treated,input$outcome]))
+				# NOTE: There is a bug in granovagg.ds that is plotting the x and
+				# y corridnates in reverse. When this bug is fixed this code should
+				# be replaced with what is above.
+				# https://github.com/briandk/granovaGG/issues/175
+				granovagg.ds(data.frame(df[match.out$index.treated,input$outcome],
+										df[match.out$index.control,input$outcome])) +
+					xlab('Control') + ylab('Treated')
+				
 			)
 			
 			output$ps.density <- renderPlot(

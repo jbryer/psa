@@ -4,8 +4,17 @@
 \alias{MatchBalance}
 \title{Calculates balance statistics for matching.}
 \usage{
-MatchBalance(df, formu, formu.Y, exact.covs, index.treated, index.control,
-  tolerance = 0.25, n.levels = 2, ...)
+MatchBalance(
+  df,
+  formu,
+  formu.Y,
+  exact.covs,
+  index.treated,
+  index.control,
+  tolerance = 0.25,
+  n.levels = 2,
+  ...
+)
 }
 \arguments{
 \item{df}{data frame with data to match.}

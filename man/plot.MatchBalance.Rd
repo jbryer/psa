@@ -4,8 +4,13 @@
 \alias{plot.MatchBalance}
 \title{Plot method for MatchBalance.}
 \usage{
-\method{plot}{MatchBalance}(x, min.label.gap = 0.05, importance = TRUE,
-  importance.sep = ifelse(ncol(x$df.matrix) > 10, " ", "\\n"), ...)
+\method{plot}{MatchBalance}(
+  x,
+  min.label.gap = 0.05,
+  importance = TRUE,
+  importance.sep = ifelse(ncol(x$df.matrix) > 10, " ", "\\n"),
+  ...
+)
 }
 \arguments{
 \item{x}{results of \code{\link{MatchBalance}}.}

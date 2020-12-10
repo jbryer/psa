@@ -20,6 +20,7 @@ utils::globalVariables(c('grid.layout','grid.newpage','pushViewport','viewport',
 #' @import granovaGG
 #' @import shiny
 #' @importFrom cowplot plot_grid
+#' @import mice
 NA
 
 #' Student data file.
