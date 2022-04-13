@@ -2,7 +2,7 @@
 
 Contact: [Jason Bryer](https://www.bryer.org/) ([jason@bryer.org](mailto:jason@bryer.org))  
 [Intro to PSA Slides](http://jbryer.github.io/psa/slides/Intro_PSA.html).  
-Early draft of the [Applied Propensity Score Analysis with R](library) book.
+Early draft of the [Applied Propensity Score Analysis with R](https://htmlpreview.github.io/?https://github.com/jbryer/psa/blob/master/docs/index.html) book.
 
 Run the PSA Shiny App:
 
