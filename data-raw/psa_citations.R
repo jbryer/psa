@@ -2,6 +2,13 @@ library(lubridate)
 library(dplyr)
 library(scholar)
 
+# Go to the Web of Science.
+# https://www-webofscience-com.libproxy.albany.edu/wos/woscc/basic-search
+# Search terms:
+# * "propensity score"
+# * "propensity score analysis"
+# * "propensity score matching"
+
 wos.ps <- read.table('data-raw/wos-propensity_score.txt', 
 					 header = TRUE, sep = '\t')
 wos.psa <- read.table('data-raw/wos-propensity_score_analysis.txt',

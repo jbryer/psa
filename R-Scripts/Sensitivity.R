@@ -26,7 +26,7 @@ BalanceMat <- cbind(age, educ, black, hisp, married, nodegr, u74, u75, re75, re7
 					I(re74*re75))
 detach(lalonde)
 
-gen1 <- GenMatch(Tr=Tr, X=X, BalanceMat=BalanceMat, pop.size=50,
+gen1 <- GenMatch(Tr=tr, X=X, pop.size=50,
                   data.type.int=FALSE, print=0, replace=FALSE)
 mgen1 <- Match(Y=Y, Tr=Tr, X=X, Weight.matrix=gen1, replace=FALSE)
 summary(mgen1)

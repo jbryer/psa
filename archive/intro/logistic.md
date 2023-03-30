@@ -1,6 +1,0 @@
-
-
-
-Stratification with Logistic Regression
-========================================================
-

@@ -1,0 +1,72 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Working with Missing Data}
+-->
+
+# Working with Missing Data
+
+### Jason Bryer, Ph.D. 
+#### Project website: [jason.bryer.org/psa](http://jason.bryer.org/psa)
+#### Bug Reports: [github.com/jbryer/psa/issues](https://github.com/jbryer/psa/issues)
+
+
+
+
+```{r}
+library(psa)
+library(mice)
+data(lalonde, package='Matching')
+lalonde.mar <- lalonde
+lalonde.nmar <- lalonde
+treat.rows <- which(lalonde$treat == 1)
+control.rows <- which(lalonde$treat == 0)
+
+formu <- treat ~ age + educ + black + hisp + married + nodegr + re74 + re75
+```
+
+
+Add missingness to the existing data. For the not missing at random data treatment units will have twice as many missing values as the control group.
+
+```{r}
+missing.rate <- .2 # What percent of rows will have missing data
+missing.cols <- c('nodegr', 're75') # The columns we will add missing values to
+missing.ratio <- 1.5 # Ratio of missingness for treatment-to-control
+
+set.seed(2112)
+for(i in missing.cols) {
+	lalonde.mar[sample(nrow(lalonde), nrow(lalonde) * missing.rate), i] <- NA
+	lalonde.nmar[sample(treat.rows, length(treat.rows) * missing.rate * missing.ratio), i] <- NA
+	lalonde.nmar[sample(control.rows, length(control.rows) * missing.rate), i] <- NA
+}
+
+```
+
+```{r}
+mice.mar <- mice(lalonde.mar[,all.vars(formu)[-1]], m=1, printFlag=FALSE)
+mice.nmar <- mice(lalonde.nmar[,all.vars(formu)[-1]], m=1, printFlag=FALSE)
+```
+
+
+```{r}
+mice.mar.complete <- merge(mice.mar, lalonde.mar, shadow.matrix = TRUE)
+mice.nmar.complete <- merge(mice.nmar, lalonde.nmar, shadow.matrix = TRUE)
+```
+
+
+```{r}
+formu2 <- update.formula(formu, ~ . + nodegr_missing + re75_missing)
+mar.lr.out <- glm(formu2, data = mice.mar.complete, 
+				  family = binomial(link = 'logit'))
+nmar.lr.out <- glm(formu2, data = mice.nmar.complete, 
+				   family = binomial(link = 'logit'))
+
+summary(mar.lr.out)
+summary(nmar.lr.out)
+```
+
+
