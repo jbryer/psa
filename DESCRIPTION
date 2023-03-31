@@ -7,7 +7,7 @@ Author: Jason Bryer <jason@bryer.org>
 Maintainer: Jason Bryer <jason@bryer.org>
 Description: Shiny application and utility functions to assist with conducting
     propensity score analysis.
-License: GPL-2
+License: GPL (>= 3)
 URL: http://github.com/jbryer/psa
 BugReports: https://github.com/jbryer/psa/issues
 Depends: 

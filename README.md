@@ -254,3 +254,9 @@ version 4.0-1.
 Thoemmes, F. J., & Kim, E. S. (2011). A systematic review of propensity
 score methods in the social sciences. Multivariate Behavioral Research,
 46, 90-118.
+
+## Code of Conduct
+
+Please note that the psa project is released with a [Contributor Code of
+Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
