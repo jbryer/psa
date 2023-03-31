@@ -7,13 +7,15 @@
 treatment_effect(treatment, outcome, ps, weights, ...)
 }
 \arguments{
+\item{treatment}{logical vector for treatment status.}
+
 \item{outcome}{vector of outcome values.}
 
 \item{ps}{vector of propensity scores.}
 
 \item{weights}{vector of propensity score weights.}
 
-\item{logical}{vector for treatment status.}
+\item{...}{parameters passed [calculate_ps_weights()].}
 }
 \description{
 Estimate the treatment effects.

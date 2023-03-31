@@ -13,6 +13,9 @@
 
 \item{...}{currently unused.}
 }
+\value{
+a list with two elements: `n.summary` and `balance`.
+}
 \description{
 Summary method for MatchBalance.
 }

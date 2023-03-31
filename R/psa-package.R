@@ -13,13 +13,18 @@ utils::globalVariables(c('grid.layout','grid.newpage','pushViewport','viewport',
 #' @import grid
 #' @import reshape2
 #' @import dplyr
-#' @import party
 #' @import Matching
 #' @import MatchIt
 #' @import PSAgraphics
 #' @import granovaGG
 #' @import shiny
+#' @import multilevelPSA
+#' @import PSAboot
+#' @import TriMatch
+#' @importFrom psych describe describeBy
+#' @importFrom plyr llply
 #' @importFrom cowplot plot_grid
+#' @importFrom stats binomial density fitted fivenum glm median model.matrix quantile sd t.test
 #' @import mice
 NA
 
@@ -48,6 +53,3 @@ NA
 #' @keywords datasets
 NA
 
-
-.onAttach <- function(libname, pkgname) {
-}

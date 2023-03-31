@@ -4,7 +4,9 @@
 \name{students}
 \alias{students}
 \title{Student data file.}
-\format{a data frame with 374 ovservations of 17 variables.}
+\format{
+a data frame with 374 ovservations of 17 variables.
+}
 \description{
 Student data file.
 }

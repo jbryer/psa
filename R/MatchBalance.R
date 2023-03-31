@@ -26,7 +26,7 @@
 #'           \item{ps.out}{Results from the logistic regression model for treatment.}
 #'           \item{Y.out}{Results from the multiple regression model for Y.}
 #'           \item{covariate.matched}{a named numeric vector containing the percent
-#'                 of observatins with "perfect" match for each covariate.}
+#'                 of observations with "perfect" match for each covariate.}
 #'           \item{covariate.balance}{a named numeric vector containing the percent
 #'                 of covariates with "perfect" match for each observation.}
 #'           \item{covariate.importance}{a data frame with covariate importance.

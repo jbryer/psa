@@ -1,4 +1,4 @@
-#' Run the psa shiny application.
+#' Run the PSA shiny application.
 #' 
 #' @export
 psa_shiny <- function() {

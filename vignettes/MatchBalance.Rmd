@@ -1,18 +1,30 @@
 ---
-output: html_document
-editor_options: 
-  chunk_output_type: console
+title: "Evaluating the Balance of Propensity Score Matching"
+author: "Jason Bryer, Ph.D."
+date: "`r Sys.Date()`"
+output:
+ html_document:
+ toc: true
+ toc_depth: 3
+ fig_crop: no
+ citation_package: biblatex
+ number_sections: true
+pkgdown:
+ as_is: false
+fontsize: 11pt
+geometry: = 2in
+
+# Custom YAML Pandoc Variables
+line-numbers: true
+list-tables: true
+list-figures: true
+
+# Package indexing
+vignette: >
+  %\VignetteIndexEntry{Evaluating the Balance of Propensity Score Matching}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Evaluating the Balance of Propensity Score Matching}
--->
-
-# Evaluating the Balance of Propensity Score Matching
-
-### Jason Bryer, Ph.D. 
-#### Project website: [jason.bryer.org/psa](http://jason.bryer.org/psa)
-#### Bug Reports: [github.com/jbryer/psa/issues](https://github.com/jbryer/psa/issues)
 
 
 ```{r setup, echo=FALSE, results='hide', message=FALSE, warning=FALSE}

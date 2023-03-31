@@ -11,3 +11,9 @@ build.R
 README.md
 config.R
 lindner.csv
+PSA Schema.graffle
+private/
+README.Rmd
+data-raw/
+docs/
+^\.github$

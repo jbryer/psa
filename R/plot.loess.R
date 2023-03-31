@@ -21,7 +21,7 @@ utils::globalVariables(c('ps','y'))
 #' @seealso plot.mlpsa
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' require(multilevelPSA)
 #' require(party)
 #' data(pisana)

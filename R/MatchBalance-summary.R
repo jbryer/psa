@@ -1,11 +1,14 @@
 #' Summary method for MatchBalance.
 #' 
+#' 
+#' 
 #' @param object result from \code{\link{MatchBalance}}
 #' @param print whether to print the result or to return using \code{invisible}.
 #' @param ... currently unused.
 #' @method summary MatchBalance
+#' @return a list with two elements: `n.summary` and `balance`.
 #' @export
-summary.MatchBalance <- function(object, print=TRUE, ...) {
+summary.MatchBalance <- function(object, print = TRUE, ...) {
 	treat.var <- all.vars(object$ps.out$formula)[1]
 	covs <- colnames(object$df.matrix)
 	

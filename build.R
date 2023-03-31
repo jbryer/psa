@@ -1,11 +1,30 @@
-# setwd("~/Dropbox/Projects/psa")
-
 install.packages(c('devtools','tidyverse',
-				   'Matching','MatchIt','PSAgraphics','granovaGG',
+				   'Matching','MatchIt','PSAgraphics','granovaGG','PSAboot',
 				   'party','shiny','cowplot'))
-devtools::install_github('rstudio/rsconnect')
-devtools::install_github('rstudio/bookdown')
+remotes::install_github('rstudio/rsconnect')
+remotes::install_github('rstudio/bookdown')
 
+##### For the R package ########################################################
+library(devtools)
+
+source('data-raw/psa_citations.R') # Build the psa_citations data file
+usethis::use_tidy_description()
+
+devtools::document()
+devtools::build_readme()
+devtools::install(upgrade = 'never')
+devtools::install(upgrade = 'never', build_vignettes = TRUE)
+devtools::build_readme()
+devtools::build()
+
+devtools::check(cran = TRUE)
+
+# Can run this if there is an error about checking the time
+# Sys.setenv('_R_CHECK_SYSTEM_CLOCK_' = 0)
+
+
+################################################################################
+# Load package and list available functions
 # For the book
 library(bookdown)
 setwd('book')
@@ -15,20 +34,7 @@ bookdown::render_book(input = "index.Rmd",
 
 #bookdown::render_book("index.Rmd", "bookdown::pdf_book")
 
-# For the R package
-library(devtools)
 
-source('data-raw/psa_citations.R') # Build the psa_citations data file
-document()
-
-install(build_vignettes = FALSE)
-install(build_vignettes = TRUE)
-build()
-
-check()
-
-
-# Load package and list available functions
 library(psa)
 ls('package:psa')
 data(package = 'psa')

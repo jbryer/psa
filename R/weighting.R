@@ -32,10 +32,11 @@ calculate_ps_weights <- function(treatment, ps, estimand = 'ATE') {
 
 #' Estimate the treatment effects.
 #' 
-#' @param logical vector for treatment status.
+#' @param treatment logical vector for treatment status.
 #' @param outcome vector of outcome values.
 #' @param ps vector of propensity scores.
 #' @param weights vector of propensity score weights.
+#' @param ... parameters passed [calculate_ps_weights()].
 #' @export
 treatment_effect <- function(treatment, outcome, ps, weights, ...) {
 	if(missing(weights)) {

@@ -55,7 +55,7 @@ Loess plot with density distributions for propensity scores and outcomes on
 top and right, respectively.
 }
 \examples{
-\dontrun{
+\donttest{
 require(multilevelPSA)
 require(party)
 data(pisana)

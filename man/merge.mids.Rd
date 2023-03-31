@@ -7,9 +7,9 @@
 \method{merge}{mids}(x, y, shadow.matrix = FALSE, shadow.suffix = "_missing", ...)
 }
 \arguments{
-\item{x}{the results from \code{\link{mice::mice}}.}
+\item{x}{the results from [mice::mice()].}
 
-\item{y}{the \code{data.frame} passed to \code{\link{mice::mice}}. This must
+\item{y}{the `data.frame` passed to [mice::mice()]. This must
 have the same number rows, but may contain additional columns.}
 
 \item{shadow.matrix}{if TRUE, addtional columns will be added indicating 
@@ -17,7 +17,7 @@ whether the value was missing in the original data.frame.}
 
 \item{shadow.suffix}{the suffix used for the shadow matrix.}
 
-\item{...}{parameters passed to \code{\link{mice::complete}}.}
+\item{...}{parameters passed to [mice::complete()].}
 }
 \description{
 Returns a data.frame where the variables in the original (i.e. \code{y} 
