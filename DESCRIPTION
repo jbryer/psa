@@ -35,7 +35,8 @@ Suggests:
     lubridate,
     mvtnorm,
     scholar,
-    stargazer
+    stargazer,
+    rmarkdown
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

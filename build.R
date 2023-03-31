@@ -27,10 +27,11 @@ devtools::check(cran = TRUE)
 # Load package and list available functions
 # For the book
 library(bookdown)
-setwd('book')
+wd <- setwd('book')
 bookdown::render_book(input = "index.Rmd", 
 					  output_format = "bookdown::gitbook",
 					  output_dir = '../docs')
+setwd(wd)
 
 #bookdown::render_book("index.Rmd", "bookdown::pdf_book")
 
