@@ -1,33 +1,41 @@
 --- 
 title: "Applied Propensity Score Analysis with R"
-author: "Jason Bryer"
-date: "Last updated `r format(Sys.Date(), '%B %d, %Y')`"
+author: "Jason Bryer, Ph.D."
+date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
-output: 
-  bookdown::gitbook:
-    split_by: chapter
-    split_bib: false
-    output_dir: ../docs
-    config:
-      sharing:
-        facebook: false
-        twitter: false
 documentclass: book
-bibliography: [book.bib, packages.bib]
+url: https://psa.bryer.org
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  An introduction to conducting propensity score analysis with R.
 biblio-style: apalike
-link-citations: yes
-github-repo: jbryer/psa
-description: "Introduction to propensity score anaylsis using R."
+bibliography: [book.bib, packages.bib]
 ---
+
+[![Bookdown Status](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml)
 
 # Preface {-}
 
+I first encountered propensity score analysis (PSA) by my late dissertation advisor Robert Pruzek in 2006 when I entered graduate school. The notion that you could get reasonable causal estimates without the need of randomization was foreign to me and at first, I was skeptical. Many years later having used PSA for many projects, not only am I convinced it is possible, I believe there are instances where this may be preferred over the randomized control trial. I have been the Principal Investigator for two Federal grants to develop and test the [Diagnostic Assessment and Achievement of College Skills (DAACS)](https://daacs.net) where have attempted to conduct large scale randomized control trials (RCT) involving thousands of students. Through those experiences I have found that there are numerous compromises made in delivering an intervention that the generalizability of the results to a context where we are not concerned about the RCT make interpretations difficult. Moreover, RCTs assume a single effect for everyone. With PSA, particularly in the stratification section, it is possible to tease out how an intervention may vary by the observed covariates.
 
-## Colophon
+I have taught PSA many times over the years. This "book" is my attempt to collect my notes and experiences on conducting PSA. For the most part I will emphasize the applied and provide links to references if the reader wishes to explore the theoretical in more details. The `psa` R package that accompanies this book is available on Github and can be installed using the `remotes` package with the command below. By setting the `dependencies = TRUE` parameter will ensure that all the R packages used in this book are installed as well. The `psa` package contains a number of datasets and utility functions used throughout the book. But it also contains a [Shiny](https://shiny.rstudio.com) application designed to conduct PSA using a graphical user interface. Details on using the application are provided in the [appendix](#psa_shiny).
 
-This book was created using the `bookdown` R package [@xie2016]. The book is available online at [http://jason.bryer.org/psa/](http://jason.bryer.org/psa/) and the source is available at [https://github.com/jbryer/psa](https://github.com/jbryer/psa).
+```{r, eval = FALSE}
+remotes::install(build_vignettes = TRUE, dependencies = 'Enhances')
+```
+
+This books is very much a work in progress and contributions are welcome. Please adhere to the [code of conduct](https://github.com/jbryer/psa/blob/master/CODE_OF_CONDUCT.md). Each page has an edit link which will take you directly to the source file on [Github.](https://github.com/jbryer/psa) You are also submit feedback using the [Github Issues](https://github.com/jbryer/psa/issues) tracker.
+
+
+## Acknowledgements {.unnumbered}
+
+This website was created using [bookdown](https://bookdown.org) and is hosted by [Github](https://github.com/jbryer/psa) [pages](https://www.google.com/search?client=safari&rls=en&q=github+pages&ie=UTF-8&oe=UTF-8).
+
+## Colophon {.unnumbered}
 
 ```{r appendix-colophon}
 devtools::session_info()
 ```
 
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work by [Jason Bryer](https://bryer.org/) is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.

@@ -1,4 +1,4 @@
-# Shiny Application
+# Shiny Application {#psa_shiny}
 
 ```{r shiny, eval=FALSE}
 library(psa)

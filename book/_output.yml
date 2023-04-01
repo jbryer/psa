@@ -1,17 +1,15 @@
-bookdown::gitbook:
+bookdown::bs4_book:
   css: style.css
-  config:
-    toc:
-      before: |
-        <li><a href="./">Applied PSA with R</a></li>
-      after: |
-        <li><a href="https://www.bryer.org" target="blank">Jason Bryer, Ph.D.</a></li>
-    edit:
-      link: https://github.com/jbryer/psa/book/edit/master/%s
-  output_dir: ../docs/
+  theme:
+    primary: "#096B72"
+  repo: 
+    base: https://github.com/jbryer/psa
+    subdir: book
+    branch: master
 bookdown::pdf_book:
   includes:
     in_header: preamble.tex
   latex_engine: xelatex
   citation_package: natbib
+  keep_tex: yes
 bookdown::epub_book: default

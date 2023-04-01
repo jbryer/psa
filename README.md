@@ -4,13 +4,16 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/jbryer/psa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/R-CMD-check.yaml)
-[![](https://img.shields.io/badge/devel%20version-0.9.2-blue.svg)](https://github.com/jbryer/psa)
+[![Bookdown
+Status](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml)
+[![](https://img.shields.io/badge/devel%20version-0.1.0-blue.svg)](https://github.com/jbryer/psa)
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- badges: end -->
 
-Contact: [Jason Bryer](https://www.bryer.org/) (<jason@bryer.org>)
+Contact: [Jason Bryer](https://www.bryer.org/) (<jason@bryer.org>)  
+Bookdown Site: <https://psa.bryer.org>
 
 ## Overview
 

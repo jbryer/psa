@@ -38,9 +38,7 @@ jobs:
           install.packages(c('cowplot', 'granovaGG', 'mice'))
           devtools::install(upgrade = 'never', build_vignettes = FALSE, dependencies = 'Enhances')
           setwd('book')
-          bookdown::render_book(input = "index.Rmd", 
-                                output_format = "bookdown::gitbook", 
-                                output_dir = '../docs')
+          bookdown::render_book()
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀
@@ -48,4 +46,4 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           branch: gh-pages
-          folder: docs
+          folder: book/_book

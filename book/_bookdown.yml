@@ -1,11 +1,10 @@
 book_filename: "AppliedPSAwithR"
-chapter_name: "Chapter "
-edit:
-  link: https://github.com/jbryer/psa/edit/book/book/%s
-  text: "Edit"
-bibliography: ["book.bib", "packages.bib"]
-biblio-style: apalike
-link-citations: yes
-before_chapter_script: "chapter_setup.R"
-after_chapter_script: "chapter_cleanup.R"
-output_dir: ../docs
+new_session: true
+before_chapter_script: chapter_setup.R
+after_chapter_script: chapter_cleanup.R
+delete_merged_file: true
+view: https://github.com/jbryer/psa/edit/master/book/%s
+edit: https://github.com/jbryer/psa/blob/master/book/%s
+language:
+  ui:
+    chapter_name: "Chapter "

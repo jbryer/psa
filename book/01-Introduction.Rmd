@@ -10,7 +10,7 @@ The use of propensity score methods [@RosenbaumRubin1983] for estimating causal 
 
 This book will provide a theoretical overview of propensity score methods as well as illustrations and discussion of PSA applications. Methods used in phase I of PSA (i.e. models or methods for estimating propensity scores) include logistic regression, classification trees, and matching. Discussions on appropriate comparisons and estimations of effect size and confidence intervals in phase II will also be covered. The use of graphics for diagnosing covariate balance as well as summarizing overall results will be emphasized. Lastly, the extension of PSA methods for multilevel data will also be presented.
 
-```{r popularity, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=6, fig.cap='PSA Citations per Year'}
+```{r popularity, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='PSA Citations per Year'}
 library(ggplot2)
 data("psa_citations", package = 'psa')
 ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) +
