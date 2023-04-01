@@ -35,7 +35,7 @@ jobs:
       - name: Build site
         run: |
           install.packages('devtools')
-          devtools::install(upgrade = 'never', build_vignettes = FALSE)
+          devtools::install(upgrade = 'never', build_vignettes = FALSE, dependencies = 'Enhances')
           wd <- setwd('book')
           bookdown::render_book(input = "index.Rmd", 
                                 output_format = "bookdown::gitbook", 

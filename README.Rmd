@@ -31,7 +31,7 @@ The use of propensity score methods (Rosenbaum & Rubin, 1983) for estimating cau
 
 This workshop will provide participants with a theoretical overview of propensity score methods as well as illustrations and discussion of PSA applications. Methods used in phase I of PSA (i.e. models or methods for estimating propensity scores) include logistic regression, classification trees, and matching. Discussions on appropriate comparisons and estimations of effect size and confidence intervals in phase II will also be covered. The use of graphics for diagnosing covariate balance as well as summarizing overall results will be emphasized. 
 
-```{r psa_citations_by_year, echo=FALSE}
+```{r psa_citations_by_year, echo=FALSE, fig.width='10', fig.height='4'}
 data('psa_citations', package = 'psa')
 library(ggplot2)
 ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) +
@@ -55,6 +55,10 @@ Run the PSA Shiny App:
 ```{r, eval = FALSE}
 library(psa)
 psa::psa_shiny()
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics('man/figures/psa_shiny_screenshots.gif')
 ```
 
 

@@ -1,5 +1,5 @@
 
-# <img src="man/figures/psa.png" align="right" width="120" align="right" /> Introduction to Propensity Score Methods with R
+# <img src="man/figures/psa.png" align="right" width="120" align="right" /> Propensity Score Analysis with R
 
 <!-- badges: start -->
 
@@ -51,6 +51,8 @@ Run the PSA Shiny App:
 library(psa)
 psa::psa_shiny()
 ```
+
+<img src="man/figures/psa_shiny_screenshots.gif" width="100%" />
 
 ## Outline
 
