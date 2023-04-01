@@ -11,30 +11,14 @@ The use of propensity score methods [@RosenbaumRubin1983] for estimating causal 
 This book will provide a theoretical overview of propensity score methods as well as illustrations and discussion of PSA applications. Methods used in phase I of PSA (i.e. models or methods for estimating propensity scores) include logistic regression, classification trees, and matching. Discussions on appropriate comparisons and estimations of effect size and confidence intervals in phase II will also be covered. The use of graphics for diagnosing covariate balance as well as summarizing overall results will be emphasized. Lastly, the extension of PSA methods for multilevel data will also be presented.
 
 ```{r popularity, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=6, fig.cap='PSA Citations per Year'}
-library(gdata)
-
-psm <- read.xls('Data/WebOfScienceResults.xlsx', sheet=1)
-psa <- read.xls('Data/WebOfScienceResults.xlsx', sheet=2)
-ps <- read.xls('Data/WebOfScienceResults.xlsx', sheet=3)
-
-psm$Term <- 'Propensity Score Matching'
-psa$Term <- 'Propensity Score Analysis'
-ps$Term <- 'Propensity Score'
-
-df <- rbind(psm, psa, ps)
-
-df.label <- df[df$Year == max(df$Year),]
-df.label$y <- df.label$Articles
-df.label[1,]$y <- df.label[1,]$y + 30
-df.label[2,]$y <- df.label[2,]$y - 30
-ggplot(df, aes(x=Year, y=Articles, group=Term, color=Term)) + 
-	geom_path() + 
-	geom_text(data=df.label, aes(label=Articles, y=y), hjust=-0.05, show.legend=FALSE) +
-	scale_color_hue('Search Term') +
-	ylab("Number of Publications") + xlab("Year of Publication") +
-	ggtitle('Number of PSA Publications by Year\n(source: Web of Science)') +
-	theme(legend.position="bottom") + 
-	scale_x_continuous(breaks=seq(min(df$Year), max(df$Year), by=1))
+library(ggplot2)
+data("psa_citations", package = 'psa')
+ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) +
+	geom_path() +
+	scale_color_brewer('Search Teram', type = 'qual', palette = 2) +
+	ggtitle('Number of Citations for Propensity Score Analysis',
+			subtitle = 'Source: Web of Science and Google Scholar') +
+	theme_minimal()
 ```
 
 

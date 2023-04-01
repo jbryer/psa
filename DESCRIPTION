@@ -37,6 +37,8 @@ Suggests:
     scholar,
     stargazer,
     rmarkdown
+Enhances:
+    rgenoud
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
