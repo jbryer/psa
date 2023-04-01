@@ -28,7 +28,7 @@ jobs:
 
       - uses: r-lib/actions/setup-renv@v2
 
-      - uses: ./setup-r-dependencies
+      - uses: r-lib/actions/setup-r-dependencies
         with:
           extra-packages: any::bookdown, local::.
           needs: website
