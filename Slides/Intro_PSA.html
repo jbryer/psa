@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Propensity Score Analysis with R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jason Bryer, Ph.D." />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/mtheme_max.css" type="text/css" />
+    <link rel="stylesheet" href="assets/fonts_mtheme_max.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+class: center, middle, inverse, title-slide
+
+# Propensity Score Analysis with R
+## 
+### Jason Bryer, Ph.D.
+### 
+
+
+---
+# Agenda
+
+* Overview of causal inference
+	* Counterfactuals
+	* Randomized control trials
+	* Rubin's Causal Model
+* Propensity Score Analysis in two Phases
+	* Various types of treatment effects
+	* Matching
+	* Stratification
+	* Weighting
+	* Evaluating Balance
+* Sensitivity Analysis
+* Bootstrapping PSA
+* Matching for Non-Binary Treatments
+* Multilevel PSA
+
+
+---
+# Popularity of Propensity Score Analysis
+
+&lt;img src="Intro_PSA_files/figure-html/popularity-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Counterfactuals
+
+&lt;img src="Causality.png" width="3099" style="display: block; margin: auto;" /&gt;
+
+---
+# The Randomized Experiment
+
+Considered to be the *gold standard* for estimating causal effects.
+
+* Effects can be estimated using simple means between groups, or blocks in randomized block design.
+* Randomization presumes unbiasedness and balance between groups.
+
+However, randomization is often not feasible for many reasons, especially in educational contexts.
+
+The strong ignorability assumption states that:
+
+`$$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \unicode{x2AEB} \; { T }_{ i }|{ X }_{ i }=x$$`
+
+for all `\({X}_{i}\)`.
+
+
+---
+# RCT Example
+
+
+
+
+```r
+set.seed(2112)
+pop.mean &lt;- 100
+pop.sd &lt;- 15
+pop.es &lt;- .3
+n &lt;- 30
+thedata &lt;- data.frame(
+	id = 1:30,
+	center = rnorm(n, mean = pop.mean, sd = pop.sd),
+	stringsAsFactors = FALSE
+)
+val &lt;- pop.sd * pop.es / 2
+thedata$placebo &lt;- thedata$center - val
+thedata$treatment &lt;- thedata$center + val
+thedata$diff &lt;- thedata$treatment - thedata$placebo
+thedata$RCT_Assignment &lt;- sample(c('placebo', 'treatment'), n, replace = TRUE)
+thedata$RCT_Value &lt;- as.numeric(apply(thedata, 1, 
+					FUN = function(x) { return(x[x['RCT_Assignment']]) }))
+head(thedata, n = 3)
+```
+
+```
+##   id    center   placebo treatment diff RCT_Assignment RCT_Value
+## 1  1 113.86506 111.61506 116.11506  4.5      treatment 116.11506
+## 2  2  95.38746  93.13746  97.63746  4.5      treatment  97.63746
+## 3  3  90.60380  88.35380  92.85380  4.5      treatment  92.85380
+```
+
+```r
+tab.out &lt;- describeBy(thedata$RCT_Value, group = thedata$RCT_Assignment, mat = TRUE, skew = FALSE)
+```
+
+---
+# True Counterfactual
+
+
+
+.pull-left[
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# True Counterfactual (left) vs. One RCT (right)
+
+.pull-left[
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-5-1.png" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+# True Counterfactual (left) vs. One RCT (right)
+
+.pull-left[
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Distribution of Differences from 1,000 RCTs
+
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Rubin Causal Model&lt;sup&gt;1&lt;/sup&gt;
+
+* The causal effect of a treatment is the difference in an individual's outcome under the situation they were given the treatment and not (referred to as a counterfactual).
+
+`$${\delta}_{i} ={ Y }_{ i1 }-{ Y }_{ i0 }$$`
+
+* However, it is impossible to directly observe `\({\delta}_{i}\)` (referred to as *The Fundamental Problem of Causal Inference*, Holland 1986).
+
+* Rubin frames this problem as a "missing data problem."
+
+&lt;img src='Causality2.png' width='500' alt="Causality - Missing Values" /&gt;
+
+.footnote[[1] See Rubin, 1974, 1977, 1978, 1980, and Holland, 1986.]
+
+---
+# Propensity Score Analysis
+
+The propensity score is the "conditional probability of assignment to a particular treatment given a vector of observed covariates" (Rosenbaum \&amp; Rubin, 1983, p. 41). The probability of being in the treatment:
+`$$\pi ({ X }_{ i }) \; \equiv \; Pr({ T }_{ i }=1|{ X }_{ i })$$`
+
+The balancing property under exogeneity:
+
+`$${ T }_{ i } \; \unicode{x2AEB} { X }_{ i } \;| \; \pi ({ X }_{ i })$$`
+
+We can then restate the ignorability assumption with the propensity score: 
+
+`$$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \unicode{x2AEB} \; { T }_{ i } \; | \; \pi({ X }_{ i })$$`
+
+---
+# Treatment Effects
+
+The average treatment effect (ATE) is defined as:
+
+`$$E({ r }_{ 1 })-E({ r }_{ 0 })$$`
+
+where `\(E(.)\)` is the expectation in the population. For a set of covariates, `\(X\)`, and outcomes `\(Y\)` where 0 denotes control and 1 treatment, we define ATE as:
+
+`$$ATE=E(Y_{1}-Y_{0}|X)=E(Y_{1}|X)-E(Y_{0}|X)$$`
+
+The Average treatment effect on the treated (ATT), is defined as:
+
+`$$ATT=E(Y_{1}-Y_{0}|X,C=1)=E(Y_{1}|X,C=1)-E(Y_{0}|X,C=1)$$`
+
+
+---
+# Propensity score methods
+
+* **Matching** - Each treatment unit is paired with a comparison unit based upon the pre-treatment covariates.
+* **Stratification** Treatment and comparison units are divided into strata (or subclasses) so that treated and comparison units are similar within each strata. Cochran (1968) observed that creating five subclassifications (stratum) removes at least 90\% of the bias in the estimated treatment effect.
+* **Weighting** Each observation is weighted by the inverse of the probability of being in that group.
+
+$$\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ \left( \frac { { T }_{ i }{ Y }_{ i } }{ \pi ({ X }_{ i }) } -\frac { (1-{ T }_{ i }){ Y }_{ i } }{ 1-\pi ({ X }_{ i }) }  \right)  } $$
+
+---
+# Steps for Implementing Matching Methods
+
+Stuart and Rubin (2008) outline the following steps for matching, but the same approach can be used for stratification and weighting as well.
+
+1. Choose the covariates to be used.
+2. Define a distance measure (i.e. what constitutes similar).
+3. Choose the matching algorithm.
+4. Diagnose the matches (or strata) obtained (iterating through steps 2 and 3 as well).
+5. Estimate the treatment effect using the matches (or strata) found in step 4.
+
+
+
+---
+# Matching Methods
+
+There are many choices and approaches to matching, including:
+
+* Propensity score matching.
+* Limited exact matching.
+* Full matching.
+* Nearest neighbor matching.
+* Optimal/Genetic matching.
+* Mahalanobis distance matching (for quantitative covariates only).
+* Matching with and without replacement.
+* One-to-one or one-to-many matching.
+
+**Which matching method should you use?**
+
+*Whichever one gives the best balance!*
+
+See Rosenbaum (2012), *Testing one hypothesis twice in observational studies*.
+
+
+---
+# Simulated Example
+
+
+
+
+```r
+n &lt;- 1000
+treatment.effect &lt;- 2
+X &lt;- mvtnorm::rmvnorm(n,
+					  mean = c(0.5, 1),
+					  sigma = matrix(c(2, 1, 1, 1), ncol = 2) )
+dat &lt;- tibble(
+	x1 = X[, 1],
+	x2 = X[, 2],
+	treatment = as.numeric(- 0.5 + 0.25 * x1 + 0.75 * x2 + rnorm(n, 0, 1) &gt; 0),
+	outcome = treatment.effect * treatment + rnorm(n, 0, 1)
+)
+
+head(dat)
+```
+
+```
+## # A tibble: 6 × 4
+##       x1    x2 treatment outcome
+##    &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1  1.60  1.14          1   2.54 
+## 2 -0.619 0.163         0   0.544
+## 3  1.56  1.82          0   0.207
+## 4  2.33  2.27          1   1.53 
+## 5  1.92  2.44          1   2.07 
+## 6  1.28  0.880         1   1.43
+```
+
+##
+
+
+```r
+ggplot(dat, aes(x = x1, y = x2, color = factor(treatment))) + 
+	geom_point() + scale_color_manual('Treatment', values = cols)
+```
+
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Estimate Propensity Scores
+
+
+```r
+lr.out &lt;- glm(treatment ~ x1 + x2, data = dat, family = binomial(link='logit'))
+dat$ps &lt;- fitted(lr.out) # Get the propensity scores
+summary(lr.out)
+```
+
+```
+## 
+## Call:
+## glm(formula = treatment ~ x1 + x2, family = binomial(link = "logit"), 
+##     data = dat)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.4355  -0.8136   0.3107   0.7797   2.7172  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -1.07812    0.13066  -8.251  &lt; 2e-16 ***
+## x1           0.43117    0.08136   5.299 1.16e-07 ***
+## x2           1.27902    0.12992   9.845  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1363.10  on 999  degrees of freedom
+## Residual deviance:  976.19  on 997  degrees of freedom
+## AIC: 982.19
+## 
+## Number of Fisher Scoring iterations: 5
+```
+
+---
+# Distribution of Propensity Scores
+
+
+```r
+dat2 &lt;- dat %&gt;% tidyr::spread(treatment, ps, sep = '_p')
+ggplot(dat) +
+	geom_histogram(data = dat[dat$treatment == 1,], aes(x = ps, y = ..count..),
+				   bins = 50, fill = cols[2]) +
+	geom_histogram(data = dat[dat$treatment == 0,], aes(x = ps, y = -..count..),
+				   bins = 50, fill = cols[1]) +
+	geom_hline(yintercept = 0, lwd = 0.5) +
+	scale_y_continuous(label = abs) 
+```
+
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Propensity Score Weights
+
+
+```r
+dat &lt;- dat %&gt;% mutate(
+	ate_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATE'),
+	att_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATT'),
+	atc_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATC'),
+	atm_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATM')
+)
+dat
+```
+
+```
+## # A tibble: 1,000 × 9
+##        x1      x2 treatment outcome    ps ate_weight att_weight atc_weight
+##     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+##  1  1.60   1.14           1   2.54  0.744       1.34      1         0.343 
+##  2 -0.619  0.163          0   0.544 0.243       1.32      0.321     1     
+##  3  1.56   1.82           0   0.207 0.873       7.86      6.86      1     
+##  4  2.33   2.27           1   1.53  0.944       1.06      1         0.0593
+##  5  1.92   2.44           1   2.07  0.946       1.06      1         0.0565
+##  6  1.28   0.880          1   1.43  0.646       1.55      1         0.549 
+##  7  2.89   2.98           1   1.36  0.982       1.02      1         0.0186
+##  8  0.820  0.518          1   1.90  0.484       2.06      1         1.06  
+##  9  0.618 -0.0382         1   2.75  0.297       3.36      1         2.36  
+## 10 -1.11   1.01           1   4.25  0.435       2.30      1         1.30  
+## # ℹ 990 more rows
+## # ℹ 1 more variable: atm_weight &lt;dbl&gt;
+```
+
+---
+# Average Treatment Effect (ATE)
+
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Average Treatment Effect Among the Treated (ATT)
+
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Average Treatment Effect Among the Control (ATC)
+
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Average Treatment Effect Among the Evenly Matched (ACM)
+
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# National Supported Work
+
+The National Supported Work (NSW) Demonstration was a federally and privately funded randomized experiment done in the 1970s to estimate the effects of a job training program for disadvantaged workers.
+
+
+* Participants were randomly selected to participate in the training program.
+* Both groups were followed up to determine the effect of the training on wages.
+* Analysis of the mean differences (unbiased given randomization), was approximately \$800.
+
+
+Lalonde (1986) used data from the Panel Survey of Income Dynamics (PSID) and the Current Population Survey (CPS) to investigate whether non-experimental methods would result in similar results to the randomized experiment. He found results ranging from \$700 to \$16,000.
+
+
+---
+# National Supported Work (cont.)
+
+Dehejia and Wahba (1999) later used propensity score matching to analyze the data. The found that,
+
+* Comparison groups selected by Lalonde were very dissimilar to the treated group.
+* By restricting the comparison group to those that were similar to the treated group, they could replicate the original NSW results.
+* Using the CPS data, the range of treatment effect was between \$1,559 to \$1,681. The experimental results for the sample sample was approximately \$1,800.
+
+
+The covariates available include: age, education level, high school degree, marital status, race, ethnicity, and earning sin 1974 and 1975.
+
+Outcome of interest is earnings in 1978.
+
+
+```r
+data(lalonde, package='Matching')
+```
+
+
+---
+# Estimating Propensity Scores
+
+
+```r
+lalonde.formu &lt;- treat~age + educ  + black + hisp + married + nodegr + re74 + re75
+glm1 &lt;- glm(lalonde.formu, family=binomial, data=lalonde)
+summary(glm1)
+```
+
+```
+## 
+## Call:
+## glm(formula = lalonde.formu, family = binomial, data = lalonde)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.4358  -0.9904  -0.9071   1.2825   1.6946  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)   
+## (Intercept)  1.178e+00  1.056e+00   1.115  0.26474   
+## age          4.698e-03  1.433e-02   0.328  0.74297   
+## educ        -7.124e-02  7.173e-02  -0.993  0.32061   
+## black       -2.247e-01  3.655e-01  -0.615  0.53874   
+## hisp        -8.528e-01  5.066e-01  -1.683  0.09228 . 
+## married      1.636e-01  2.769e-01   0.591  0.55463   
+## nodegr      -9.035e-01  3.135e-01  -2.882  0.00395 **
+## re74        -3.161e-05  2.584e-05  -1.223  0.22122   
+## re75         6.161e-05  4.358e-05   1.414  0.15744   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 604.20  on 444  degrees of freedom
+## Residual deviance: 587.22  on 436  degrees of freedom
+## AIC: 605.22
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
+
+---
+# Estimating Propensity Scores
+
+
+```r
+ps &lt;- fitted(glm1)  # Propensity scores
+Y  &lt;- lalonde$re78  # Dependent variable, real earnings in 1978
+Tr &lt;- lalonde$treat # Treatment indicator
+rr &lt;- Match(Y=Y, Tr=Tr, X=ps, M=1, ties=FALSE)
+summary(rr) # The default estimate is ATT here
+```
+
+```
+## 
+## Estimate...  2490.3 
+## SE.........  638.99 
+## T-stat.....  3.8972 
+## p.val......  9.7305e-05 
+## 
+## Original number of observations..............  445 
+## Original number of treated obs...............  185 
+## Matched number of observations...............  185 
+## Matched number of observations  (unweighted).  185
+```
+
+
+---
+# Visualizing Results
+
+
+```r
+matches &lt;- data.frame(Treat=lalonde[rr$index.treated,'re78'],
+					  Control=lalonde[rr$index.control,'re78'])
+granovagg.ds(matches[,c('Control','Treat')], xlab = 'Treat', ylab = 'Control')
+```
+
+&lt;img src="Intro_PSA_files/figure-html/granovaggds-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Stratification (5 Strata)
+
+
+```r
+strata &lt;- cut(ps, quantile(ps, seq(0, 1, 1/5)), include.lowest=TRUE, labels=letters[1:5])
+circ.psa(lalonde$re78, lalonde$treat, strata, revc=TRUE)
+```
+
+&lt;img src="Intro_PSA_files/figure-html/circpsa5-1.png" style="display: block; margin: auto;" /&gt;
+
+```
+## $summary.strata
+##   n.0 n.1  means.0  means.1
+## a  62  27 5126.493 5178.073
+## b  59  30 3855.200 6496.695
+## c  56  33 4586.869 4495.076
+## d  42  47 4814.028 6059.232
+## e  41  48 4387.692 8474.201
+## 
+## $wtd.Mn.1
+## [1] 6140.655
+## 
+## $wtd.Mn.0
+## [1] 4554.056
+## 
+## $ATE
+## [1] -1586.599
+## 
+## $se.wtd
+## [1] 693.5067
+## 
+## $approx.t
+## [1] -2.287792
+## 
+## $df
+## [1] 435
+## 
+## $CI.95
+## [1] -2949.6395  -223.5584
+```
+
+
+---
+# Stratification (10 Strata)
+
+
+```r
+strata10 &lt;- cut(ps, quantile(ps, seq(0, 1, 1/10)), include.lowest=TRUE, labels=letters[1:10])
+circ.psa(lalonde$re78, lalonde$treat, strata10, revc=TRUE)
+```
+
+&lt;img src="Intro_PSA_files/figure-html/circpsa10-1.png" style="display: block; margin: auto;" /&gt;
+
+```
+## $summary.strata
+##   n.0 n.1  means.0  means.1
+## a  35  10 6339.437 7019.962
+## b  27  17 3554.157 4094.609
+## c  31  16 3430.148 4356.532
+## d  28  14 4325.792 8942.596
+## e  30  15 4932.648 4710.588
+## f  26  18 4187.895 4315.483
+## g  22  22 4755.015 6148.795
+## h  20  25 4878.944 5980.416
+## i  16  28 1375.014 9276.448
+## j  25  20 6315.806 7351.056
+## 
+## $wtd.Mn.1
+## [1] 6195.262
+## 
+## $wtd.Mn.0
+## [1] 4414.111
+## 
+## $ATE
+## [1] -1781.151
+## 
+## $se.wtd
+## [1] 710.5964
+## 
+## $approx.t
+## [1] -2.506559
+## 
+## $df
+## [1] 425
+## 
+## $CI.95
+## [1] -3177.8724  -384.4306
+```
+
+
+---
+# Loess Regression
+
+&lt;img src="Intro_PSA_files/figure-html/loessplot-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+# Checking Balance: Continuous Covariates
+
+
+```r
+box.psa(lalonde$age, lalonde$treat, strata, xlab="Strata", 
+balance=FALSE)
+```
+
+&lt;img src="Intro_PSA_files/figure-html/boxpsa-1.png" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+# Checking Balance: Categorical Covariates
+
+
+```r
+cat.psa(lalonde$married, lalonde$treat, strata, xlab='Strata', 
+balance=FALSE)
+```
+
+&lt;img src="Intro_PSA_files/figure-html/catpsa-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Checking Balance: Covariate Balance Plot
+
+&lt;img src="Intro_PSA_files/figure-html/cvbalpsa-1.png" style="display: block; margin: auto;" /&gt;
+
+&lt;!-- Some of this section is from http://sekhon.berkeley.edu/causalinf/fa2013/Section/Section11Slides.pdf --&gt;
+
+
+---
+# Sensitivity Analysis
+
+* An observational study is free of hidden bias if the propensity scores for each subject depend only on the observed covariates.
+* That is, the *p*-value is valid *if* there are no unobserved confounders.
+* However, there are very likely covariates that would better model treatment. These introduce hidden bias.
+* Hidden bias exists if two subjects have the same covariates, but different propensity scores.
+
+`\(X_a = X_b\)` but `\({ \pi  }_{ a }\neq { \pi  }_{ b }\)` for some a and b.
+
+
+
+---
+# Sensitivity Analysis
+
+Each person in the treatment is matched to exactly one person in the control. The odds of being in the treatment for persons a and b are:
+
+
+`\(O_a = \frac{  \pi_a }{ 1 - \pi_a }\)` and `\(O_b = \frac{  \pi_b }{ 1 - \pi_b }\)`
+
+The ratio of these odds, `\(\Gamma\)`, measures the bias after matching.
+
+$$\Gamma =\frac { { O }_{ a } }{ { O }_{ b } } =\frac { { { \pi  }_{ a } / ( }{ 1-{ \pi  }_{ a }) } }{ { { \pi  }_{ b } / (1-{ \pi  }_{ b }) } } $$
+   
+This is the ratio of the odds the treated unit being in the treatment group to the matched control unit being in the treatment group.
+
+
+
+---
+# Sensitivity Analysis
+
+Sensitivity analysis tests whether the results hold for various ranges of `\(\Gamma\)`. That is, we test how large the differences in `\(\pi\)` (i.e. propensity scores) would have to be to change our basic inference. Let `\(p_a\)` and `\(p_b\)` be the probability of each unit of the matched pair being treated, conditional on exactly one being treated. For example:
+
+* If `\(\Gamma = 1\)`, the treatment and control unit within each pair has the same value of treatment assignment ($p_a = 0.5$ and `\(p_b = 0.5\)`).
+* If `\(\frac{1}{2} \le \Gamma \le 2\)`, no unit can be more than twice as likely as its match to get treated ($0.33 \le p_a$, `\(p_b \le 0.66\)`).
+* If `\(\frac{1}{3} \le \Gamma \le 3\)`, no unit can be more than three times as likely as its match to get treated ($0.25 \le p_a$, `\(p_b \le 0.75\)`)
+
+To get the bounds:
+
+$$ \frac{1}{\Gamma +1 } \le p_a, p_b \le \frac{\Gamma}{\Gamma +1} $$
+
+
+---
+# Wilcoxon Signed Rank Test
+
+* Drop pairs where the matches have the same outcome.
+* Calculate the difference in outcomes within each pair.
+* Rank the pairs from smallest absolute difference to largest absolute difference (i.e. the smallest = 1).
+* Take the sum of the ranks where the treated unit had the higher outcome.
+$$ W=\left| \sum _{ 1 }^{ { N }_{ r } }{ sgn({ x }_{ T,i }-{ x }_{ C,i })\cdot { R }_{ i } }  \right|  $$
+Where `\(N\)` is the number of ranked pairs; `\(R_i\)` is the rank for pair *r*; `\(x_{T,i}\)` and `\(x_{C,i}\)` are the outcomes for the `\(i^{th}\)` treated and control pair, respectively.
+
+
+
+---
+# Sensitivity Analysis
+
+The process for sensitivity analysis:
+
+* Select a series of values for `\(\Gamma\)`. For social science research, values between 1 and 2 is an appropriate start.
+* For each `\(\Gamma\)`, estimate the *p*-values to see how the *p*-values increase for larger values of `\(\Gamma\)`.
+* For binary outcomes, use McNemar's test, for all others use Wilcoxon sign rank test and the Hodges-Lehmann point estimate. See Keele (2010) for more information.
+
+
+
+---
+# Sensitivity Analysis
+
+Children of parents who had worked in a factory where lead was used in making batteries were matched by age, exposure to traffic, and neighborhood with children whose parents did not work in lead-related industries. Whole blood was assessed for lead content yielding measurements in mg/dl
+
+
+```r
+require(rbounds)
+trt &lt;- c(38, 23, 41, 18, 37, 36, 23, 62, 31, 34, 24, 14, 21, 17, 
+ 16, 20, 15, 10, 45, 39, 22, 35, 49, 48, 44, 35, 43, 39,
+ 34, 13, 73, 25, 27)
+ctrl &lt;- c(16, 18, 18, 24, 19, 11, 10, 15, 16, 18, 18, 13, 19, 
+  10, 16, 16, 24, 13, 9, 14, 21, 19, 7, 18, 19, 12, 
+  11, 22, 25, 16, 13, 11, 13)
+```
+
+
+
+
+---
+# Sensitivity Analysis
+
+
+```r
+psens(trt, ctrl)
+```
+
+```
+## 
+##  Rosenbaum Sensitivity Test for Wilcoxon Signed Rank P-Value 
+##  
+## Unconfounded estimate ....  0 
+## 
+##  Gamma Lower bound Upper bound
+##      1           0      0.0000
+##      2           0      0.0018
+##      3           0      0.0131
+##      4           0      0.0367
+##      5           0      0.0694
+##      6           0      0.1073
+## 
+##  Note: Gamma is Odds of Differential Assignment To
+##  Treatment Due to Unobserved Factors 
+## 
+```
+
+
+
+---
+# Sensitivity Analysis
+
+
+```r
+hlsens(trt, ctrl)
+```
+
+```
+## 
+##  Rosenbaum Sensitivity Test for Hodges-Lehmann Point Estimate 
+##  
+## Unconfounded estimate ....  15.5 
+## 
+##  Gamma Lower bound Upper bound
+##      1        15.5        15.5
+##      2        10.5        19.6
+##      3         8.0        23.1
+##      4         6.5        25.1
+##      5         5.0        26.6
+##      6         4.0        28.1
+## 
+##  Note: Gamma is Odds of Differential Assignment To
+##  Treatment Due to Unobserved Factors 
+## 
+```
+
+
+
+
+
+
+---
+class: inverse, middle, center
+# Matching of Non-Binary Treatments
+
+---
+# Matching of Non-Binary Treatments
+
+
+* The `TriMatch` package provides functions for finding matched triplets.
+* Estimates propensity scores for three separate logistic regression models (one for each pair of groups, that is, treat1-to-control, treat2-to-control, and treat1-to-treat2).
+* Finds matched triplets that minimize the total distance (i.e. sum of the standardized distance between propensity scores within the three models). within a caliper.
+* Provides multiple methods for determining which matched triplets are retained:
+
+* Optimal which attempts to retain all treatment units.
+* Full which retains all matched triplets within the specified caliper (.25 by default as suggested by Rosenbaum).
+* Analog of the one-to-many for matched triplets. Specify how many times each treat1 and treat2 unit can be matched.
+* Unique which allows each unit to be matched once, and only once.
+* Functions for conducting repeated measures ANOVA and Freidman Ranksum Tests are provided.
+
+
+---
+# Example: Tutoring
+
+Students can opt to utilize tutoring services to supplement math courses. Of those who used tutoring services, approximately 58% of students used the tutoring service once, whereas the remaining 42% used it more than once. Outcome of interest is course grade.
+
+* **Military** Active military status.
+* **Income** Income level.
+* **Employment** Employment level.
+* **NativeEnglish** Is English their native language
+* **EdLevelMother** Education level of their mother.
+* **EdLevelFather** Education level of their father.
+* **Ethnicity** American Indian or Alaska Native, Asian, Black or African American, Hispanic, Native Hawaiian or Other Pacific Islander, Two or more races, Unknown, White
+* **Gender** Male, Female
+* **Age** Age at course start.
+* **GPA** Student GPA at the beginning of the course.
+
+
+
+
+
+---
+# New Student Outreach: Covariates
+
+Newly enrolled students received outreach contacts until they registered for a course or six months have passed, whichever came first. Outreach was conducted by two academic advisors and a comparison group was drawn from students who enrolled prior to the start of the outreach program. Outcome of interest is number of credits attempted within the first seven months of enrollment.
+
+
+
+---
+# PSA for Non-Binary Treatments
+
+The `TriMatch` algorithm works as follows:
+
+1. Estimate three separate propensity score models for each pair of groups (i.e. Control-to-Treat1, Control-to-Treat2, Treat1-to-Treat2).
+2. Determine the matching order. The default is to start with the largest of two treatments, then the other treatment, followed by the control.
+3. For each unit in group 1, find all units from group 2 within a certain threshold (i.e. difference between PSs is within a specified caliper).
+4. For each unit in group 2, find all units from group 3 within a certain threshold.
+5. Calculate the distance (difference) between each unit 3 found and the original unit 1. Eliminate candidates that exceed the caliper.
+6. Calculate a total distance (sum of the three distances) and retain the smallest unique *M* group 1 units (by default *M*=2)
+
+
+---
+# Matching Triplets
+
+&lt;img src="Intro_PSA_files/figure-html/triangleplot-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Checking Balance
+
+&lt;img src="Intro_PSA_files/figure-html/balanceplot-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Results
+
+&lt;img src="Intro_PSA_files/figure-html/boxdiff-1.png" style="display: block; margin: auto;" /&gt;
+`\begin{center}
+\includegraphics{figures/Slides-boxdiff}
+\end{center}`
+
+
+
+---
+class: inverse, middle, center
+# Multilevel Propensity Score Analysis
+
+---
+# Multilevel PSA
+
+The use of PSA for clustered, or multilevel data, has been limited (Thoemmes \&amp; Felix, 2011). Bryer and Pruzek (2012, 2013) have introduced an approach to analyzing multilevel or clustered data using stratification methods and implemented in the `multilevelPSA` R package.
+
+* Exact and partially exact matching methods implicitly adjust for clustering. That is, the covariates chosen to exactly match are, in essence, clustering variables.
+* Exact matching only applies to phase I of PSA. How are the clusters related to outcome of interest.
+  
+The `multilevelPSA` uses stratification methods (e.g. quintiles, classification trees) by:
+
+* Estimate separate propensity scores for each cluster.
+* Identify strata within each cluster (e.g. leaves of classification trees, quintiles).
+* Estimate ATE (or ATT) within each cluster.
+* Aggregate estimated ATE to provide an overall ATE estimate.
+* Several functions to summarize and visualize results and check balance.
+
+
+
+
+---
+# The Programme of International Student Assessment (PISA)
+
+* International assessment conducted by the Organization for Economic Co-operation and Development (OECD).
+* Assesses students towards the end of secondary school (approximately 15-year-old children) in math, reading, and science.
+* Collects a robust set of background information from students, parents, teachers, and schools.
+* Assess both private and public school students in many countries.
+* We will use PISA to estimate the effects of private school attendance on PISA outcomes.
+
+
+---
+# Phase I of Multilevel PSA
+
+The `multilevelPSA` provides two functions, `mlpsa.ctree` and `mlpsa.logistic`, that will estimate propensity scores using classification trees and logistic regression, respectively. Since logistic regression requires a complete dataset (i.e. no missing values), we will use classification trees in this example.
+
+```r
+data(pisana)
+data(pisa.colnames)
+data(pisa.psa.cols)
+student = pisana
+mlctree = mlpsa.ctree(student[,c('CNT','PUBPRIV',pisa.psa.cols)], 
+					  formula=PUBPRIV ~ ., level2='CNT')
+student.party = getStrata(mlctree, student, level2='CNT')
+student.party$mathscore = apply(
+student.party[,paste0('PV', 1:5, 'MATH')], 1, sum) / 5
+```
+
+To assess what covariates were used in each tree model, as well as the relative importance, we can create a heat map of covariate usage by level.
+
+
+
+---
+# Covariate Heat Map
+
+
+```r
+tree.plot(mlctree, level2Col=student$CNT, colLabels=pisa.colnames[,c('Variable','ShortDesc')])
+```
+
+&lt;img src="Intro_PSA_files/figure-html/mlpsatreeplot-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Phase II of Multilevel PSA
+
+The `mlpsa` function will compare the outcome of interest.
+
+
+```r
+results.psa.math = mlpsa(response=student.party$mathscore, 
+						 treatment=student.party$PUBPRIV, strata=student.party$strata, 
+						 level2=student.party$CNT, minN=5)
+results.psa.math$overall.wtd
+```
+
+```
+## [1] -28.02406
+```
+
+```r
+results.psa.math$overall.ci
+```
+
+```
+## [1] -31.30261 -24.74552
+```
+
+```r
+results.psa.math$level2.summary[,c('level2','Private','Private.n',
+'Public','Public.n','diffwtd','ci.min','ci.max')]
+```
+
+```
+##   level2  Private Private.n   Public Public.n    diffwtd    ci.min     ci.max
+## 1    CAN 578.6262      1625 512.7997    21093 -65.826528 -72.08031 -59.572751
+## 2    MEX 429.5247      4044 422.9746    34090  -6.550102 -10.04346  -3.056743
+## 3    USA 505.2189       345 484.8212     4888 -20.397746 -32.03916  -8.756334
+```
+
+---
+# Multilevel PSA Assessment Plot
+The multilevel PSA assessment plot is an extension of the `circ.psa` plot in `PSAgraphics` introduced by Helmreich and Pruzek (2009).
+
+
+```r
+plot(results.psa.math)
+```
+
+&lt;img src="Intro_PSA_files/figure-html/mlpsaplot-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Multilevel PSA Difference Plot
+
+&lt;img src="Intro_PSA_files/figure-html/mlpsadiffplot-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, middle, center
+# Shiny Application
+
+---
+# Shiny Application
+
+
+```r
+psa::psa_shiny()
+```
+
+&lt;img src="shiny_screenshot.png" width="643" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, right, middle, hide-logo
+
+&lt;!--img src="images/hex/DATA606.png" width="150px"/--&gt;
+
+# Thank You!
+
+[&lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M440 6.5L24 246.4c-34.4 19.9-31.1 70.8 5.7 85.9L144 379.6V464c0 46.4 59.2 65.5 86.6 28.6l43.8-59.1 111.9 46.2c5.9 2.4 12.1 3.6 18.3 3.6 8.2 0 16.3-2.1 23.6-6.2 12.8-7.2 21.6-20 23.9-34.5l59.4-387.2c6.1-40.1-36.9-68.8-71.5-48.9zM192 464v-64.6l36.6 15.1L192 464zm212.6-28.7l-153.8-63.5L391 169.5c10.7-15.5-9.5-33.5-23.7-21.2L155.8 332.6 48 288 464 48l-59.4 387.3z"&gt;&lt;/path&gt;&lt;/svg&gt; jason.bryer@cuny.edu](mailto:jason.bryer@cuny.edu)  
+[&lt;svg viewBox="0 0 496 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"&gt;&lt;/path&gt;&lt;/svg&gt; @jbryer](https://github.com/jbryer)  
+[&lt;svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M433 179.11c0-97.2-63.71-125.7-63.71-125.7-62.52-28.7-228.56-28.4-290.48 0 0 0-63.72 28.5-63.72 125.7 0 115.7-6.6 259.4 105.63 289.1 40.51 10.7 75.32 13 103.33 11.4 50.81-2.8 79.32-18.1 79.32-18.1l-1.7-36.9s-36.31 11.4-77.12 10.1c-40.41-1.4-83-4.4-89.63-54a102.54 102.54 0 0 1-.9-13.9c85.63 20.9 158.65 9.1 178.75 6.7 56.12-6.7 105-41.3 111.23-72.9 9.8-49.8 9-121.5 9-121.5zm-75.12 125.2h-46.63v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.33V197c0-58.5-64-56.6-64-6.9v114.2H90.19c0-122.1-5.2-147.9 18.41-175 25.9-28.9 79.82-30.8 103.83 6.1l11.6 19.5 11.6-19.5c24.11-37.1 78.12-34.8 103.83-6.1 23.71 27.3 18.4 53 18.4 175z"&gt;&lt;/path&gt;&lt;/svg&gt; @jbryer@vis.social](https://vis.social/@jbryer)  
+[&lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"&gt;&lt;/path&gt;&lt;/svg&gt; github.com/jbryer/psa](https://github.com/jbryer/psa)   
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "solarized-light",
+"highlightLanguage": "R",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+<!-- Source: https://www.garrickadenbuie.com/blog/xaringan-tip-logo-all-slides/ -->
+<style>
+.logo {
+  background-image: url(images/hex/psa.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  bottom: 2em;
+  right: 0.5em;
+  width: 55px;
+  height: 64px;
+  z-index: 0;
+}
+</style>
+
+<script>
+document
+  .querySelectorAll(
+    '.remark-slide-content' +
+    ':not(.title-slide)' +
+    // add additional classes to exclude here, e.g.
+    // ':not(.inverse)' +
+    ':not(.hide-logo)'
+  )
+  .forEach(el => {
+    el.innerHTML += '<div class="logo"></div>';
+  });
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
