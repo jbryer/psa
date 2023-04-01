@@ -1,7 +1,6 @@
 ---
-output:
-  pdf_document: default
-  html_document: default
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Introduction
@@ -103,17 +102,17 @@ ggplot(lalonde, aes(x=ps, y=treat)) + geom_point(alpha=0.5) +
 
 ## R Primer
 
-R is a statistical software language designed to be extended vis-à-vis packages. As of September 2016, there are currently over 9,000. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.
+R is a statistical software language designed to be extended vis-à-vis packages. As of `r format(Sys.Date(), format = '%B %d, %Y')`, there are currently `r format(nrow(available.packages(contrib.url('https://cran.r-project.org'))), big.mark = ',')` packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.
 
 * [`MatchIt`](http://gking.harvard.edu/gking/matchit) [@R-MatchIt] Nonparametric Preprocessing for Parametric Causal Inference
 * [`Matching`](http://sekhon.berkeley.edu/matching/) [@R-Matching] Multivariate and Propensity Score Matching Software for Causal Inference
-* [`multilevelPSA`](http://jason.bryer.org/multilevelPSA) [@R-multilevelPSA] Multilevel Propensity Score Analysis
+* [`multilevelPSA`](https://github.com/jbryer/multilevelPSA) [@R-multilevelPSA] Multilevel Propensity Score Analysis
 * [`party`](http://cran.r-project.org/web/packages/party/index.html) [@R-party] A Laboratory for Recursive Partytioning
-* [`PSAboot`](http://jason.bryer.org/PSAboot) [@R-PSAboot] Bootstrapping for Propensity Score Analysis
-* [`PSAgraphics`](http://www.jstatsoft.org/v29/i06/paper) [R-PSAgraphics] An R Package to Support Propensity Score Analysis
+* [`PSAboot`](https://github.com/jbryer/PSAboot) [@R-PSAboot] Bootstrapping for Propensity Score Analysis
+* [`PSAgraphics`](http://www.jstatsoft.org/v29/i06/paper) [@R-PSAgraphics] An R Package to Support Propensity Score Analysis
 * [`rbounds`](http://www.personal.psu.edu/ljk20/rbounds%20vignette.pdf) [@R-rbounds] An Overview of rebounds: An R Package for Rosenbaum bounds sensitivity analysis with matched data.
 * [`rpart`](http://cran.r-project.org/web/packages/rpart/index.html) [@R-rpart] Recursive Partitioning
-* [`TriMatch`](http://jason.bryer.org/TriMatch) [@R-TriMatch] Propensity Score Matching for Non-Binary Treatments
+* [`TriMatch`](https://github.com/jbryer/TriMatch) [@R-TriMatch] Propensity Score Matching for Non-Binary Treatments
 
 The following command will install the R packages we will use in this book.
 
@@ -128,34 +127,43 @@ install.packages(pkgs)
 
 ### National Supported Work Demonstration {#lalonde}
 
-[@DehejiaWahba1999] [@Lalonde1986]
+The `lalonde` dataset is perhaps one of the most used datasets when introducing or evaluating propensity score methods. The data was collected by @Lalonde1986 but became widely used in the PSA literature after @DehejiaWahba1999 used it in their paper to evaluate propensity score matching. The dataset originated from the National Supported Work Demonstration study conducted in the 1970s. The program provided 12 to 18 months of employment to people with longstanding employment problems. The dataset contains `r nrow(lalonde)` observations of `r ncol(lalonde)` variables. The primary outcome is `re78` which is real earnings in 1978. Observed covariates used to ajdust for selection bias include `age` (age in years), `edu` (number of years of education), `black` (black or not), `hisp` (Hispanic or not), `married` (married or not), `nodegr` (whether the worker has a degree or not, note that 1 = no degree), `re74` (real earnings in 1974), and `re75` (real earnings in 1975).
 
-```{r introduction-lalonde, eval=FALSE}
+```{r introduction-lalonde, eval=TRUE}
 data(lalonde, package='Matching')
+str(lalonde)
 ```
 
 ### Lindner Center {#lindner}
 
-```{r introduction-lindner, eval=FALSE}
+Data from an observational study of 996 patients receiving a PCI at Ohio Heart Health in 1997 and followed for at least 6 months by the staff of the Lindner Center. This is a landmark dataset in the literature on propensity score adjustment for treatment selection bias due to practice of evidence based medicine; patients receiving `abciximab` tended to be more severely diseased than those who did not receive a IIb/IIIa cascade blocker.
+
+```{r introduction-lindner, eval=TRUE}
 data(lindner, package='PSAgraphics')
+str(lindner)
 ```
 
 ### Tutoring {#tutoring}
 
-```{r introduction-tutoring, eval=FALSE}
+The `tutoring` dataset originates from a study conducted at an online adult serving institution examining the effects of tutoring services for students in English 101, English 201, and History 310. Tutoring services were available to all students but Treatment (`treat`) is operationalized as students who used tutoring services at least once during the course. Only `r round(100 - sum(tutoring$treat == 'Control') / nrow(tutoring) * 100, digits = 1)`% of students used tutoring services with approximately half using it more than once. We will use this dataset with both a dichotomous treatment (used tutoring or not) or as a two level treatment (used tutoring services once, used tutoring services two or more times).
+
+```{r introduction-tutoring, eval=TRUE}
 data(tutoring, package='TriMatch')
 tutoring$treat2 <- tutoring$treat != 'Control'
+str(tutoring)
+table(tutoring$Course, tutoring$treat)
 ```
 
 ### Programme of International Student Assessment (PISA) {#pisa}
 
-```{r introduction-pisa, eval=FALSE}
+```{r introduction-pisa, eval=TRUE}
 data(pisana, package='multilevelPSA')
-pisa.usa <- pisana[pisana$Country == 'United States',]
+str(pisana)
 ```
 
 ### National Medical Expenditure Study {#nmes}
 
-```{r introduction-nmes, eval=FALSE}
+```{r introduction-nmes, eval=TRUE}
 data(nmes, package='TriMatch')
+str(nmes)
 ```

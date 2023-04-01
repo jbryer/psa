@@ -96,13 +96,14 @@ loess.plot <- function(x, response, treatment,
 				  ymin=min(density(df$ps)$y), ymax=max(density(df$ps)$y), 
 				  colour='white', fill='white') +
 		theme(legend.position=c(.5,.5), 
-			  axis.text.x=element_blank(), axis.text.y=element_blank(),
-			  axis.title.x=element_blank(), axis.title.y=element_blank(),
-			  axis.ticks=element_blank(),
-			  panel.background=element_blank(),
-			  panel.grid.major=element_blank(),
-			  panel.grid.minor=element_blank(),
-			  panel.margin=element_blank()) +
+			  axis.text.x = element_blank(), 
+			  axis.text.y = element_blank(),
+			  axis.title.x = element_blank(),
+			  axis.title.y = element_blank(),
+			  axis.ticks = element_blank(),
+			  panel.background = element_blank(),
+			  panel.grid.major = element_blank(),
+			  panel.grid.minor = element_blank()) +
 		scale_colour_hue(treatmentTitle)
 	grid_layout <- grid.layout(nrow=2, ncol=2, widths=c(3,1), heights=c(1,3))
 	grid.newpage()

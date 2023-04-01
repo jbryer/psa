@@ -18,11 +18,15 @@ print.numeric<-function(x, digits = 2) {
 }
 
 # knir options
-knitr::opts_chunk$set(fig.width=12, fig.height=8, fig.align='center',
-					  echo=TRUE, warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(fig.width = 12,
+					  fig.height = 8,
+					  fig.align = 'center',
+					  echo = TRUE,
+					  warning = FALSE,
+					  message = FALSE)
 
 # Set ggplot2 theme
-theme_update(panel.background=element_rect(size=1, color='grey70', fill=NA) )
+theme_update(panel.background = element_rect(size=1, color='grey70', fill=NA) )
 
 # Load datasets
 data(lalonde, package='Matching')

@@ -5,6 +5,7 @@ after_chapter_script: chapter_cleanup.R
 delete_merged_file: true
 view: https://github.com/jbryer/psa/edit/master/book/%s
 edit: https://github.com/jbryer/psa/blob/master/book/%s
+clean: ["AppliedPSAwithR.rds"]
 language:
   ui:
     chapter_name: "Chapter "

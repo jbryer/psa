@@ -1,2 +1,110 @@
+---
+editor_options: 
+  chunk_output_type: console
+---
+
 # Stratification
 
+
+The tutoring example has treatment with three levels: Treat1, Treat2, and Control. We'll convert this to a two level treatment for this example. 
+
+```{r}
+data(lalonde, package = 'Matching')
+```
+
+## Estimating Propensity Scores
+
+```{r}
+lalonde.formu <- treat ~ age + educ + black + hisp + married + nodegr + re74 + re75
+lalonde.glm <- glm(lalonde.formu, 
+				   family = binomial(link = 'logit'), 
+				   data = lalonde)
+summary(lalonde.glm)
+```
+
+
+```{r}
+lalonde$ps <- fitted(lalonde.glm)
+```
+
+Check the distributions of propensity scores to ensure we have good overlap
+
+```{r, , fig.height = 4}
+ggplot(lalonde, aes(x = ps, color = as.logical(treat))) + 
+	geom_density() +
+	scale_color_brewer('Treatment', type = 'qual', palette = 6)
+```
+
+## Stratifying
+
+Stratification using quintiles.
+
+```{r}
+breaks <- quantile(lalonde$ps, seq(0, 1, 1/5))
+lalonde$strata <- cut(x = lalonde$ps, 
+					  breaks = breaks, 
+					  include.lowest = TRUE, 
+					  labels = letters[1:(length(breaks) - 1)])
+table(lalonde$strata, useNA = 'ifany')
+table(lalonde$treat, lalonde$strata, useNA = 'ifany')
+```
+
+```{r, echo = FALSE, fig.height = 4}
+text_labels <- data.frame(
+	x =  breaks[-length(breaks)],
+	y = 1,
+	label = LETTERS[1:(length(breaks) - 1)]
+)
+ggplot() +
+	geom_vline(xintercept = breaks) +
+	geom_point(data = lalonde, aes(x = ps, y = log(re78 + 1), color = as.logical(treat)), alpha = 0.5) +
+	geom_text(data = text_labels, aes(x = x, y = y, label = label), color = 'black', hjust = -1) +
+	scale_color_brewer('Treatment', type = 'qual', palette = 6)
+```
+
+
+## Checking Balance
+
+```{r}
+covars <- all.vars(lalonde.formu)
+covars <- lalonde[,covars[2:length(covars)]]
+PSAgraphics::cv.bal.psa(covariates = covars, 
+						treatment = lalonde$treat,
+						propensity = lalonde$ps,
+						strata = lalonde$strata)
+```
+
+
+
+```{r}
+PSAgraphics::box.psa(continuous = lalonde$age, 
+					 treatment = lalonde$treat, 
+					 strata = lalonde$strata,
+					 xlab = "Strata", 
+					 balance = FALSE)
+```
+
+
+```{r, results = 'hide'}
+PSAgraphics::cat.psa(categorical = lalonde$nodegr, 
+					 treatment = lalonde$treat, 
+					 strata = lalonde$strata, 
+					 xlab = 'Strata',
+					 balance = FALSE)
+```
+
+## Estimate Effects
+
+```{r}
+psa::loess.plot(x = lalonde$ps,
+				response = log(lalonde$re78 + 1),
+				treatment = lalonde$treat == 1)
+```
+
+
+```{r}
+PSAgraphics::circ.psa(response = log(lalonde$re78 + 1), 
+					  treatment = lalonde$treat == 1, 
+					  strata = lalonde$strata, 
+					  revc = TRUE)
+```
