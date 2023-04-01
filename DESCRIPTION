@@ -5,8 +5,8 @@ Version: 0.9.2
 Date: 2023-04-01
 Author: Jason Bryer <jason@bryer.org>
 Maintainer: Jason Bryer <jason@bryer.org>
-Description: Shiny application and utility functions to assist with conducting
-    propensity score analysis.
+Description: Shiny application and utility functions to assist with
+    conducting propensity score analysis.
 License: GPL (>= 3)
 URL: http://github.com/jbryer/psa
 BugReports: https://github.com/jbryer/psa/issues
@@ -16,32 +16,32 @@ Imports:
     cowplot,
     dplyr,
     ggplot2,
-    granovaGG,
     grid,
     Matching,
     MatchIt,
     mice,
-    PSAgraphics,
+    plyr,
     psych,
     reshape2,
-    shiny,
-    plyr
+    shiny
 Suggests: 
-    party,
     knitr,
     lubridate,
     mvtnorm,
-    stargazer,
-    rmarkdown
+    party,
+    rmarkdown,
+    stargazer
 Enhances:
-    PSAboot,
-    TriMatch,
-    multilevelPSA,
-    scholar,
-    rgenoud,
-    granova,
+    granovaGG,
     bookdown,
-    devtools
+    devtools,
+    granova,
+    multilevelPSA,
+    PSAboot,
+    PSAgraphics,
+    rgenoud,
+    scholar,
+    TriMatch
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

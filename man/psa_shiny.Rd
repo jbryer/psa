@@ -2,10 +2,10 @@
 % Please edit documentation in R/psa_shiny.R
 \name{psa_shiny}
 \alias{psa_shiny}
-\title{Run the psa shiny application.}
+\title{Run the PSA shiny application.}
 \usage{
 psa_shiny()
 }
 \description{
-Run the psa shiny application.
+Run the PSA shiny application.
 }

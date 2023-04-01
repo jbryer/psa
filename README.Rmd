@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/jbryer/psa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/R-CMD-check.yaml)
 `r badger::badge_devel("jbryer/psa", "blue")`
+`r badger::badge_repostatus("WIP")`
 <!-- badges: end -->
 
 
@@ -31,7 +32,7 @@ The use of propensity score methods (Rosenbaum & Rubin, 1983) for estimating cau
 
 This workshop will provide participants with a theoretical overview of propensity score methods as well as illustrations and discussion of PSA applications. Methods used in phase I of PSA (i.e. models or methods for estimating propensity scores) include logistic regression, classification trees, and matching. Discussions on appropriate comparisons and estimations of effect size and confidence intervals in phase II will also be covered. The use of graphics for diagnosing covariate balance as well as summarizing overall results will be emphasized. 
 
-```{r psa_citations_by_year, echo=FALSE, fig.width='10', fig.height='4'}
+```{r psa_citations_by_year, echo=FALSE, fig.width=10, fig.height=4}
 data('psa_citations', package = 'psa')
 library(ggplot2)
 ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) +
@@ -44,10 +45,10 @@ ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) +
 
 ## Getting Started
 
-You can install the `psa` package using the `remotes` package:
+You can install the `psa` package using the `remotes` package. I recommend setting the `dependencies = 'Enhances'` as many this will install all the packages that are used in the examples.
 
 ```{r, eval = FALSE}
-remotes::install_github('jbryer/psa')
+remotes::install_github('jbryer/psa', build_vignettes = TRUE, dependencies = 'Enhances')
 ```
 
 Run the PSA Shiny App:
@@ -62,50 +63,12 @@ knitr::include_graphics('man/figures/psa_shiny_screenshots.gif')
 ```
 
 
-## Outline
-
-* Theoretical overview of propensity score methods
-* Phase I of PSA - Adjusting for selection bias by modeling treatment placement
-	* Stratification using logistic regression and classification trees; also random forests
-	* Propensity score matching
-	* Checking covariate balance
-* Phase II of PSA - Estimating effects re: response variables
-	* Dependent sample tests and confidence intervals. 
-	* Visualizing results
-* Advanced Topics
-	* Sensitivity analysis
-	* PSA with Missing Data
-	* Bootstrapping for PSA (using the [`PSAboot` package](http://jason.bryer.org/PSAboot/))
-	* Analysis of non-binary treatments (using the [`TriMatch` package](http://jason.bryer.org/TriMatch/))
-	* Analysis of multilevel data (using the [`multilevelPSA` package](http://jason.bryer.org/multilevelPSA/))
-
 ## Slides
 
 * Workshop at University at Albany, Division of Educational Psychology & Methodology -- April 30 and May 7, 2014 [Download Slides](Slides/UAlbany2014/Slides.pdf?raw=true)  
 * NEAIR Conference Talk -- November 11, 2013 [Download Slides](Slides/NEAIR2013Slides/Slides.pdf?raw=true)
 * Pre-conference workshop for the 2013 useR! conference -- July 9, 2013 [Download Slides](Slides/useR 2013/Slides.pdf?raw=true)  
 
-## Software
-
-Before getting started, you should download and install R and RStudio.
-
-* [R](http://cran.r-project.org)
-* [Rtools](http://cran.r-project.org/bin/windows/Rtools/) (Windows Only)
-* [RStudio](http://www.rstudio.com/ide/download/desktop)
-
-This workshop assumes minimal knowledge of R and will not cover the basics. If you are new to R, there are many great resources for learning.
-
-* [Quick-R](http://statmethods.net/) - A great general purpose reference website covering basic and advanced R topics.
-* [R in Action](http://www.manning.com/kabacoff/) - This book by Kabacoff is originated from the Quick-R website and is a fantastic book for learning R.
-* [ggplot2](http://ggplot2.org/) - Most of the visualizations in this workshop were created with the `ggplot2` package which is an implementation of Wilkinson's (2005) [Grammar of Graphics](http://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448).
-* [The Art of R Programming](http://www.amazon.com/The-Art-Programming-Statistical-Software/dp/1593273843/ref=sr_1_6?ie=UTF8&qid=1398807573&sr=8-6&keywords=r) - This is a nice companion book to Kabacoff's *R in Action* and may be preferred if you come to R with a programming background.
-* [OpenIntro Statistics](http://www.openintro.org/stat/) - This is a free and opensource introductory statistics textbook that uses R for all its examples and exercises.
-* [The R Journal](http://journal.r-project.org/) - Journal that publishes articles related to R.
-* [Journal of Statistical Software](http://www.jstatsoft.org/) - An American Statistical Association journal focused on statistical software that regularly publishes articles about R packages.
-* [R for SAS and SPSS Users](https://science.nature.nps.gov/im/datamgmt/statistics/R/documents/R_for_SAS_SPSS_users.pdf) - If you already know SAS or SPSS, Muenchen's book is very well regarded for learning R.
-* [R Bloggers](http://www.r-bloggers.com/) - This is an aggregate of many blogs about R and an excellent resource for learning about new developments around R.
-* [Twitter](https://twitter.com/hashtag/rstats) - The `#Rstats` hashtag on Twitter is a great way to see what people are saying about R.
-* [StackOverflow](http://stackoverflow.com/tags/R) - This website is a great place to go to ask questions and get help on R related topics.
 
 ## R Scripts
 

@@ -15,12 +15,7 @@ utils::globalVariables(c('grid.layout','grid.newpage','pushViewport','viewport',
 #' @import dplyr
 #' @import Matching
 #' @import MatchIt
-#' @import PSAgraphics
-#' @import granovaGG
 #' @import shiny
-#' @import multilevelPSA
-#' @import PSAboot
-#' @import TriMatch
 #' @importFrom psych describe describeBy
 #' @importFrom plyr llply
 #' @importFrom cowplot plot_grid

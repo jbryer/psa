@@ -35,6 +35,7 @@ jobs:
       - name: Build site
         run: |
           install.packages('devtools')
+          install.packages(c('cowplot', 'granovaGG', 'mice'))
           devtools::install(upgrade = 'never', build_vignettes = FALSE, dependencies = 'Enhances')
           wd <- setwd('book')
           bookdown::render_book(input = "index.Rmd", 
