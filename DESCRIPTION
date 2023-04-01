@@ -38,7 +38,8 @@ Suggests:
     stargazer,
     rmarkdown
 Enhances:
-    rgenoud
+    rgenoud,
+    granova
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

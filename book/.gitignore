@@ -4,3 +4,4 @@ _book/
 *.DS_Store
 log/
 .Rhistory
+_bookdown_files/
