@@ -25,21 +25,23 @@ Imports:
     psych,
     reshape2,
     shiny,
-    PSAboot,
-    TriMatch,
-    multilevelPSA,
     plyr
 Suggests: 
     party,
     knitr,
     lubridate,
     mvtnorm,
-    scholar,
     stargazer,
     rmarkdown
 Enhances:
+    PSAboot,
+    TriMatch,
+    multilevelPSA,
+    scholar,
     rgenoud,
-    granova
+    granova,
+    bookdown,
+    devtools
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

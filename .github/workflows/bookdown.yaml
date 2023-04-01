@@ -32,14 +32,15 @@ jobs:
       - name: Setup renv
         uses: r-lib/actions/setup-renv@v2
 
-      - name: Install dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::bookdown
-          needs: bookdown
-          
       - name: Build site
-        run: wd <- setwd('book'); bookdown::render_book(input = "index.Rmd", output_format = "bookdown::gitbook", output_dir = '../docs'); setwd(wd)
+        run: |
+          install.packages('devtools')
+          devtools::install(upgrade = 'never', build_vignettes = FALSE)
+          wd <- setwd('book')
+          bookdown::render_book(input = "index.Rmd", 
+                                output_format = "bookdown::gitbook", 
+                                output_dir = '../docs')
+          setwd(wd)
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀

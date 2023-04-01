@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# <img src="man/figures/psa.png" align="right" width="120" align="right" /> Introduction to Propensity Score Methods with R
+# <img src="man/figures/psa.png" align="right" width="120" align="right" /> Propensity Score Analysis with R
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/jbryer/psa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/R-CMD-check.yaml)
