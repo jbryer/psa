@@ -1,6 +1,0 @@
-
-
-
-Stratification with Classification Trees
-========================================================
-

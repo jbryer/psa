@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 8 Non-Binary Treatments | Applied Propensity Score Analysis with R</title>
+  <meta name="description" content="Introduction to propensity score anaylsis using R." />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 8 Non-Binary Treatments | Applied Propensity Score Analysis with R" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Introduction to propensity score anaylsis using R." />
+  <meta name="github-repo" content="jbryer/psa" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 8 Non-Binary Treatments | Applied Propensity Score Analysis with R" />
+  
+  <meta name="twitter:description" content="Introduction to propensity score anaylsis using R." />
+  
+
+<meta name="author" content="Jason Bryer" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="bootstrapping.html"/>
+<link rel="next" href="multilevel-psa.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Applied PSA with R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#colophon"><i class="fa fa-check"></i><b>0.1</b> Colophon</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="introduction.html"><a href="introduction.html#counterfactual-model-for-causality"><i class="fa fa-check"></i><b>1.1</b> Counterfactual Model for Causality</a></li>
+<li class="chapter" data-level="1.2" data-path="introduction.html"><a href="introduction.html#randomized-control-trials-the-gold-standard"><i class="fa fa-check"></i><b>1.2</b> Randomized Control Trials “The Gold Standard”</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="introduction.html"><a href="introduction.html#rubins-causal-model"><i class="fa fa-check"></i><b>1.2.1</b> Rubin’s Causal Model</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="introduction.html"><a href="introduction.html#conceptual-steps-for-conducting-propensity-score-analysis"><i class="fa fa-check"></i><b>1.3</b> Conceptual Steps for Conducting Propensity Score Analysis</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="introduction.html"><a href="introduction.html#phase-i-modeling-for-selection-bias"><i class="fa fa-check"></i><b>1.3.1</b> Phase I: Modeling for Selection Bias</a></li>
+<li class="chapter" data-level="1.3.2" data-path="introduction.html"><a href="introduction.html#phase-ii-estimate-causal-effects"><i class="fa fa-check"></i><b>1.3.2</b> Phase II: Estimate Causal Effects</a></li>
+</ul></li>
+<li class="chapter" data-level="1.4" data-path="introduction.html"><a href="introduction.html#r-primer"><i class="fa fa-check"></i><b>1.4</b> R Primer</a></li>
+<li class="chapter" data-level="1.5" data-path="introduction.html"><a href="introduction.html#datasets"><i class="fa fa-check"></i><b>1.5</b> Datasets</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="introduction.html"><a href="introduction.html#lalonde"><i class="fa fa-check"></i><b>1.5.1</b> National Supported Work Demonstration</a></li>
+<li class="chapter" data-level="1.5.2" data-path="introduction.html"><a href="introduction.html#lindner"><i class="fa fa-check"></i><b>1.5.2</b> Lindner Center</a></li>
+<li class="chapter" data-level="1.5.3" data-path="introduction.html"><a href="introduction.html#tutoring"><i class="fa fa-check"></i><b>1.5.3</b> Tutoring</a></li>
+<li class="chapter" data-level="1.5.4" data-path="introduction.html"><a href="introduction.html#pisa"><i class="fa fa-check"></i><b>1.5.4</b> Programme of International Student Assessment (PISA)</a></li>
+<li class="chapter" data-level="1.5.5" data-path="introduction.html"><a href="introduction.html#nmes"><i class="fa fa-check"></i><b>1.5.5</b> National Medical Expenditure Study</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="stratification.html"><a href="stratification.html"><i class="fa fa-check"></i><b>2</b> Stratification</a></li>
+<li class="chapter" data-level="3" data-path="matching.html"><a href="matching.html"><i class="fa fa-check"></i><b>3</b> Matching</a></li>
+<li class="chapter" data-level="4" data-path="weighting.html"><a href="weighting.html"><i class="fa fa-check"></i><b>4</b> Weighting</a></li>
+<li class="chapter" data-level="5" data-path="missing-data.html"><a href="missing-data.html"><i class="fa fa-check"></i><b>5</b> Missing Data</a></li>
+<li class="chapter" data-level="6" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>6</b> Sensitivity Analysis</a></li>
+<li class="chapter" data-level="7" data-path="bootstrapping.html"><a href="bootstrapping.html"><i class="fa fa-check"></i><b>7</b> Bootstrapping</a></li>
+<li class="chapter" data-level="8" data-path="non-binary-treatments.html"><a href="non-binary-treatments.html"><i class="fa fa-check"></i><b>8</b> Non-Binary Treatments</a></li>
+<li class="chapter" data-level="9" data-path="multilevel-psa.html"><a href="multilevel-psa.html"><i class="fa fa-check"></i><b>9</b> Multilevel PSA</a></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="shiny-application.html"><a href="shiny-application.html"><i class="fa fa-check"></i><b>A</b> Shiny Application</a></li>
+<li class="chapter" data-level="B" data-path="propensity-score-ranges.html"><a href="propensity-score-ranges.html"><i class="fa fa-check"></i><b>B</b> Propensity Score Ranges</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://www.bryer.org" target="blank">Jason Bryer, Ph.D.</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Applied Propensity Score Analysis with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="non-binary-treatments" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">Chapter 8</span> Non-Binary Treatments<a href="non-binary-treatments.html#non-binary-treatments" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="non-binary-treatments.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(TriMatch)</span>
+<span id="cb36-2"><a href="non-binary-treatments.html#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="non-binary-treatments.html#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(tutoring)</span>
+<span id="cb36-4"><a href="non-binary-treatments.html#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(tutoring)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    1142 obs. of  17 variables:
+##  $ treat     : Factor w/ 3 levels &quot;Control&quot;,&quot;Treat1&quot;,..: 1 1 1 1 1 2 1 1 1 1 ...
+##  $ Course    : chr  &quot;ENG*201&quot; &quot;ENG*201&quot; &quot;ENG*201&quot; &quot;ENG*201&quot; ...
+##  $ Grade     : int  4 4 4 4 4 3 4 3 0 4 ...
+##  $ Gender    : Factor w/ 2 levels &quot;FEMALE&quot;,&quot;MALE&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Ethnicity : Factor w/ 3 levels &quot;Black&quot;,&quot;Other&quot;,..: 2 3 3 3 3 3 3 3 1 3 ...
+##  $ Military  : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  $ ESL       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  $ EdMother  : int  3 5 1 3 2 3 4 4 3 6 ...
+##  $ EdFather  : int  6 6 1 5 2 3 4 4 2 6 ...
+##  $ Age       : num  48 49 53 52 47 53 54 54 59 40 ...
+##  $ Employment: int  3 3 1 3 1 3 3 3 1 3 ...
+##  $ Income    : num  9 9 5 5 5 9 6 6 1 8 ...
+##  $ Transfer  : num  24 25 39 48 23 ...
+##  $ GPA       : num  3 2.72 2.71 4 3.5 3.55 3.57 3.57 3.43 2.81 ...
+##  $ GradeCode : chr  &quot;A&quot; &quot;A&quot; &quot;A&quot; &quot;A&quot; ...
+##  $ Level     : Factor w/ 2 levels &quot;Lower&quot;,&quot;Upper&quot;: 1 1 1 1 1 2 1 1 1 1 ...
+##  $ ID        : int  377 882 292 215 252 265 1016 282 39 911 ...</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="non-binary-treatments.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(tutoring<span class="sc">$</span>treat)</span></code></pre></div>
+<pre><code>## 
+## Control  Treat1  Treat2 
+##     918     134      90</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="non-binary-treatments.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of unadjusted grades</span></span>
+<span id="cb40-2"><a href="non-binary-treatments.html#cb40-2" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">prop.table</span>(<span class="fu">table</span>(tutoring<span class="sc">$</span>treat, tutoring<span class="sc">$</span>Grade), <span class="dv">1</span>))</span>
+<span id="cb40-3"><a href="non-binary-treatments.html#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tmp, <span class="fu">aes</span>(<span class="at">x=</span>Var2, <span class="at">y=</span>Freq, <span class="at">fill=</span>Var1)) <span class="sc">+</span> </span>
+<span id="cb40-4"><a href="non-binary-treatments.html#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">position=</span><span class="st">&#39;dodge&#39;</span>, <span class="at">stat=</span><span class="st">&#39;identity&#39;</span>) <span class="sc">+</span></span>
+<span id="cb40-5"><a href="non-binary-treatments.html#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">percent_format</span>()) <span class="sc">+</span></span>
+<span id="cb40-6"><a href="non-binary-treatments.html#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">&#39;Grade&#39;</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">&#39;Percent&#39;</span>) <span class="sc">+</span> <span class="fu">scale_colour_hue</span>(<span class="st">&#39;Treatment&#39;</span>)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-30-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="non-binary-treatments.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Phase I</span></span>
+<span id="cb41-2"><a href="non-binary-treatments.html#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="non-binary-treatments.html#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Note that the dependent variable is not included in the formula. The TriMatch</span></span>
+<span id="cb41-4"><a href="non-binary-treatments.html#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># functions will replace the dependent variable depending on which pair is</span></span>
+<span id="cb41-5"><a href="non-binary-treatments.html#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="co"># being modeled.</span></span>
+<span id="cb41-6"><a href="non-binary-treatments.html#cb41-6" aria-hidden="true" tabindex="-1"></a>tutoring.formu <span class="ot">&lt;-</span> <span class="er">~</span> Gender <span class="sc">+</span> Ethnicity <span class="sc">+</span> Military <span class="sc">+</span> ESL <span class="sc">+</span> EdMother <span class="sc">+</span> EdFather <span class="sc">+</span> </span>
+<span id="cb41-7"><a href="non-binary-treatments.html#cb41-7" aria-hidden="true" tabindex="-1"></a>    Age <span class="sc">+</span> Employment <span class="sc">+</span> Income <span class="sc">+</span> Transfer <span class="sc">+</span> GPA</span>
+<span id="cb41-8"><a href="non-binary-treatments.html#cb41-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-9"><a href="non-binary-treatments.html#cb41-9" aria-hidden="true" tabindex="-1"></a><span class="co"># trips will estimate the propensity scores for each pairing of groups</span></span>
+<span id="cb41-10"><a href="non-binary-treatments.html#cb41-10" aria-hidden="true" tabindex="-1"></a>tutoring.tpsa <span class="ot">&lt;-</span> <span class="fu">trips</span>(tutoring, tutoring<span class="sc">$</span>treat, tutoring.formu)</span>
+<span id="cb41-11"><a href="non-binary-treatments.html#cb41-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-12"><a href="non-binary-treatments.html#cb41-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tutoring.tpsa, <span class="at">sample=</span><span class="fu">c</span>(<span class="dv">200</span>))</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="non-binary-treatments.html#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># trimatch finds matched triplets.</span></span>
+<span id="cb42-2"><a href="non-binary-treatments.html#cb42-2" aria-hidden="true" tabindex="-1"></a>tutoring.matched <span class="ot">&lt;-</span> <span class="fu">trimatch</span>(tutoring.tpsa)</span>
+<span id="cb42-3"><a href="non-binary-treatments.html#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="non-binary-treatments.html#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Partial exact matching</span></span>
+<span id="cb42-5"><a href="non-binary-treatments.html#cb42-5" aria-hidden="true" tabindex="-1"></a>tutoring.matched2 <span class="ot">&lt;-</span> <span class="fu">trimatch</span>(tutoring.tpsa, <span class="at">exact=</span>tutoring<span class="sc">$</span>Level)</span>
+<span id="cb42-6"><a href="non-binary-treatments.html#cb42-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-7"><a href="non-binary-treatments.html#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting the results of trimatch is a subset of the triangle plot with only</span></span>
+<span id="cb42-8"><a href="non-binary-treatments.html#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="co"># points that were matched. There is also an additional parameter, rows, that</span></span>
+<span id="cb42-9"><a href="non-binary-treatments.html#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="co"># will overlay matched triplets.</span></span>
+<span id="cb42-10"><a href="non-binary-treatments.html#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tutoring.matched, <span class="at">rows=</span><span class="dv">1</span>, <span class="at">line.alpha=</span><span class="dv">1</span>, <span class="at">draw.segments=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-2.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="non-binary-treatments.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Examine the unmatched students</span></span>
+<span id="cb43-2"><a href="non-binary-treatments.html#cb43-2" aria-hidden="true" tabindex="-1"></a>unmatched <span class="ot">&lt;-</span> <span class="fu">unmatched</span>(tutoring.matched)</span>
+<span id="cb43-3"><a href="non-binary-treatments.html#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(unmatched)</span></code></pre></div>
+<pre><code>## 819 (71.7%) of 1142 total data points were not matched.
+## Unmatched by treatment:
+##     Control      Treat1      Treat2 
+## 795 (86.6%)  17 (12.7%)   7 (7.78%)</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="non-binary-treatments.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(unmatched)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-3.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="non-binary-treatments.html#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Check balance</span></span>
+<span id="cb46-2"><a href="non-binary-treatments.html#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">multibalance.plot</span>(tutoring.tpsa)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-4.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="non-binary-treatments.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance.plot</span>(tutoring.matched, tutoring<span class="sc">$</span>Age, <span class="at">label=</span><span class="st">&#39;Age&#39;</span>)</span></code></pre></div>
+<pre><code>## 
+##  Friedman rank sum test
+## 
+## data:  Covariate and Treatment and ID
+## Friedman chi-squared = 4.1498, df = 2, p-value = 0.1256
+## 
+##  Repeated measures ANOVA
+## 
+##      Effect DFn DFd        F         p p&lt;.05         ges
+## 2 Treatment   2 294 1.707234 0.1831598       0.006613137</code></pre>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-5.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="non-binary-treatments.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">balance.plot</span>(tutoring.matched, tutoring<span class="sc">$</span>Military, <span class="at">label=</span><span class="st">&#39;Military&#39;</span>)</span></code></pre></div>
+<pre><code>## 
+##  Friedman rank sum test
+## 
+## data:  Covariate and Treatment and ID
+## Friedman chi-squared = 0.4, df = 2, p-value = 0.8187</code></pre>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-6.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="non-binary-treatments.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a grid of figures.</span></span>
+<span id="cb51-2"><a href="non-binary-treatments.html#cb51-2" aria-hidden="true" tabindex="-1"></a>bplots <span class="ot">&lt;-</span> <span class="fu">balance.plot</span>(tutoring.matched, tutoring[,<span class="fu">all.vars</span>(tutoring.formu)], </span>
+<span id="cb51-3"><a href="non-binary-treatments.html#cb51-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">legend.position=</span><span class="st">&#39;none&#39;</span>, </span>
+<span id="cb51-4"><a href="non-binary-treatments.html#cb51-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">x.axis.labels=</span><span class="fu">c</span>(<span class="st">&#39;C&#39;</span>,<span class="st">&#39;T1&#39;</span>,<span class="st">&#39;T1&#39;</span>), <span class="at">x.axis.angle=</span><span class="dv">0</span>)</span>
+<span id="cb51-5"><a href="non-binary-treatments.html#cb51-5" aria-hidden="true" tabindex="-1"></a>bplots[[<span class="st">&#39;Military&#39;</span>]] <span class="co"># We can plot one at at time.</span></span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-7.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="non-binary-treatments.html#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bplots) <span class="co"># Create a data frame with the statistical results</span></span></code></pre></div>
+<pre><code>##     Covariate   Friedman Friedman.p Friedman.sig    rmANOVA rmANOVA.p
+## 1      Gender 2.16666667 0.33846543                      NA        NA
+## 2   Ethnicity 0.05678233 0.97200807                      NA        NA
+## 3    Military 0.40000000 0.81873075                      NA        NA
+## 4         ESL 4.78571429 0.09136826            .         NA        NA
+## 5    EdMother 1.55974843 0.45846368              0.76509335 0.4662146
+## 6    EdFather 0.02794411 0.98612510              0.06102055 0.9408158
+## 7         Age 4.14982578 0.12556736              1.70723419 0.1831598
+## 8  Employment 2.04048583 0.36050736              1.27194067 0.2818249
+## 9      Income 0.59582543 0.74236614              0.39251642 0.6757086
+## 10   Transfer 3.08717949 0.21361291              0.55080160 0.5770812
+## 11        GPA 1.37542662 0.50272433              0.49589373 0.6095348
+##    rmANOVA.sig
+## 1         &lt;NA&gt;
+## 2         &lt;NA&gt;
+## 3         &lt;NA&gt;
+## 4         &lt;NA&gt;
+## 5             
+## 6             
+## 7             
+## 8             
+## 9             
+## 10            
+## 11</code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="non-binary-treatments.html#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(bplots, <span class="at">cols=</span><span class="dv">3</span>, <span class="at">byrow=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-8.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="non-binary-treatments.html#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Phase II</span></span>
+<span id="cb55-2"><a href="non-binary-treatments.html#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The summary function performs a number of statistical tests including Friedman</span></span>
+<span id="cb55-3"><a href="non-binary-treatments.html#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="co"># rank sum test, repeated measures ANOVA, and if one or both of those tests have</span></span>
+<span id="cb55-4"><a href="non-binary-treatments.html#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="co"># p values less than 0.5 (the default, but configurable), then a pairwise Wilcox</span></span>
+<span id="cb55-5"><a href="non-binary-treatments.html#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="co"># test and three paired t-tests will also be performed.</span></span>
+<span id="cb55-6"><a href="non-binary-treatments.html#cb55-6" aria-hidden="true" tabindex="-1"></a>(sout <span class="ot">&lt;-</span> <span class="fu">summary</span>(tutoring.matched, tutoring<span class="sc">$</span>Grade))</span></code></pre></div>
+<pre><code>## $PercentMatched
+##   Control    Treat1    Treat2 
+## 0.1339869 0.8731343 0.9222222 
+## 
+## $friedman.test
+## 
+##  Friedman rank sum test
+## 
+## data:  Outcome and Treatment and ID
+## Friedman chi-squared = 17.404, df = 2, p-value = 0.0001663
+## 
+## 
+## $rmanova
+## $rmanova$ANOVA
+##      Effect DFn DFd        F            p p&lt;.05        ges
+## 2 Treatment   2 294 16.66293 1.396209e-07     * 0.06818487
+## 
+## $rmanova$`Mauchly&#39;s Test for Sphericity`
+##      Effect         W            p p&lt;.05
+## 2 Treatment 0.8668353 2.946934e-05     *
+## 
+## $rmanova$`Sphericity Corrections`
+##      Effect       GGe        p[GG] p[GG]&lt;.05       HFe        p[HF] p[HF]&lt;.05
+## 2 Treatment 0.8824842 6.035469e-07         * 0.8923995 5.333417e-07         *
+## 
+## 
+## $pairwise.wilcox.test
+## 
+##  Pairwise comparisons using Wilcoxon signed rank test with continuity correction 
+## 
+## data:  out$Outcome and out$Treatment 
+## 
+##             Treat1.out Treat2.out
+## Treat2.out  0.0046     -         
+## Control.out 0.0165     1.9e-06   
+## 
+## P value adjustment method: bonferroni 
+## 
+## $t.tests
+##               Treatments         t  df      p.value sig  mean.diff     ci.min
+## 1  Treat1.out-Treat2.out -3.095689 147 2.351743e-03  ** -0.3378378 -0.5535076
+## 2 Treat1.out-Control.out  2.939953 147 3.813865e-03  **  0.4459459  0.1461816
+## 3 Treat2.out-Control.out  5.443253 147 2.140672e-07 ***  0.7837838  0.4992224
+##       ci.max
+## 1 -0.1221681
+## 2  0.7457103
+## 3  1.0683452
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;trimatch.summary&quot; &quot;list&quot;</code></pre>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="non-binary-treatments.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span>(sout)</span></code></pre></div>
+<pre><code>## [1] &quot;friedman.test&quot;        &quot;pairwise.wilcox.test&quot; &quot;PercentMatched&quot;      
+## [4] &quot;rmanova&quot;              &quot;t.tests&quot;</code></pre>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="non-binary-treatments.html#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: boxdiff.plot(tutoring.matched, tutoring$Grade, ordering=c(&#39;Treatment2&#39;,&#39;Treatment1&#39;,&#39;Control&#39;))</span></span>
+<span id="cb59-2"><a href="non-binary-treatments.html#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">parallel.plot</span>(tutoring.matched, tutoring<span class="sc">$</span>Grade)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-9.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="non-binary-treatments.html#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The Loess plot is imperfect with three sets of propensity scores. There is a</span></span>
+<span id="cb60-2"><a href="non-binary-treatments.html#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="co"># model parameter to specify which model to use. Once we a model is selected</span></span>
+<span id="cb60-3"><a href="non-binary-treatments.html#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="co"># we have propensity scores for two of the three groups. We impute a propensity</span></span>
+<span id="cb60-4"><a href="non-binary-treatments.html#cb60-4" aria-hidden="true" tabindex="-1"></a><span class="co"># score on that model&#39;s scale for the third group as the midpoint between</span></span>
+<span id="cb60-5"><a href="non-binary-treatments.html#cb60-5" aria-hidden="true" tabindex="-1"></a><span class="co"># the other two propensity scores that unit was matched to.</span></span>
+<span id="cb60-6"><a href="non-binary-treatments.html#cb60-6" aria-hidden="true" tabindex="-1"></a><span class="fu">loess3.plot</span>(tutoring.matched, tutoring<span class="sc">$</span>Grade, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">method=</span><span class="st">&#39;loess&#39;</span>)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-10.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="non-binary-treatments.html#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Turn on 95% confidence interval (see also the level parameter)</span></span>
+<span id="cb61-2"><a href="non-binary-treatments.html#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">loess3.plot</span>(tutoring.matched, tutoring<span class="sc">$</span>Grade, <span class="at">se=</span><span class="cn">TRUE</span>, <span class="at">method=</span><span class="st">&#39;loess&#39;</span>)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-11.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="non-binary-treatments.html#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We can also pass other parameters to the loess function.</span></span>
+<span id="cb62-2"><a href="non-binary-treatments.html#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">loess3.plot</span>(tutoring.matched, tutoring<span class="sc">$</span>Grade, <span class="at">se=</span><span class="cn">TRUE</span>, <span class="at">method=</span><span class="st">&#39;loess&#39;</span>, <span class="at">span=</span><span class="dv">1</span>)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-12.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="non-binary-treatments.html#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This is a busy plot, but since all the lines are practically vertical, the</span></span>
+<span id="cb63-2"><a href="non-binary-treatments.html#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="co"># distance between each pair of propensity scores is minimal.</span></span>
+<span id="cb63-3"><a href="non-binary-treatments.html#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="fu">loess3.plot</span>(tutoring.matched, tutoring<span class="sc">$</span>Grade, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">method=</span><span class="st">&#39;loess&#39;</span>, </span>
+<span id="cb63-4"><a href="non-binary-treatments.html#cb63-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">plot.connections=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="AppliedPSAwithR_files/figure-html/unnamed-chunk-31-13.png" width="1152" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="non-binary-treatments.html#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The merge function will add the outcome to the matched triplet data frame.</span></span>
+<span id="cb64-2"><a href="non-binary-treatments.html#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This is useful for other approaches to analyzing the matched triplets.</span></span>
+<span id="cb64-3"><a href="non-binary-treatments.html#cb64-3" aria-hidden="true" tabindex="-1"></a>tmatch.out <span class="ot">&lt;-</span> <span class="fu">merge</span>(tutoring.matched, tutoring<span class="sc">$</span>Grade)</span>
+<span id="cb64-4"><a href="non-binary-treatments.html#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tmatch.out)</span></code></pre></div>
+<pre><code>##   Treat1 Treat2 Control        D.m3        D.m2         D.m1     Dtotal
+## 1    368     39     331 0.007053754 0.001788577 0.0103932229 0.01923555
+## 2    800   1088    1105 0.018477707 0.000736057 0.0001821526 0.01939592
+## 3    286    655     853 0.016859948 0.004237243 0.0019476652 0.02304486
+## 4    158    279     365 0.003373585 0.009530680 0.0107118774 0.02361614
+## 5    899    209     100 0.001929173 0.013633300 0.0091835718 0.02474604
+## 6   1034    791     484 0.010538949 0.008541671 0.0092350273 0.02831565
+##   Treat1.out Treat2.out Control.out
+## 1          4          4           0
+## 2          4          4           3
+## 3          2          4           4
+## 4          4          4           4
+## 5          4          3           4
+## 6          4          4           4</code></pre>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="bootstrapping.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="multilevel-psa.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/jbryer/psa/book/edit/master/08-TriMatch.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
