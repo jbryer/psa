@@ -2,7 +2,6 @@ fig:popularity
 fig:introduction-causality
 fig:introduction-logistic
 fig:shiny-screenshot
-colophon
 introduction
 counterfactual-model-for-causality
 randomized-control-trials-the-gold-standard
@@ -27,5 +26,5 @@ sensitivity-analysis
 bootstrapping
 non-binary-treatments
 multilevel-psa
-shiny-application
+psa_shiny
 propensity-score-ranges
