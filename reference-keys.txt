@@ -19,6 +19,10 @@ tutoring
 pisa
 nmes
 stratification
+estimating-propensity-scores
+stratifying
+checking-balance
+estimate-effects
 matching
 weighting
 missing-data

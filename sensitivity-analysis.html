@@ -91,7 +91,7 @@
 <h1>
 <span class="header-section-number">6</span> Sensitivity Analysis<a class="anchor" aria-label="anchor" href="#sensitivity-analysis"><i class="fas fa-link"></i></a>
 </h1>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">rbounds</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lalonde</span>, package<span class="op">=</span><span class="st">'Matching'</span><span class="op">)</span></span>
 <span></span>
@@ -119,7 +119,7 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  185 
 ## Matched number of observations  (unweighted).  185</code></pre>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">rbounds</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rbounds/man/psens.html">psens</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Y</span><span class="op">[</span><span class="va">mgen1</span><span class="op">$</span><span class="va">index.treated</span><span class="op">]</span>,</span>
 <span>      y <span class="op">=</span><span class="va">Y</span><span class="op">[</span><span class="va">mgen1</span><span class="op">$</span><span class="va">index.contro</span><span class="op">]</span>,</span>
 <span>      Gamma <span class="op">=</span> <span class="fl">1.5</span>, </span>
@@ -140,7 +140,7 @@
 ##  Note: Gamma is Odds of Differential Assignment To
 ##  Treatment Due to Unobserved Factors 
 ## </code></pre>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">rbounds</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rbounds/man/hlsens.html">hlsens</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Y</span><span class="op">[</span><span class="va">mgen1</span><span class="op">$</span><span class="va">index.treated</span><span class="op">]</span>,</span>
 <span>       y <span class="op">=</span> <span class="va">Y</span><span class="op">[</span><span class="va">mgen1</span><span class="op">$</span><span class="va">index.contro</span><span class="op">]</span>,</span>
 <span>       Gamma <span class="op">=</span> <span class="fl">1.5</span>, </span>
