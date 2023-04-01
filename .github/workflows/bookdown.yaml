@@ -28,7 +28,12 @@ jobs:
 
       - uses: r-lib/actions/setup-renv@v2
 
-      - name: Cache bookdown results
+      - uses: ./setup-r-dependencies
+        with:
+          extra-packages: any::bookdown, local::.
+          needs: website
+          
+     - name: Cache bookdown results
         uses: actions/cache@v3
         with:
           path: _bookdown_files
