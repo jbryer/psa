@@ -37,11 +37,10 @@ jobs:
           install.packages('devtools')
           install.packages(c('cowplot', 'granovaGG', 'mice'))
           devtools::install(upgrade = 'never', build_vignettes = FALSE, dependencies = 'Enhances')
-          wd <- setwd('book')
+          setwd('book')
           bookdown::render_book(input = "index.Rmd", 
                                 output_format = "bookdown::gitbook", 
                                 output_dir = '../docs')
-          setwd(wd)
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀

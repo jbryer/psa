@@ -1,4 +1,4 @@
-#' Caluclates propensity score weights.
+#' Calculates propensity score weights.
 #' 
 #' @param treatment a logical vector for treatment status.
 #' @param ps numeric vector of propensity scores

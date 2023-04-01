@@ -59,6 +59,55 @@ psa::psa_shiny()
 
 <img src="man/figures/psa_shiny_screenshots.gif" width="100%" />
 
+## The `MatchBalance` Function
+
+``` r
+data(lalonde, package='Matching')
+formu.lalonde <- treat ~ age + I(age^2) + educ + I(educ^2) + hisp + married + nodegr + 
+    re74  + I(re74^2) + re75 + I(re75^2) + u74 + u75
+mb0.lalonde <- psa::MatchBalance(df = lalonde, formu=formu.lalonde)
+# summary(mb0.lalonde) # Excluded to save space
+plot(mb0.lalonde)
+```
+
+<img src="man/figures/README-MatchBalance-1.png" width="100%" />
+
+## The `loess.plot` Function
+
+``` r
+data(pisana, package = 'multilevelPSA')
+data(pisa.psa.cols, package = 'multilevelPSA')
+cnt <- 'USA' # Can change this to USA, MEX, or CAN
+pisa_usa <- pisana[pisana$CNT == cnt,]
+pisa_usa$treat <- as.integer(pisa_usa$PUBPRIV) %% 2
+lr.results <- glm(treat ~ ., data=pisa_usa[,c('treat',pisa.psa.cols)], family='binomial')
+st <- data.frame(ps=fitted(lr.results), 
+                math=apply(pisa_usa[,paste('PV', 1:5, 'MATH', sep='')], 1, mean), 
+                pubpriv=pisa_usa$treat)
+st$treat = as.logical(st$pubpriv)
+psa::loess.plot(x = st$ps, 
+                response = st$math, 
+                treatment = st$treat, 
+                percentPoints.control = 0.4, 
+                percentPoints.treat=0.4)
+#> `geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
+```
+
+<img src="man/figures/README-loess_plot-1.png" width="100%" />
+
+## The `merge.mids` Function
+
+The `merge.mids` function is a convenience for merging the multiple
+imputation results from the `mice::mice()` function with the full data
+frame used for imputation. In the context of PSA imputation is conducted
+without the including the outcome variable. This function will merge in
+the outcome, along with any other variables not used in the imputation
+procedure, with one of the imputed datasets. Additionally, by setting
+the `shadow.matrix` parameter to `TRUE` the resulting data frame will
+contain additional logical columns with the suffix `_missing` with a
+value of `TRUE` if the variable was originally missing and therefore was
+imputed.
+
 ## Slides
 
 - Workshop at University at Albany, Division of Educational Psychology &
