@@ -41,6 +41,7 @@ Enhances:
     PSAgraphics,
     rgenoud,
     scholar,
+    rbounds,
     TriMatch
 VignetteBuilder: 
     knitr

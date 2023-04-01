@@ -18,7 +18,7 @@ devtools::check(cran = TRUE)
 
 ################################################################################
 # For the bookdown site
-library(bookdown)
+# library(bookdown)
 wd <- setwd('book')
 bookdown::render_book(input = "index.Rmd", 
 					  output_format = "bookdown::gitbook",

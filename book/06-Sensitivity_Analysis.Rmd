@@ -20,7 +20,7 @@ gen1 <- GenMatch(Tr=Tr, X=X, BalanceMat=BalanceMat, pop.size=50,
 mgen1 <- Match(Y=Y, Tr=Tr, X=X, Weight.matrix=gen1, replace=FALSE)
 summary(mgen1)
 
-psens(x = Y[mgen1$index.treated],
+rbounds::psens(x = Y[mgen1$index.treated],
 	  y =Y[mgen1$index.contro],
 	  Gamma = 1.5, 
 	  GammaInc = .1)
@@ -28,7 +28,7 @@ psens(x = Y[mgen1$index.treated],
 
 
 ```{r sensitivity_hlsens, cache=TRUE}
-hlsens(x = Y[mgen1$index.treated],
+rbounds::hlsens(x = Y[mgen1$index.treated],
 	   y = Y[mgen1$index.contro],
 	   Gamma = 1.5, 
 	   GammaInc = .1)

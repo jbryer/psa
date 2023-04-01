@@ -1,7 +1,7 @@
 book_filename: "AppliedPSAwithR"
 chapter_name: "Chapter "
 edit:
-  link: https://github.com/jbryer/psa/book/edit/master/inst/examples/%s
+  link: https://github.com/jbryer/psa/edit/book/book/%s
   text: "Edit"
 bibliography: ["book.bib", "packages.bib"]
 biblio-style: apalike
