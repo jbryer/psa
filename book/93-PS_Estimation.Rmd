@@ -48,7 +48,7 @@ rpart_ps <- predict(rpart_out, type = 'prob')[,1]
 
 ## Bayesian Logistic Regression
 
-```{r, cache=TRUE}
+```{r, eval=FALSE, cache=TRUE}
 library(rstanarm)
 stan_out <- stan_glm(lalonde.formu,
 					 data = lalonde)
