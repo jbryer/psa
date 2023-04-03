@@ -10,7 +10,7 @@ The use of propensity score methods [@RosenbaumRubin1983] for estimating causal 
 This book will provide a theoretical overview of propensity score methods as well as illustrations and discussion of PSA applications. Methods used in phase I of PSA (i.e. models or methods for estimating propensity scores) include logistic regression, classification trees, and matching. Discussions on appropriate comparisons and estimations of effect size and confidence intervals in phase II will also be covered. The use of graphics for diagnosing covariate balance as well as summarizing overall results will be emphasized. Lastly, the extension of PSA methods for multilevel data will also be presented.
 
 <div class="figure" style="text-align: center">
-<img src="01-Introduction_files/figure-html/popularity-1.png" alt="PSA Citations per Year" width="672" />
+<img src="01-Introduction_files/figure-html/popularity-1.png" alt="PSA Citations per Year" width="100%" />
 <p class="caption">(\#fig:popularity)PSA Citations per Year</p>
 </div>
 
@@ -20,15 +20,44 @@ This book will provide a theoretical overview of propensity score methods as wel
 In order to understand how propensity score analysis allows us to make causal estimates from observational data, we must first understand the basic principals of causality, particulary the counterfactual model. Figure \@ref(fig:introduction-causality) depicts a conterfactual model. We begin with our research subject. This can be a student, patient, rat, asteroid, or any other object we wish to know whether some condition has an effect on. Consider two parallel universes: one where the subject receives condition A and another where they receive condition B. Typically one condition is some treatment whereas the other condition is the absense of that treatment (also referred to as the control). We will use treatment and control throughout this book to refer to these two conditions. Once the individual has been exposed to the two conditions, the outcome is measured. The difference between these outcomes is the true causal effect. However, it is impossible for an object to exist in two universes at the same time, therefore we can never actually observe the true causal effect. @Holland1986 referred to this as the *Fundamental Problem of Causal Inference*.
 
 <div class="figure" style="text-align: center">
-<img src="figures/Causality.png" alt="Causal Model" width="80%" />
-<p class="caption">(\#fig:introduction-causality)Causal Model</p>
+<img src="figures/Causality.png" alt="Theoretical Causal Model" width="100%" />
+<p class="caption">(\#fig:introduction-causality)Theoretical Causal Model</p>
 </div>
 
 ## Randomized Control Trials "The Gold Standard"
 
 The randomized experiment has been the goals standard for estimating causal effects. Effects can be estimated using simple means between groups, or blocks in randomized block design. Randomization presumes unbiasedness and balance between groups. However, randomization is often not feasible for many reasons, especially in educational contexts.
 
-The strong ignorability assumtion states that an outcome is independent of any observed or unobserved covariates under randomization. This is represented mathematically as:
+
+
+The Intelligence Quotient (IQ) is a common measure of intelligence. It is designed such that the mean is 100 and the standard deviation is 15. Consider we have developed an intervention that is known to increase anyone's IQ by 4.5 points. Figure \@ref(fig:rct1) represents such a scenario with 30 individuals. The left panel has the individual's outcome if they were assigned to the control condition (in blue) and to the treatment condition (in red). The distance between the red and blue points for any individual is 4.5, our stipulated counterfactual difference. For RCTs we only ever get to observe one outcome for any individual. The right pane represents one possible outcome from an RCT.
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/rct1-1.png" alt="Example conterfactuals (left panel) with one possible randomized control trial." width="100%" />
+<p class="caption">(\#fig:rct1)Example conterfactuals (left panel) with one possible randomized control trial.</p>
+</div>
+
+Figure \@ref(fig:rct2) includes the mean differences between treatment and control as vertical lines in blue and red, respectively. On the left where we observe the true counterfactuals the difference between the treatment (in red) and control (in blue) vertical lines is 4.5. However, on the right the difference between treatment and control is -5.3! 
+
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/rct2-1.png" alt="Estimated differences for full counterfactual model and one RCT." width="100%" />
+<p class="caption">(\#fig:rct2)Estimated differences for full counterfactual model and one RCT.</p>
+</div>
+
+In this exmaple not only did the RCT not estimate the true effect, it estimated in the wrong direction. However, Figure \@ref(fig:rctc) represents the distribution of effects after conducting 1,000 RCTs from the 30 individuals above. The point here is that the RCT is already compromise to estimating the true counterfactual (i.e. causal effect). It is consider the gold standard because over many trials it will nearly approximate the true counterfactual.
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/rctc-1.png" alt="Distribution of differences across many RCTs" width="100%" />
+<p class="caption">(\#fig:rctc)Distribution of differences across many RCTs</p>
+</div>
+
+
+
+
+
+
+The strong ignorability assumption states that an outcome is independent of any observed or unobserved covariates under randomization. This is represented mathematically as:
 
 $$\left( { Y }_{ i }\left( 1 \right) ,{ Y }_{ i }\left( 0 \right)  \right) \bot { T }_{ i }$$
 
@@ -41,38 +70,147 @@ $${\delta}_{i} = { Y }_{ i1 }-{ Y }_{ i0 }$$
 However, it is impossible to directly observe \\({\delta}_{i}\\) (referred to as The Fundamental Problem of Causal Inference, Holland 1986). Rubin framed this problem as a missing data problem.
 
 
-
 ### Rubin's Causal Model
 
-## Conceptual Steps for Conducting Propensity Score Analysis
+## Conceptual Phases of Propensity Score Analysis
+
+Propensity score analysis is typically conducted in three phases, namely:
+
+1. Model for selection bias (i.e. estimate propensity scores).
+2. Estimate causal effects.
+3. Check for sensitivity to unobserved confounders.
+
+The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification, matching, and weighting.
 
 ### Phase I: Modeling for Selection Bias
 
+Phase one of propensity score analysis is a cyclical process where propensity scores are estimated using a statistical model, balance in observed covariates is checked, and modifications to the statistical model are modified until sufficient balance is achieved. For simplicity we will use logistic regression to estimate propensity scores throughout the book. However, will introduce classification trees in chapter \@ref(chapter-stratification) given how they are uniquely applicable to stratification methods in and in appendix \@ref(appendix-psmodels) outlines some additional statistical methods, with R code, for estimating propensity scores.
+
 #### Estimate Propensity Scores
 
-The goal in phase one of PSA is to estimate the probability of being in the treatment. Since in most cases this is a binary outcome, logistic regressionis a common approach to estimating propensity scores. 
 
-$$ \sigma =\frac { { e }^{ t } }{ { e }^{ t }+1 } =\frac { 1 }{ 1+{ e }^{ -1 } }  $$
 
-$$ t={ \beta  }+{ \beta  }_{ 1 }x+\cdots +{ \beta  }_{ k } $$
-
-$$ F\left( x \right) =\frac { 1 }{ 1+{ e }^{ -\left( { \beta  }+{ \beta  }_{ 1 }x+\cdots +{ \beta  }_{ k } \right)  } } $$
-
-Figure \@ref(fig:introduction-logistic) depicts a fitted logistic regression along with a sample of matchs connected by the purple lines.^[The data in this figure are from the [`lalonde`](#lalonde) dataset that will be described at the end of this chapter.]
+Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous. Very often logistic regression is used, but with the advances in predictive models we have an increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis will use a simulated dataset with two pre-treatment covariates, `x1` and `x2`, treatment indicator, and an outcome variable with a treatment_effect of 2. Figure \@ref(fig:sim-scatter) is a scatter plot of the simulated data.^[This simulated dataset is adapted from a [blog post](https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html) by [Lucy D’Agostino McGowan](https://www.lucymcgowan.com)]
 
 <div class="figure" style="text-align: center">
-<img src="01-Introduction_files/figure-html/introduction-logistic-1.png" alt="Propensity Scores from Logistic Regression with Sample of Matched Pairs" width="672" />
-<p class="caption">(\#fig:introduction-logistic)Propensity Scores from Logistic Regression with Sample of Matched Pairs</p>
+<img src="01-Introduction_files/figure-html/sim-scatter-1.png" alt="Scatterplot of simulated datatset" width="100%" />
+<p class="caption">(\#fig:sim-scatter)Scatterplot of simulated datatset</p>
 </div>
 
+Figure \@ref(fig:sim-ggpairs) is a pairs plot [@R-GGally] showing the relationship between the covariates (i.e. `x1` and `x2`) with the outcome grouped by treatment. There is a statistically significant correlation between each of the covariates and the outcome suggesting there is  selection bias that would bias any causal estimate.
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/sim-ggpairs-1.png" alt="Pairs plot showing the relationships between covariates, treatment, and outcome" width="100%" />
+<p class="caption">(\#fig:sim-ggpairs)Pairs plot showing the relationships between covariates, treatment, and outcome</p>
+</div>
+
+
+
+Indeed a simple null hypothesis test resulted in a difference of 4.63 ($t_{447} = -24.19$, *p* < 0.01), however we setup the simulation to have a mean difference of 2!
+
+
+```
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  outcome by treatment
+## t = -24.188, df = 446.5, p-value < 2.2e-16
+## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
+## 95 percent confidence interval:
+##  -5.006033 -4.253672
+## sample estimates:
+```
+
+Propensity scores allow us to adjust for this selection bias.
+
+After estimating the propensity scores we can plot the distributions by treatment and control as represented in figure \@ref(fig:sim-dist). Note how the distributions are skewed; treatment group is negatively skewed and the control group is positively skewed. This should hopefully make intuitive sense. As the probability of being in the treatment increases, we should see the number of treatment observations increase while the number of control observation decreases. 
+
+
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/sim-dist-1.png" alt="Distribution of propensity scores" width="100%" />
+<p class="caption">(\#fig:sim-dist)Distribution of propensity scores</p>
+</div>
+
+
+
 #### Evaluate Balance
+
+
+
 
 ### Phase II: Estimate Causal Effects
 
 
+
+Chapter \@ref(chapter-weighting)
+
+
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/sim-loess-1.png" alt="Scatter plot of propensity scores against outcome with Loess regression lines" width="100%" />
+<p class="caption">(\#fig:sim-loess)Scatter plot of propensity scores against outcome with Loess regression lines</p>
+</div>
+
+
+
+
+
+
+
+#### Average treatment_effect (ATE)
+
+
+$$ ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X) $$
+Figure \@ref(fig:ate-hist)
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/ate-hist-1.png" alt="Histogram of average treatement effect" width="100%" />
+<p class="caption">(\#fig:ate-hist)Histogram of average treatement effect</p>
+</div>
+
+#### Average treatment_effect Among the Treated (ATT)
+
+$$ ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1) $$
+Figure \@ref(fig:att-hist)
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/att-hist-1.png" alt="Histogram of average treatement among the treated" width="100%" />
+<p class="caption">(\#fig:att-hist)Histogram of average treatement among the treated</p>
+</div>
+
+#### Average treatment_effect Among the Control (ATC)
+
+$$ ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0) $$
+
+Figure \@ref(fig:atc-hist)
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/atc-hist-1.png" alt="Histogram of average treatement among the control" width="100%" />
+<p class="caption">(\#fig:atc-hist)Histogram of average treatement among the control</p>
+</div>
+
+#### Average treatment_effect Among the Evenly Matched (ATM)
+
+@LiGreene2013 
+
+$$ ATM_d = E(Y_1 - Y_0 | M_d = 1) $$
+
+Figure \@ref(fig:acm-hist)
+
+<div class="figure" style="text-align: center">
+<img src="01-Introduction_files/figure-html/acm-hist-1.png" alt="Histogram of average treatment_effect among the evenly matched" width="100%" />
+<p class="caption">(\#fig:acm-hist)Histogram of average treatment_effect among the evenly matched</p>
+</div>
+
+
+### Phase III: Sensitivity Analysis
+
+
+
 ## R Primer
 
-R is a statistical software language designed to be extended vis-à-vis packages. As of April 01, 2023, there are currently 19,342 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.
+R is a statistical software language designed to be extended vis-à-vis packages. As of April 03, 2023, there are currently 19,330 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.
 
 * [`MatchIt`](http://gking.harvard.edu/gking/matchit) [@R-MatchIt] Nonparametric Preprocessing for Parametric Causal Inference
 * [`Matching`](http://sekhon.berkeley.edu/matching/) [@R-Matching] Multivariate and Propensity Score Matching Software for Causal Inference
@@ -98,7 +236,7 @@ install.packages(pkgs)
 
 ### National Supported Work Demonstration {#lalonde}
 
-The `lalonde` dataset is perhaps one of the most used datasets when introducing or evaluating propensity score methods. The data was collected by @Lalonde1986 but became widely used in the PSA literature after @DehejiaWahba1999 used it in their paper to evaluate propensity score matching. The dataset originated from the National Supported Work Demonstration study conducted in the 1970s. The program provided 12 to 18 months of employment to people with longstanding employment problems. The dataset contains 445 observations of 13 variables. The primary outcome is `re78` which is real earnings in 1978. Observed covariates used to ajdust for selection bias include `age` (age in years), `edu` (number of years of education), `black` (black or not), `hisp` (Hispanic or not), `married` (married or not), `nodegr` (whether the worker has a degree or not, note that 1 = no degree), `re74` (real earnings in 1974), and `re75` (real earnings in 1975).
+The `lalonde` dataset is perhaps one of the most used datasets when introducing or evaluating propensity score methods. The data was collected by @Lalonde1986 but became widely used in the PSA literature after @DehejiaWahba1999 used it in their paper to evaluate propensity score matching. The dataset originated from the National Supported Work Demonstration study conducted in the 1970s. The program provided 12 to 18 months of employment to people with longstanding employment problems. The dataset contains 445 observations of 12 variables. The primary outcome is `re78` which is real earnings in 1978. Observed covariates used to ajdust for selection bias include `age` (age in years), `edu` (number of years of education), `black` (black or not), `hisp` (Hispanic or not), `married` (married or not), `nodegr` (whether the worker has a degree or not, note that 1 = no degree), `re74` (real earnings in 1974), and `re75` (real earnings in 1975).
 
 
 ```r

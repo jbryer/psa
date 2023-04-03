@@ -1,6 +1,11 @@
-# Propensity Score Ranges
+# Propensity Score Ranges {#appendix-psranges}
 
-This function will create a data frame with three variables (a, b, c) for two groups.
+<!-- TODO: Copied directly from my dissertation. Need to edit -->
+
+With regard to propensity score ranges, the range tends to shrink as the ratio of treatment-to-control increases. Figure 20 depicts the range and distribution of propensity scores (using logistic regression) with varying treatment-to-control ratios. The data used to create this figure is simulated and available in Appendix K. The `psrange` and `plot.psrange` functions are included in the `multilevelPSA` R package. Propensity scores are estimated with a single covariate where the mean for the treatment and control are 0.6 and 0.4, respectively. The standard deviation for both is 0.4. There are 100 treatment units and 1,000 control units simulated. The goal in choosing these means and standard deviations is to have some separation between treatment and control. Each row in the figure represents the percentage of control units sampled before estimating the propensity scores, starting with 100% (i.e. all 1,000 control units) to 10% (100 of the control units). As the figure shows, as the ratio decreases to where there are equal treatment and control units, the range of the propensity scores becomes more normal. To calculate the ranges, each sampling step is bootstrapped so the green bar and black points represent each of the 20 bootstrap samples taken. The bars then represent the mean of the minimum and mean of the maximum for each step.
+
+The "shrinking" of propensity score ranges as the ratio of treatment-to-control increases has implications for the interpretation of propensity scores. Typically, propensity scores are interpreted as the probability of being in the treatment. For studies where the number of treatment and control units are roughly equal, this interpretation is valid. However, in cases where the ratio of treatment-to-control is large, it best to simply interpret the propensity scores as adjustment scores and not probabilities. Since the matching and stratification procedures utilize standard scores (i.e. the propensity score divided by the standard deviation of the propensity scores), should only impact interpretation of the propensity scores and should not impact on the estimated treatment e↵ects. It appears this issue has not been explored in either the PSA or logistic regression literature and additional exploration of the topic appears to be warranted.
+
 
 
 ```r
@@ -41,7 +46,7 @@ psranges1 <- psrange(test.df1, test.df1$treat, treat ~ ., samples = seq(100,
 plot(psranges1)
 ```
 
-<img src="92-PS_Ranges_files/figure-html/psranges-1to10-1.png" width="672" style="display: block; margin: auto;" />
+<img src="92-PS_Ranges_files/figure-html/psranges-1to10-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 ```r
@@ -94,7 +99,7 @@ psranges2 <- psrange(test.df2, test.df2$treat, treat ~ ., samples = seq(100,
 plot(psranges2)
 ```
 
-<img src="92-PS_Ranges_files/figure-html/psranges-1to20-1.png" width="672" style="display: block; margin: auto;" />
+<img src="92-PS_Ranges_files/figure-html/psranges-1to20-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 ```r
@@ -177,7 +182,7 @@ psranges3 <- psrange(test.df3, test.df3$treat, treat ~ ., samples = seq(100,
 plot(psranges3)
 ```
 
-<img src="92-PS_Ranges_files/figure-html/psranges-100to1000-1.png" width="672" style="display: block; margin: auto;" />
+<img src="92-PS_Ranges_files/figure-html/psranges-100to1000-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 ```r
@@ -231,7 +236,7 @@ psranges4 <- psrange(test.df4, test.df4$treat, treat ~ ., samples = seq(100,
 plot(psranges4)
 ```
 
-<img src="92-PS_Ranges_files/figure-html/psranges-nooverlap-1.png" width="672" style="display: block; margin: auto;" />
+<img src="92-PS_Ranges_files/figure-html/psranges-nooverlap-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 ```r
@@ -284,7 +289,7 @@ psranges5 <- psrange(test.df5, test.df5$treat, treat ~ ., samples = seq(100,
 plot(psranges5)
 ```
 
-<img src="92-PS_Ranges_files/figure-html/psranges-10covariates-1.png" width="672" style="display: block; margin: auto;" />
+<img src="92-PS_Ranges_files/figure-html/psranges-10covariates-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 ```r

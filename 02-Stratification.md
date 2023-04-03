@@ -3,7 +3,23 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Stratification
+# Stratification {#chapter-stratification}
+
+Since in most cases this is a binary outcome, logistic regression is a common approach to estimating propensity scores. 
+
+$$ \sigma =\frac { { e }^{ t } }{ { e }^{ t }+1 } =\frac { 1 }{ 1+{ e }^{ -1 } }  $$
+
+$$ t={ \beta  }+{ \beta  }_{ 1 }x+\cdots +{ \beta  }_{ k } $$
+
+$$ F\left( x \right) =\frac { 1 }{ 1+{ e }^{ -\left( { \beta  }+{ \beta  }_{ 1 }x+\cdots +{ \beta  }_{ k } \right)  } } $$
+
+The goal in phase one of PSA is to estimate the probability of being in the treatment. 
+Figure \@ref(fig:introduction-logistic) depicts a fitted logistic regression along with a sample of matchs connected by the purple lines.^[The data in this figure are from the [`lalonde`](#lalonde) dataset that will be described at the end of this chapter.]
+
+<div class="figure" style="text-align: center">
+<img src="02-Stratification_files/figure-html/introduction-logistic-1.png" alt="Propensity Scores from Logistic Regression with Sample of Matched Pairs" width="100%" />
+<p class="caption">(\#fig:introduction-logistic)Propensity Scores from Logistic Regression with Sample of Matched Pairs</p>
+</div>
 
 
 The tutoring example has treatment with three levels: Treat1, Treat2, and Control. We'll convert this to a two level treatment for this example. 
@@ -72,7 +88,7 @@ ggplot(lalonde, aes(x = ps, color = as.logical(treat))) +
 	scale_color_brewer('Treatment', type = 'qual', palette = 6)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" />
 
 ## Stratifying
 
@@ -105,7 +121,7 @@ table(lalonde$treat, lalonde$strata, useNA = 'ifany')
 ##   1 27 30 33 47 48
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 ## Checking Balance
@@ -120,7 +136,7 @@ PSAgraphics::cv.bal.psa(covariates = covars,
 						strata = lalonde$strata)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 
@@ -133,7 +149,7 @@ PSAgraphics::box.psa(continuous = lalonde$age,
 					 balance = FALSE)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 
@@ -145,7 +161,7 @@ PSAgraphics::cat.psa(categorical = lalonde$nodegr,
 					 balance = FALSE)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;" />
 
 ## Estimate Effects
 
@@ -156,7 +172,7 @@ psa::loess.plot(x = lalonde$ps,
 				treatment = lalonde$treat == 1)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 
@@ -167,7 +183,7 @@ PSAgraphics::circ.psa(response = log(lalonde$re78 + 1),
 					  revc = TRUE)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;" />
 
 ```
 ## $summary.strata

@@ -4,17 +4,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Chapter 3 Matching | Applied Propensity Score Analysis with R</title>
+<title>Chapter 4 Weighting | Applied Propensity Score Analysis with R</title>
 <meta name="author" content="Jason Bryer, Ph.D.">
 <meta name="description" content="An introduction to conducting propensity score analysis with R.">
 <meta name="generator" content="bookdown 0.33 with bs4_book()">
-<meta property="og:title" content="Chapter 3 Matching | Applied Propensity Score Analysis with R">
+<meta property="og:title" content="Chapter 4 Weighting | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
-<meta property="og:url" content="https://psa.bryer.org/matching.html">
+<meta property="og:url" content="https://psa.bryer.org/chapter-weighting.html">
+<meta property="og:image" content="https://psa.bryer.org/images/psa.png">
 <meta property="og:description" content="An introduction to conducting propensity score analysis with R.">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Chapter 3 Matching | Applied Propensity Score Analysis with R">
+<meta name="twitter:title" content="Chapter 4 Weighting | Applied Propensity Score Analysis with R">
 <meta name="twitter:description" content="An introduction to conducting propensity score analysis with R.">
+<meta name="twitter:image" content="https://psa.bryer.org/images/psa.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
@@ -68,17 +70,18 @@
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">Preface</a></li>
 <li><a class="" href="introduction.html"><span class="header-section-number">1</span> Introduction</a></li>
-<li><a class="" href="stratification.html"><span class="header-section-number">2</span> Stratification</a></li>
-<li><a class="active" href="matching.html"><span class="header-section-number">3</span> Matching</a></li>
-<li><a class="" href="weighting.html"><span class="header-section-number">4</span> Weighting</a></li>
+<li><a class="" href="chapter-stratification.html"><span class="header-section-number">2</span> Stratification</a></li>
+<li><a class="" href="chapter-matching.html"><span class="header-section-number">3</span> Matching</a></li>
+<li><a class="active" href="chapter-weighting.html"><span class="header-section-number">4</span> Weighting</a></li>
 <li><a class="" href="missing-data.html"><span class="header-section-number">5</span> Missing Data</a></li>
-<li><a class="" href="sensitivity-analysis.html"><span class="header-section-number">6</span> Sensitivity Analysis</a></li>
-<li><a class="" href="bootstrapping.html"><span class="header-section-number">7</span> Bootstrapping</a></li>
-<li><a class="" href="non-binary-treatments.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
-<li><a class="" href="multilevel-psa.html"><span class="header-section-number">9</span> Multilevel PSA</a></li>
+<li><a class="" href="chapter-sensitivity.html"><span class="header-section-number">6</span> Sensitivity Analysis</a></li>
+<li><a class="" href="chapter-bootstrapping.html"><span class="header-section-number">7</span> Bootstrapping</a></li>
+<li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
+<li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">9</span> Multilevel PSA</a></li>
 <li class="book-part">Appendix</li>
 <li><a class="" href="psa_shiny.html"><span class="header-section-number">A</span> Shiny Application</a></li>
-<li><a class="" href="propensity-score-ranges.html"><span class="header-section-number">B</span> Propensity Score Ranges</a></li>
+<li><a class="" href="appendix-psranges.html"><span class="header-section-number">B</span> Propensity Score Ranges</a></li>
+<li><a class="" href="appendix-psmodels.html"><span class="header-section-number">C</span> Methods for Estimating Propensity Scores</a></li>
 <li><a class="" href="references.html">References</a></li>
 </ul>
 
@@ -87,23 +90,23 @@
         </div>
       </nav>
 </div>
-  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="matching" class="section level1" number="3">
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="chapter-weighting" class="section level1" number="4">
 <h1>
-<span class="header-section-number">3</span> Matching<a class="anchor" aria-label="anchor" href="#matching"><i class="fas fa-link"></i></a>
+<span class="header-section-number">4</span> Weighting<a class="anchor" aria-label="anchor" href="#chapter-weighting"><i class="fas fa-link"></i></a>
 </h1>
 
 </div>
   <div class="chapter-nav">
-<div class="prev"><a href="stratification.html"><span class="header-section-number">2</span> Stratification</a></div>
-<div class="next"><a href="weighting.html"><span class="header-section-number">4</span> Weighting</a></div>
+<div class="prev"><a href="chapter-matching.html"><span class="header-section-number">3</span> Matching</a></div>
+<div class="next"><a href="missing-data.html"><span class="header-section-number">5</span> Missing Data</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
-      <ul class="nav navbar-nav"><li><a class="nav-link" href="#matching"><span class="header-section-number">3</span> Matching</a></li></ul>
+      <ul class="nav navbar-nav"><li><a class="nav-link" href="#chapter-weighting"><span class="header-section-number">4</span> Weighting</a></li></ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">
-<li><a id="book-source" href="https://github.com/jbryer/psa/blob/master/book/03-Matching.Rmd">View source <i class="fab fa-github"></i></a></li>
-          <li><a id="book-edit" href="https://github.com/jbryer/psa/edit/master/book/03-Matching.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+<li><a id="book-source" href="https://github.com/jbryer/psa/blob/master/book/04-Weighting.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/jbryer/psa/edit/master/book/04-Weighting.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
         </ul>
 </div>
     </nav>
@@ -115,7 +118,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-01.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-03.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

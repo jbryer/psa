@@ -1,4 +1,4 @@
-# Non-Binary Treatments
+# Non-Binary Treatments {#chapter-non-binary}
 
 
 
@@ -50,7 +50,7 @@ ggplot(tmp, aes(x=Var2, y=Freq, fill=Var1)) +
 	xlab('Grade') + ylab('Percent') + scale_colour_hue('Treatment')
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 ```r
@@ -68,7 +68,7 @@ tutoring.tpsa <- trips(tutoring, tutoring$treat, tutoring.formu)
 plot(tutoring.tpsa, sample=c(200))
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 # trimatch finds matched triplets.
@@ -83,7 +83,7 @@ tutoring.matched2 <- trimatch(tutoring.tpsa, exact=tutoring$Level)
 plot(tutoring.matched, rows=1, line.alpha=1, draw.segments=TRUE)
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-2.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 ## Examine the unmatched students
@@ -102,14 +102,14 @@ summary(unmatched)
 plot(unmatched)
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-3.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-3.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 ## Check balance
 multibalance.plot(tutoring.tpsa)
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-4.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-4.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 balance.plot(tutoring.matched, tutoring$Age, label='Age')
@@ -128,7 +128,7 @@ balance.plot(tutoring.matched, tutoring$Age, label='Age')
 ## 2 Treatment   2 294 1.707234 0.1831598       0.006613137
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-5.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-5.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 balance.plot(tutoring.matched, tutoring$Military, label='Military')
@@ -142,7 +142,7 @@ balance.plot(tutoring.matched, tutoring$Military, label='Military')
 ## Friedman chi-squared = 0.4, df = 2, p-value = 0.8187
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-6.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-6.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 # Create a grid of figures.
@@ -152,7 +152,7 @@ bplots <- balance.plot(tutoring.matched, tutoring[,all.vars(tutoring.formu)],
 bplots[['Military']] # We can plot one at at time.
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-7.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-7.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 summary(bplots) # Create a data frame with the statistical results
@@ -189,7 +189,7 @@ summary(bplots) # Create a data frame with the statistical results
 plot(bplots, cols=3, byrow=FALSE)
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-8.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-8.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 ## Phase II
@@ -267,7 +267,7 @@ ls(sout)
 parallel.plot(tutoring.matched, tutoring$Grade)
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-9.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-9.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 # The Loess plot is imperfect with three sets of propensity scores. There is a
@@ -278,21 +278,21 @@ parallel.plot(tutoring.matched, tutoring$Grade)
 loess3.plot(tutoring.matched, tutoring$Grade, se=FALSE, method='loess')
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-10.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-10.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 # Turn on 95% confidence interval (see also the level parameter)
 loess3.plot(tutoring.matched, tutoring$Grade, se=TRUE, method='loess')
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-11.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-11.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 # We can also pass other parameters to the loess function.
 loess3.plot(tutoring.matched, tutoring$Grade, se=TRUE, method='loess', span=1)
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-12.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-12.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 # This is a busy plot, but since all the lines are practically vertical, the
@@ -301,7 +301,7 @@ loess3.plot(tutoring.matched, tutoring$Grade, se=FALSE, method='loess',
 			plot.connections=TRUE)
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-13.png" width="672" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-3-13.png" width="100%" style="display: block; margin: auto;" />
 
 ```r
 # The merge function will add the outcome to the matched triplet data frame.

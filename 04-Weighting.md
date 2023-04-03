@@ -1,2 +1,2 @@
-# Weighting
+# Weighting {#chapter-weighting}
 
