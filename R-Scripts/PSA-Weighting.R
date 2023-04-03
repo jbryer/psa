@@ -1,5 +1,5 @@
 # Adapted from McGowan's (2019-01-17) blog post, "Understanding propensity score weighting"
-# https://livefreeordichotomize.com/2019/01/17/understanding-propensity-score-weighting/
+# https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html
 
 library(tidyverse)
 
@@ -7,19 +7,31 @@ theme_set(theme_bw())
 cols <- c('#fc8d62', '#66c2a5') # http://colorbrewer2.org/#type=qualitative&scheme=Set2&n=3
 set.seed(2112)
 
-n <- 1000
+set.seed(2112) 
+n <- 500
 treatment.effect <- 2
 X <- mvtnorm::rmvnorm(n,
 					  mean = c(0.5, 1),
 					  sigma = matrix(c(2, 1, 1, 1), ncol = 2) )
-
-dat <- tibble(
+dat <- tibble::tibble(
 	x1 = X[, 1],
 	x2 = X[, 2],
 	treatment = as.numeric(- 0.5 + 0.25 * x1 + 0.75 * x2 + rnorm(n, 0, 1) > 0),
-	outcome = treatment.effect * treatment + rnorm(n, 0, 1)
+	outcome = treatment.effect * treatment + x1 + x2 + rnorm(n, 0, 1)
 )
 dat
+
+GGally::ggpairs(
+	dat[,1:4],
+	columns = c(1,2,4),
+	mapping = ggplot2::aes(color = treatment == 1),
+	lower = list(continuous = wrap("points", alpha = 0.3), combo = wrap("dot_no_facet", alpha = 0.4)),
+	diag = list(continuous = "densityDiag", discrete = "barDiag", na = "naDiag", alpha = 0.4),
+)
+
+t_result <- t.test(outcome ~ treatment, data = dat)
+t_result
+t_result$estimate |> diff() |> round(digits = 2) |> unname()
 
 ggplot(dat, aes(x = x1, y = x2, color = factor(treatment))) + 
 	geom_point() +

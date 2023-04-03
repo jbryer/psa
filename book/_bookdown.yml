@@ -7,5 +7,9 @@ view: https://github.com/jbryer/psa/edit/master/book/%s
 edit: https://github.com/jbryer/psa/blob/master/book/%s
 clean: ["AppliedPSAwithR.rds"]
 language:
+  label:
+    fig: "Figure "
+    tab: "Table "
   ui:
+    edit: "Edit"
     chapter_name: "Chapter "

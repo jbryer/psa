@@ -1,3 +1,62 @@
-# Bootstrapping
+---
+editor_options: 
+  chunk_output_type: console
+---
+
+# Bootstrapping {#chapter-bootstrapping}
+
+```{r, cache=TRUE}
+require(PSAboot)
+
+boot.matching.1to3 <- function(Tr, Y, X, X.trans, formu, ...) {
+	return(boot.matching(Tr=Tr, Y=Y, X=X, X.trans=X.trans, formu=formu, M=3, ...))
+}
 
 
+boot_out <- PSAboot(Tr = lalonde$treat == 1, 
+					Y = lalonde$re78, 
+					X = lalonde[,all.vars(lalonde.formu)[-1]], 
+					seed = 2112,
+					methods=c('Stratification' = boot.strata,
+							  'ctree' = boot.ctree,
+							  'rpart' = boot.rpart,
+							  'Matching' = boot.matching,
+							  'Matching-1-to-3' = boot.matching.1to3,
+							  'MatchIt' = boot.matchit) )
+
+summary(boot_out)
+```
+
+```{r psaboot-plot, cache=TRUE, fig.cap='Mean difference across all bootstrap samples by method'}
+plot(boot_out)
+```
+
+```{r psaboot-boxplot, cache=TRUE, fig.cap=''}
+boxplot(boot_out)
+```
+
+
+```{r psaboot-matrixplot, cache=TRUE, fig.cap=''}
+matrixplot(boot_out)
+```
+
+```{r, cache=TRUE}
+boot_balance <- balance(boot_out)
+boot_balance
+```
+
+```{r psaboot-balance-plot, cache=TRUE, fig.cap=''}
+plot(boot_balance)
+```
+
+```{r psaboot-balance-boxplot, cache=TRUE, fig.cap=''}
+boxplot(boot_balance) + geom_hline(yintercept=.1, color='red')
+```
+
+Details are available within the returned object
+
+```{r}
+boot_balance$unadjusted
+boot_balance$complete
+boot_balance$pooled |> head()
+```

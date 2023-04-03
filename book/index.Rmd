@@ -5,16 +5,18 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
 url: https://psa.bryer.org
-# cover-image: path to the social sharing image like images/cover.jpg
+cover-image: images/psa.png
 description: |
   An introduction to conducting propensity score analysis with R.
 biblio-style: apalike
 bibliography: [book.bib, packages.bib]
 ---
 
-[![Bookdown Status](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml)
-
 # Preface {-}
+
+[![Bookdown Status](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml)
+`r badger::badge_repostatus("WIP")`
+
 
 I first encountered propensity score analysis (PSA) by my late dissertation advisor Robert Pruzek in 2006 when I entered graduate school. The notion that you could get reasonable causal estimates without the need of randomization was foreign to me and at first, I was skeptical. Many years later having used PSA for many projects, not only am I convinced it is possible, I believe there are instances where this may be preferred over the randomized control trial. I have been the Principal Investigator for two Federal grants to develop and test the [Diagnostic Assessment and Achievement of College Skills (DAACS)](https://daacs.net) where have attempted to conduct large scale randomized control trials (RCT) involving thousands of students. Through those experiences I have found that there are numerous compromises made in delivering an intervention that the generalizability of the results to a context where we are not concerned about the RCT make interpretations difficult. Moreover, RCTs assume a single effect for everyone. With PSA, particularly in the stratification section, it is possible to tease out how an intervention may vary by the observed covariates.
 

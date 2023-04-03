@@ -46,7 +46,7 @@ results.psa.math$overall.ci / sd(pisana.party$mathscore)
 plot(results.psa.math)
 mlpsa.difference.plot(results.psa.math)
 # Specifying sd (the standard deviation) effect sizes will be plotted.
-mlpsa.difference.plot(results.psa.math, sd=sd(pisana.party$mathscore))
+mlpsa.difference.plot(results.psa.math, sd = sd(pisana.party$mathscore))
 
 # Or the individual components of the main plot separately
 mlpsa.circ.plot(results.psa.math, legendlab='Country')

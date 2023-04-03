@@ -9,15 +9,14 @@ The use of propensity score methods [@RosenbaumRubin1983] for estimating causal 
 
 This book will provide a theoretical overview of propensity score methods as well as illustrations and discussion of PSA applications. Methods used in phase I of PSA (i.e. models or methods for estimating propensity scores) include logistic regression, classification trees, and matching. Discussions on appropriate comparisons and estimations of effect size and confidence intervals in phase II will also be covered. The use of graphics for diagnosing covariate balance as well as summarizing overall results will be emphasized. Lastly, the extension of PSA methods for multilevel data will also be presented.
 
-```{r popularity, echo=FALSE, message=FALSE, warning=FALSE, fig.cap='PSA Citations per Year'}
+```{r popularity, echo=FALSE, message=FALSE, warning=FALSE, fig.height = 3.5, fig.cap='PSA Citations per Year'}
 library(ggplot2)
 data("psa_citations", package = 'psa')
 ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) +
 	geom_path() +
 	scale_color_brewer('Search Teram', type = 'qual', palette = 2) +
 	ggtitle('Number of Citations for Propensity Score Analysis',
-			subtitle = 'Source: Web of Science and Google Scholar') +
-	theme_minimal()
+			subtitle = 'Source: Web of Science and Google Scholar')
 ```
 
 
@@ -25,7 +24,7 @@ ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) +
 
 In order to understand how propensity score analysis allows us to make causal estimates from observational data, we must first understand the basic principals of causality, particulary the counterfactual model. Figure \@ref(fig:introduction-causality) depicts a conterfactual model. We begin with our research subject. This can be a student, patient, rat, asteroid, or any other object we wish to know whether some condition has an effect on. Consider two parallel universes: one where the subject receives condition A and another where they receive condition B. Typically one condition is some treatment whereas the other condition is the absense of that treatment (also referred to as the control). We will use treatment and control throughout this book to refer to these two conditions. Once the individual has been exposed to the two conditions, the outcome is measured. The difference between these outcomes is the true causal effect. However, it is impossible for an object to exist in two universes at the same time, therefore we can never actually observe the true causal effect. @Holland1986 referred to this as the *Fundamental Problem of Causal Inference*.
 
-```{r introduction-causality, echo=FALSE, out.width='80%', fig.cap='Causal Model'}
+```{r introduction-causality, echo=FALSE, fig.cap='Theoretical Causal Model'}
 knitr::include_graphics("figures/Causality.png")
 ```
 
@@ -33,7 +32,82 @@ knitr::include_graphics("figures/Causality.png")
 
 The randomized experiment has been the goals standard for estimating causal effects. Effects can be estimated using simple means between groups, or blocks in randomized block design. Randomization presumes unbiasedness and balance between groups. However, randomization is often not feasible for many reasons, especially in educational contexts.
 
-The strong ignorability assumtion states that an outcome is independent of any observed or unobserved covariates under randomization. This is represented mathematically as:
+```{r, echo = FALSE}
+set.seed(2112)
+pop.mean <- 100
+pop.sd <- 15
+pop.es <- .3
+n <- 30
+thedata <- data.frame(
+	id = 1:30,
+	center = rnorm(n, mean = pop.mean, sd = pop.sd),
+	stringsAsFactors = FALSE
+)
+val <- pop.sd * pop.es / 2
+thedata$placebo <- thedata$center - val
+thedata$treatment <- thedata$center + val
+thedata$diff <- thedata$treatment - thedata$placebo
+thedata$RCT_Assignment <- sample(c('placebo', 'treatment'), n, replace = TRUE)
+thedata$RCT_Value <- as.numeric(apply(thedata, 1, 
+					FUN = function(x) { return(x[x['RCT_Assignment']]) }))
+tab.out <- psych::describeBy(thedata$RCT_Value, group = thedata$RCT_Assignment, mat = TRUE, skew = FALSE)
+
+p1 <- ggplot(thedata) + 
+	geom_segment(aes(x = placebo, xend = treatment, y = id, yend = id)) +
+	geom_point(aes(x = placebo, y = id), color = 'blue') +
+	geom_point(aes(x = treatment, y = id), color = 'red') +
+	ylab('') + xlab('Outcome') +
+	xlim(pop.mean - 3 * pop.sd, pop.mean + 3 * pop.sd) +
+	ggtitle(paste0('True Counterfactual Difference = ', mean(thedata$diff)))
+p1b <- p1 +
+	geom_vline(xintercept = mean(thedata$treatment), color = 'red') +
+	geom_vline(xintercept = mean(thedata$placebo), color = 'blue')
+p2 <- ggplot(thedata, aes(x = RCT_Value, color = RCT_Assignment, y = id)) +
+	geom_point() +
+	scale_color_manual(values = c('placebo' = 'blue', 'treatment' = 'red')) +
+	theme(legend.position = 'none') +
+	ylab('') + xlab('Outcome') +
+	xlim(pop.mean - 3 * pop.sd, pop.mean + 3 * pop.sd) +
+	ggtitle('Observed values in an RCT')
+p2b <- p2 + 
+	geom_vline(data = tab.out, aes(xintercept = mean, color = group1)) +
+	ggtitle(paste0('RCT Difference = ', round(diff(tab.out$mean), digits = 2)))
+```
+
+The Intelligence Quotient (IQ) is a common measure of intelligence. It is designed such that the mean is 100 and the standard deviation is 15. Consider we have developed an intervention that is known to increase anyone's IQ by 4.5 points. Figure \@ref(fig:rct1) represents such a scenario with 30 individuals. The left panel has the individual's outcome if they were assigned to the control condition (in blue) and to the treatment condition (in red). The distance between the red and blue points for any individual is 4.5, our stipulated counterfactual difference. For RCTs we only ever get to observe one outcome for any individual. The right pane represents one possible outcome from an RCT.
+
+```{r rct1, echo=FALSE, fig.height = 4, fig.cap = 'Example conterfactuals (left panel) with one possible randomized control trial.'}
+cowplot::plot_grid(p1, p2, align = 'h')
+```
+
+Figure \@ref(fig:rct2) includes the mean differences between treatment and control as vertical lines in blue and red, respectively. On the left where we observe the true counterfactuals the difference between the treatment (in red) and control (in blue) vertical lines is 4.5. However, on the right the difference between treatment and control is -5.3! 
+
+
+```{r rct2, echo=FALSE, fig.height = 4, fig.cap = 'Estimated differences for full counterfactual model and one RCT.'}
+cowplot::plot_grid(p1b, p2b, align = 'h')
+```
+
+In this exmaple not only did the RCT not estimate the true effect, it estimated in the wrong direction. However, Figure \@ref(fig:rctc) represents the distribution of effects after conducting 1,000 RCTs from the 30 individuals above. The point here is that the RCT is already compromise to estimating the true counterfactual (i.e. causal effect). It is consider the gold standard because over many trials it will nearly approximate the true counterfactual.
+
+```{r rctc, echo=FALSE, fig.height = 4, fig.cap = 'Distribution of differences across many RCTs'}
+sim.diff <- numeric(1000)
+for(i in seq_along(sim.diff)) {
+	treats <- sample(c(T,F), n, replace = TRUE)
+	sim.diff[i] <- mean(thedata[treats,]$treatment) - mean(thedata[!treats,]$placebo)
+}
+ggplot(data.frame(x = sim.diff), aes(x = x)) + 
+	geom_histogram(alpha = 0.5, bins = 20) +
+	geom_vline(xintercept = mean(thedata$diff), color = 'red') +
+	geom_vline(xintercept = mean(sim.diff)) +
+	xlab('RCT Different') + ylab('Count')
+```
+
+
+
+
+
+
+The strong ignorability assumption states that an outcome is independent of any observed or unobserved covariates under randomization. This is represented mathematically as:
 
 $$\left( { Y }_{ i }\left( 1 \right) ,{ Y }_{ i }\left( 0 \right)  \right) \bot { T }_{ i }$$
 
@@ -46,58 +120,241 @@ $${\delta}_{i} = { Y }_{ i1 }-{ Y }_{ i0 }$$
 However, it is impossible to directly observe \\({\delta}_{i}\\) (referred to as The Fundamental Problem of Causal Inference, Holland 1986). Rubin framed this problem as a missing data problem.
 
 
-
 ### Rubin's Causal Model
 
-## Conceptual Steps for Conducting Propensity Score Analysis
+## Conceptual Phases of Propensity Score Analysis
+
+Propensity score analysis is typically conducted in three phases, namely:
+
+1. Model for selection bias (i.e. estimate propensity scores).
+2. Estimate causal effects.
+3. Check for sensitivity to unobserved confounders.
+
+The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification, matching, and weighting.
 
 ### Phase I: Modeling for Selection Bias
 
+Phase one of propensity score analysis is a cyclical process where propensity scores are estimated using a statistical model, balance in observed covariates is checked, and modifications to the statistical model are modified until sufficient balance is achieved. For simplicity we will use logistic regression to estimate propensity scores throughout the book. However, will introduce classification trees in chapter \@ref(chapter-stratification) given how they are uniquely applicable to stratification methods in and in appendix \@ref(appendix-psmodels) outlines some additional statistical methods, with R code, for estimating propensity scores.
+
 #### Estimate Propensity Scores
 
-The goal in phase one of PSA is to estimate the probability of being in the treatment. Since in most cases this is a binary outcome, logistic regressionis a common approach to estimating propensity scores. 
-
-$$ \sigma =\frac { { e }^{ t } }{ { e }^{ t }+1 } =\frac { 1 }{ 1+{ e }^{ -1 } }  $$
-
-$$ t={ \beta  }+{ \beta  }_{ 1 }x+\cdots +{ \beta  }_{ k } $$
-
-$$ F\left( x \right) =\frac { 1 }{ 1+{ e }^{ -\left( { \beta  }+{ \beta  }_{ 1 }x+\cdots +{ \beta  }_{ k } \right)  } } $$
-
-Figure \@ref(fig:introduction-logistic) depicts a fitted logistic regression along with a sample of matchs connected by the purple lines.^[The data in this figure are from the [`lalonde`](#lalonde) dataset that will be described at the end of this chapter.]
-
-```{r introduction-logistic, echo=FALSE, fig.height=4, fig.cap='Propensity Scores from Logistic Regression with Sample of Matched Pairs'}
-lalonde.lr <- glm(lalonde.formu, family=binomial, data=lalonde)
-lalonde$ps <- fitted(lalonde.lr)
-lalonde.match <- Match(Y=lalonde$re78, Tr=lalonde$treat, X=lalonde$ps, M=1);
-lalonde.match.df <- data.frame(treated.ps=lalonde[lalonde.match$index.treated,]$ps,
-						       control.ps=lalonde[lalonde.match$index.control,]$ps,
-							   treated.y=1, control.y=0)
-lalonde.match.df <- lalonde.match.df[order(lalonde.match.df$control.ps),]
-rows <- (1:nrow(lalonde.match.df) - 1) %% floor(nrow(lalonde.match.df) / 5) == 0
-ggplot(lalonde, aes(x=ps, y=treat)) + geom_point(alpha=0.5) +
-	stat_smooth(method="glm", method.args=list(family="binomial"), se=FALSE) +
-	xlim(c(0,1)) + xlab('Propensity Score') + ylab('Treatment') +
-	geom_segment(data=lalonde.match.df[rows,], 
-				 aes(x=treated.ps, xend=control.ps, y=treated.y, yend=control.y),
-				 color='purple')
-
-# lindner.lr <- glm(lindner.formu, family=binomial, data=lindner)
-# lindner$ps <- fitted(lindner.lr)
-# ggplot(lindner, aes(x=ps, y=abcix)) + geom_point() +
-# 	stat_smooth(method="glm", method.args=list(family="binomial"), se=FALSE) +
-# 	xlim(c(0, 1))
-
-# tutoring.lr <- glm(tutoring.formu, family=binomial, data=tutoring)
-# tutoring$ps <- fitted(tutoring.lr)
-# ggplot(tutoring, aes(x=ps, y=as.integer(treat2))) + geom_point() +
-# 	stat_smooth(method="glm", method.args=list(family="binomial"), se=FALSE) +
-# 	xlim(c(0,1))
-
+```{r simulationSetup, cache=TRUE, echo=FALSE}
+set.seed(2112) 
+n <- 500
+treatment_effect <- 2
+X <- mvtnorm::rmvnorm(n,
+					  mean = c(0.5, 1),
+					  sigma = matrix(c(2, 1, 1, 1), ncol = 2) )
+dat <- tibble::tibble(
+	x1 = X[, 1],
+	x2 = X[, 2],
+	treatment = as.numeric(-0.5 + 0.25 * x1 + 0.75 * x2 + rnorm(n, 0, 1) > 0),
+	outcome = treatment_effect * treatment + x1 + x2 + rnorm(n, 0, 1)
+)
 ```
+
+Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous. Very often logistic regression is used, but with the advances in predictive models we have an increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis will use a simulated dataset with two pre-treatment covariates, `x1` and `x2`, treatment indicator, and an outcome variable with a treatment_effect of `r treatment_effect`. Figure \@ref(fig:sim-scatter) is a scatter plot of the simulated data.^[This simulated dataset is adapted from a [blog post](https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html) by [Lucy D’Agostino McGowan](https://www.lucymcgowan.com)]
+
+```{r sim-scatter, echo=FALSE, fig.cap = 'Scatterplot of simulated datatset', fig.height=5}
+ggplot(dat, aes(x = x1, y = x2, color = factor(treatment))) + 
+	geom_point() + 
+	scale_color_manual('Treatment', values = palette2) +
+	theme(legend.position = 'bottom')
+```
+
+Figure \@ref(fig:sim-ggpairs) is a pairs plot [@R-GGally] showing the relationship between the covariates (i.e. `x1` and `x2`) with the outcome grouped by treatment. There is a statistically significant correlation between each of the covariates and the outcome suggesting there is  selection bias that would bias any causal estimate.
+
+```{r sim-ggpairs, echo=FALSE, cache=TRUE, fig.cap = 'Pairs plot showing the relationships between covariates, treatment, and outcome'}
+p <- GGally::ggpairs(
+	dat[,1:4],
+	columns = c(1,2,4),
+	mapping = ggplot2::aes(color = treatment == 1),
+	lower = list(continuous = GGally::wrap("points", alpha = 0.3), 
+				 combo = GGally::wrap("dot_no_facet", alpha = 0.4)),
+	diag = list(continuous = "densityDiag", discrete = "barDiag", na = "naDiag", alpha = 0.4),
+)
+for(i in 1:p$nrow) {
+  for(j in 1:p$ncol){
+    p[i,j] <- p[i,j] + 
+    	scale_color_manual(values = palette2) +
+    	scale_fill_manual(values = palette2)
+  }
+}
+p
+```
+
+```{r, echo=FALSE, results='hide'}
+t_result <- t.test(outcome ~ treatment, data = dat)
+```
+
+Indeed a simple null hypothesis test resulted in a difference of `r t_result$estimate |> diff() |> round(digits = 2) |> unname()` ($t_{`r round(t_result$parameter) |> unname()`} = `r round(t_result$statistic, digits = 2) |> unname()`$, *p* < 0.01), however we setup the simulation to have a mean difference of 2!
+
+```{r, echo=FALSE}
+t_result
+```
+
+Propensity scores allow us to adjust for this selection bias.
+
+After estimating the propensity scores we can plot the distributions by treatment and control as represented in figure \@ref(fig:sim-dist). Note how the distributions are skewed; treatment group is negatively skewed and the control group is positively skewed. This should hopefully make intuitive sense. As the probability of being in the treatment increases, we should see the number of treatment observations increase while the number of control observation decreases. 
+
+```{r, echo=FALSE, results='hide'}
+lr.out <- glm(treatment ~ x1 + x2, data = dat, family = binomial(link='logit'))
+dat$ps <- fitted(lr.out) # Get the propensity scores
+# summary(lr.out)
+```
+
+```{r sim-dist, echo=FALSE, fig.height=4, fig.cap='Distribution of propensity scores'}
+dat2 <- dat |> tidyr::spread(treatment, ps, sep = '_p')
+ggplot(dat) +
+	geom_histogram(data = dat[dat$treatment == 1,], aes(x = ps, y = ..count..),
+				   bins = 50, fill = palette2[2]) +
+	geom_histogram(data = dat[dat$treatment == 0,], aes(x = ps, y = -..count..),
+				   bins = 50, fill = palette2[1]) +
+	geom_hline(yintercept = 0, lwd = 0.5) +
+	scale_y_continuous(label = abs) 
+```
+
+
 
 #### Evaluate Balance
 
+
+
+
 ### Phase II: Estimate Causal Effects
+
+
+
+Chapter \@ref(chapter-weighting)
+
+
+
+```{r sim-loess, echo = FALSE, fig.height = 5, fig.cap='Scatter plot of propensity scores against outcome with Loess regression lines'}
+ggplot(dat, aes(x = ps, y = outcome, color = factor(treatment))) + 
+	geom_point() +
+	geom_smooth(method = 'loess', formula = y ~ x) +
+	xlab('Propensity Score') +
+	scale_color_manual('Treatment', values = palette2) +
+	theme(legend.position = 'bottom')
+```
+
+
+
+
+```{r, echo=FALSE}
+dat <- dat |> mutate(
+	ate_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATE'),
+	att_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATT'),
+	atc_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATC'),
+	atm_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATM')
+)
+```
+
+
+#### Average treatment_effect (ATE)
+
+
+$$ ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X) $$
+Figure \@ref(fig:ate-hist)
+
+```{r ate-hist, echo = FALSE, fig.height=4, fig.cap = 'Histogram of average treatement effect'}
+ggplot() +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, y = ..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, weight = ate_weight, y = ..count..),
+				   bins = 50, 
+				   fill = palette2[2], alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, y = -..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, weight = ate_weight, y = -..count..),
+				   bins = 50, 
+				   fill = palette2[1], alpha = 0.5) +
+	ggtitle('Average treatment_effect (ATE)')
+```
+
+#### Average treatment_effect Among the Treated (ATT)
+
+$$ ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1) $$
+Figure \@ref(fig:att-hist)
+
+```{r att-hist, echo=FALSE, fig.height=4, fig.cap = 'Histogram of average treatement among the treated'}
+ggplot() +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, y = ..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, weight = att_weight, y = ..count..),
+				   bins = 50, 
+				   fill = palette2[2], alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, y = -..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, weight = att_weight, y = -..count..),
+				   bins = 50, 
+				   fill = palette2[1], alpha = 0.5) +
+	ggtitle('Average treatment_effect Among the Treated (ATT)')
+```
+
+#### Average treatment_effect Among the Control (ATC)
+
+$$ ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0) $$
+
+Figure \@ref(fig:atc-hist)
+
+```{r atc-hist, echo=FALSE, fig.height=4, fig.cap = 'Histogram of average treatement among the control'}
+ggplot() +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, y = ..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, weight = atc_weight, y = ..count..),
+				   bins = 50, 
+				   fill = palette2[2], alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, y = -..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, weight = atc_weight, y = -..count..),
+				   bins = 50, 
+				   fill = palette2[1], alpha = 0.5) +
+	ggtitle('Average treatment_effect Among the Control (ATC)')
+```
+
+#### Average treatment_effect Among the Evenly Matched (ATM)
+
+@LiGreene2013 
+
+$$ ATM_d = E(Y_1 - Y_0 | M_d = 1) $$
+
+Figure \@ref(fig:acm-hist)
+
+```{r acm-hist, echo=FALSE, fig.height=4, fig.cap = 'Histogram of average treatment_effect among the evenly matched'}
+ggplot() +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, y = ..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 1,],
+				   aes(x = ps, weight = atm_weight, y = ..count..),
+				   bins = 50, 
+				   fill = palette2[2], alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, y = -..count..),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treatment == 0,],
+				   aes(x = ps, weight = atm_weight, y = -..count..),
+				   bins = 50, 
+				   fill = palette2[1], alpha = 0.5) +
+	ggtitle('Average treatment_effect Among the Evenly Matched (ACM)')
+```
+
+
+### Phase III: Sensitivity Analysis
+
 
 
 ## R Primer

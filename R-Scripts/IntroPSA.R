@@ -144,7 +144,7 @@ tmp <- data.frame(treat=factor(lalonde$treat),
 				  strata.tree=factor(tree.fit$where) )
 
 # The relationship between the propensity scores estimated using logistic
-# regression and a classificaiton tree.
+# regression and a classification tree.
 ggplot(tmp, aes(x=ps.lr, y=treat, color=strata.tree)) + geom_jitter() + 
 	scale_color_brewer(type='qual')
 # The relationship between the conditional probability and classification.

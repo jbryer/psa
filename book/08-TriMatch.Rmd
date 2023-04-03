@@ -1,4 +1,4 @@
-# Non-Binary Treatments
+# Non-Binary Treatments {#chapter-non-binary}
 
 
 ```{r}

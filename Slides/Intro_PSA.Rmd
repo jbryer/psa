@@ -159,9 +159,6 @@ for all ${X}_{i}$.
 ---
 # RCT Example
 
-```{r, echo=FALSE}
-set.seed(123)
-```
 
 ```{r}
 set.seed(2112)
@@ -394,7 +391,7 @@ summary(lr.out)
 # Distribution of Propensity Scores
 
 ```{r, fig.height=3}
-dat2 <- dat %>% tidyr::spread(treatment, ps, sep = '_p')
+dat2 <- dat |> tidyr::spread(treatment, ps, sep = '_p')
 ggplot(dat) +
 	geom_histogram(data = dat[dat$treatment == 1,], aes(x = ps, y = ..count..),
 				   bins = 50, fill = cols[2]) +
@@ -408,7 +405,7 @@ ggplot(dat) +
 # Propensity Score Weights
 
 ```{r}
-dat <- dat %>% mutate(
+dat <- dat |> mutate(
 	ate_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATE'),
 	att_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATT'),
 	atc_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATC'),

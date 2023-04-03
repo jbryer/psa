@@ -3,7 +3,7 @@
 ```{r include=FALSE}
 pkgs <- c('granova', 'granovaGG', 'Matching', 'MatchIt', 'mice', 
           'multilevelPSA', 'party', 'PSAboot', 'PSAgraphics', 'rbounds',
-		  'TriMatch')
+		  'TriMatch', 'GGally')
 knitr::write_bib(c(
   .packages(), 'bookdown', 'knitr', 'rmarkdown', pkgs
 ), 'packages.bib')

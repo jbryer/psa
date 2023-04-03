@@ -38,6 +38,7 @@ Enhances:
     bookdown,
     devtools,
     granova,
+    GGally,
     multilevelPSA,
     PSAboot,
     PSAgraphics,

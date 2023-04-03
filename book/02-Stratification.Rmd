@@ -3,7 +3,35 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Stratification
+# Stratification {#chapter-stratification}
+
+Since in most cases this is a binary outcome, logistic regression is a common approach to estimating propensity scores. 
+
+$$ \sigma =\frac { { e }^{ t } }{ { e }^{ t }+1 } =\frac { 1 }{ 1+{ e }^{ -1 } }  $$
+
+$$ t={ \beta  }+{ \beta  }_{ 1 }x+\cdots +{ \beta  }_{ k } $$
+
+$$ F\left( x \right) =\frac { 1 }{ 1+{ e }^{ -\left( { \beta  }+{ \beta  }_{ 1 }x+\cdots +{ \beta  }_{ k } \right)  } } $$
+
+The goal in phase one of PSA is to estimate the probability of being in the treatment. 
+Figure \@ref(fig:introduction-logistic) depicts a fitted logistic regression along with a sample of matchs connected by the purple lines.^[The data in this figure are from the [`lalonde`](#lalonde) dataset that will be described at the end of this chapter.]
+
+```{r introduction-logistic, echo=FALSE, fig.height=4, fig.cap='Propensity Scores from Logistic Regression with Sample of Matched Pairs'}
+lalonde.lr <- glm(lalonde.formu, family=binomial, data=lalonde)
+lalonde$ps <- fitted(lalonde.lr)
+lalonde.match <- Match(Y=lalonde$re78, Tr=lalonde$treat, X=lalonde$ps, M=1);
+lalonde.match.df <- data.frame(treated.ps=lalonde[lalonde.match$index.treated,]$ps,
+						       control.ps=lalonde[lalonde.match$index.control,]$ps,
+							   treated.y=1, control.y=0)
+lalonde.match.df <- lalonde.match.df[order(lalonde.match.df$control.ps),]
+rows <- (1:nrow(lalonde.match.df) - 1) %% floor(nrow(lalonde.match.df) / 5) == 0
+ggplot(lalonde, aes(x=ps, y=treat)) + geom_point(alpha=0.5) +
+	stat_smooth(method="glm", method.args=list(family="binomial"), se=FALSE) +
+	xlim(c(0,1)) + xlab('Propensity Score') + ylab('Treatment') +
+	geom_segment(data=lalonde.match.df[rows,], 
+				 aes(x=treated.ps, xend=control.ps, y=treated.y, yend=control.y),
+				 color='purple')
+```
 
 
 The tutoring example has treatment with three levels: Treat1, Treat2, and Control. We'll convert this to a two level treatment for this example. 
