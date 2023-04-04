@@ -15,7 +15,7 @@ lalonde.formu <- treat ~ age + I(age^2) + educ + I(educ^2) + black +
 
 ## Logistic Regression
 
-```{r, cache=TRUE}
+```{r, cache=TRUE, eval=FALSE}
 lr_out <- glm(lalonde.formu,
 			  data = lalonde,
 			  family = binomial(link = logit))
@@ -25,7 +25,7 @@ lr_ps <- fitted(lr_out)
 
 ## Conditional Inference Trees with `party` package
 
-```{r, cache=TRUE}
+```{r, cache=TRUE, eval=FALSE}
 library(party)
 ctree_out <- ctree(lalonde.formu,
 				   data = lalonde)
@@ -35,7 +35,7 @@ ctree_out <- ctree(lalonde.formu,
 
 ## Recusrive Partitioning with `rpart`
 
-```{r, cache=TRUE}
+```{r, cache=TRUE, eval=FALSE}
 library(rpart)
 rpart_out <- rpart(lalonde.formu,
 				   data = lalonde,
@@ -57,7 +57,7 @@ stan_ps <- predict(stan_out, type = 'response')
 
 ## Probit BART for dichotomous outcomes with Normal latents
 
-```{r, cache=TRUE}
+```{r, cache=TRUE, eval=FALSE}
 library(BART)
 bart_out <- pbart(x.train = lalonde[,all.vars(lalonde.formu)[-1]],
 				  y.train = lalonde[,all.vars(lalonde.formu)[1]])
@@ -67,7 +67,7 @@ bart_ps <- bart_out$prob.test.mean
 ## Random Forests
 
 
-```{r, cache=TRUE}
+```{r, cache=TRUE, eval=FALSE}
 library(randomForest)
 rf_out <- randomForest(update.formula(lalonde.formu, factor(treat) ~ .),
 					   data = lalonde)
