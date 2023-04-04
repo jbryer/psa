@@ -72,3 +72,8 @@ Slides/Albany R Meetup/Slides.tpbuild
 config.R
 inst/shiny/psa/rsconnect
 .DS_Store
+book/AppliedPSAwithR.bbl
+book/AppliedPSAwithR.blg
+book/AppliedPSAwithR.log
+book/AppliedPSAwithR.tex
+book/AppliedPSAwithR.toc

@@ -20,8 +20,8 @@ devtools::check(cran = TRUE)
 # For the bookdown site
 # library(bookdown)
 wd <- setwd('book')
-bookdown::render_book(input = "index.Rmd", 
-					  output_dir = '../docs')
+bookdown::render_book(input = "index.Rmd", output_format = "bookdown::bs4_book")
+bookdown::render_book(input = "index.Rmd", output_format = "bookdown::pdf_book")
 setwd(wd)
 
 library(RefManageR)

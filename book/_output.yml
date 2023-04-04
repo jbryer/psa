@@ -3,6 +3,7 @@ bookdown::bs4_book:
   theme:
     primary: "#8DA0CB"
   cover-image: images/psa.png
+  template: bs4_book_template.html
   repo: 
     base: https://github.com/jbryer/psa
     subdir: book

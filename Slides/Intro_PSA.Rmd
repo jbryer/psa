@@ -95,7 +95,7 @@ class: center, middle, inverse, title-slide
 # `r metadata$title`
 ## `r metadata$subtitle`
 ### `r metadata$author`
-### `r metadata$date`
+### Last updated: `r `format(Sys.Date(), '%B %d, %Y')`
 
 
 ---

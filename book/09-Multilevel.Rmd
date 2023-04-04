@@ -19,6 +19,10 @@ table(pisana$CNT, pisana$PUBPRIV, useNA='ifany')
 prop.table(table(pisana$CNT, pisana$PUBPRIV, useNA='ifany'), 1) * 100
 ```
 
+```{r, echo=FALSE, fig.cap='Annotated multilevel PSA assessment plot. This plot compares private schools (x- axis) against public schools (y-axis) for North America from the Programme of International Student Assessment.'}
+knitr::include_graphics('figures/AnnotatedCircPlot.png')
+```
+
 Phase I
 
 Use conditional inference trees from the party package
