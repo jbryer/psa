@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 1 Introduction | Applied Propensity Score Analysis with R</title>
+<meta name="author" content="Jason Bryer, Ph.D.">
+<meta name="description" content="The use of propensity score methods (Rosenbaum and Rubin 1983) for estimating causal effects in observational studies or certain kinds of quasi-experiments has been increasing over the last couple...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="Chapter 1 Introduction | Applied Propensity Score Analysis with R">
+<meta property="og:type" content="book">
+<meta property="og:url" content="https://psa.bryer.org/chapter-introduction.html">
+<meta property="og:image" content="https://psa.bryer.org/images/cover.png">
+<meta property="og:description" content="The use of propensity score methods (Rosenbaum and Rubin 1983) for estimating causal effects in observational studies or certain kinds of quasi-experiments has been increasing over the last couple...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 1 Introduction | Applied Propensity Score Analysis with R">
+<meta name="twitter:description" content="The use of propensity score methods (Rosenbaum and Rubin 1983) for estimating causal effects in observational studies or certain kinds of quasi-experiments has been increasing over the last couple...">
+<meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Applied Propensity Score Analysis with R</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Preface</a></li>
+<li><a class="active" href="chapter-introduction.html"><span class="header-section-number">1</span> Introduction</a></li>
+<li><a class="" href="chapter-stratification.html"><span class="header-section-number">2</span> Stratification</a></li>
+<li><a class="" href="chapter-matching.html"><span class="header-section-number">3</span> Matching</a></li>
+<li><a class="" href="chapter-weighting.html"><span class="header-section-number">4</span> Weighting</a></li>
+<li><a class="" href="chapter-missing.html"><span class="header-section-number">5</span> Missing Data</a></li>
+<li><a class="" href="chapter-sensitivity.html"><span class="header-section-number">6</span> Sensitivity Analysis</a></li>
+<li><a class="" href="chapter-bootstrapping.html"><span class="header-section-number">7</span> Bootstrapping</a></li>
+<li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
+<li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">9</span> Multilevel PSA</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Application</a></li>
+<li><a class="" href="appendix-psranges.html"><span class="header-section-number">B</span> Propensity Score Ranges</a></li>
+<li><a class="" href="appendix-psmodels.html"><span class="header-section-number">C</span> Methods for Estimating Propensity Scores</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/jbryer/psa">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="chapter-introduction" class="section level1" number="1">
+<h1>
+<span class="header-section-number">1</span> Introduction<a class="anchor" aria-label="anchor" href="#chapter-introduction"><i class="fas fa-link"></i></a>
+</h1>
+<p>The use of propensity score methods <span class="citation">(Rosenbaum and Rubin 1983)</span> for estimating causal effects in observational studies or certain kinds of quasi-experiments has been increasing over the last couple of decades (see Figure <a href="chapter-introduction.html#fig:popularity">1.1</a>), especially in the social sciences <span class="citation">(Thoemmes and Kim 2011)</span> and medical research <span class="citation">(Austin 2008)</span>. Propensity score analysis (PSA) attempts to adjust selection bias that occurs due to the lack of randomization. Analysis is typically conducted in three phases where in phase I, the probability of placement in the treatment is estimated to identify matched pairs or clusters so that in phase II, comparisons on the dependent variable can be made between matched pairs or within clusters. Lastly, phase III involves testing the robustness of estimates to any unobserved confounders. R <span class="citation">(R Core Team 2023)</span> is ideal for conducting PSA given its wide availability of the most current statistical methods vis-à-vis add-on packages as well as its superior graphics capabilities.</p>
+<p>This book will provide a theoretical overview of propensity score methods as well as illustrations and discussion of implementing PSA methods in R. Chapter <a href="chapter-introduction.html#chapter-introduction">1</a> provides an overview of all three phases of PSA with minimal R code. Chapters <a href="chapter-stratification.html#chapter-stratification">2</a>, <a href="chapter-matching.html#chapter-matching">3</a>, and <a href="chapter-weighting.html#chapter-weighting">4</a> will discuss the details of implementing the three major approaches to PSA. Chapter <a href="chapter-missing.html#chapter-missing">5</a> provides some strategies to conducting PSA when there is missing data. Chapters <a href="chapter-sensitivity.html#chapter-sensitivity">6</a> and <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a> provide details for phase III of PSA using sensitivity analysis and bootstrapping, respectively. Lastly, chapter <a href="chapter-non-binary.html#chapter-non-binary">8</a> provides methods for implementing PSA with non-binary treatments and chapter <a href="chapter-multilevelpsa.html#chapter-multilevelpsa">9</a> discusses methods for PSA with cluster, or Hierarchical, data. The appendices contain additional details regarding the PSA Shiny application (Appendix @ref{appendix-shiny}), limitations of interpreting fitted values from logistic regression (Appendix <a href="appendix-psranges.html#appendix-psranges">B</a>), and additional methods and packages for estimating propensity scores (Appendix <a href="appendix-psmodels.html#appendix-psmodels">C</a>).</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:popularity"></span>
+<img src="01-Introduction_files/figure-html/popularity-1.png" alt="PSA Citations per year" width="100%"><p class="caption">
+Figure 1.1: PSA Citations per year
+</p>
+</div>
+<div id="counterfactual-model-for-causality" class="section level2" number="1.1">
+<h2>
+<span class="header-section-number">1.1</span> Counterfactual Model for Causality<a class="anchor" aria-label="anchor" href="#counterfactual-model-for-causality"><i class="fas fa-link"></i></a>
+</h2>
+<p>In order to understand how propensity score analysis allows us to make causal estimates from observational data, we must first understand the basic principals of causality, particularly the counterfactual model. Figure <a href="chapter-introduction.html#fig:introduction-causality">1.2</a> depicts a conterfactual model. We begin with our research subject. This can be a student, patient, mouse, asteroid, or any other object we wish to know whether some condition has an effect on. Consider two parallel universes: one where the subject receives condition A and another where they receive condition B. Typically one condition is some treatment whereas the other condition is the absence of that treatment (also referred to as the control). We will use treatment and control throughout this book to refer to these two conditions. Once the individual has been exposed to the two conditions, the outcome is measured. The difference between these outcomes is the true causal effect. However, unless your Dr. Strange living in the Marvell multiverse, it is impossible for an object to exist in two universes at the same time, therefore we can never actually observe the true causal effect. <span class="citation">Holland (1986)</span> referred to this as the <em>Fundamental Problem of Causal Inference</em>.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:introduction-causality"></span>
+<img src="figures/Causality.png" alt="Theoretical Causal Model" width="100%"><p class="caption">
+Figure 1.2: Theoretical Causal Model
+</p>
+</div>
+</div>
+<div id="randomized-control-trials-the-gold-standard" class="section level2" number="1.2">
+<h2>
+<span class="header-section-number">1.2</span> Randomized Control Trials: “The Gold Standard”<a class="anchor" aria-label="anchor" href="#randomized-control-trials-the-gold-standard"><i class="fas fa-link"></i></a>
+</h2>
+<p>The randomized control trials (RCT) has been the gold standard for estimating causal effects. Effects can be estimated using simple means between groups, or blocks in randomized block design. Randomization presumes unbiasedness and balance between groups. However, randomization is often not feasible for many reasons, especially in educational contexts. Although the RCT is the gold standard, it is important to recognize that it only <em>estimates</em> the causal effect. We will look at an example of where the RCT can be wrong and why on average it provides good estimates of the true causal effect so we can build a model to closely mimick the RCT with non-randomized data.</p>
+<p>The Intelligence Quotient (IQ) is a common measure of intelligence. It is designed such that the mean is 100 and the standard deviation is 15. Consider we have developed an intervention that is known to increase anyone’s IQ by 4.5 points (or a standardized effect size of 0.3). Figure <a href="chapter-introduction.html#fig:rct1">1.3</a> represents such a scenario with 30 individuals. The left panel has the individual’s outcome if they were assigned to the control condition (in blue) and to the treatment condition (in red). The distance between the red and blue points for any individual is 4.5, our stipulated counterfactual difference. For RCTs we only ever get to observe one outcome for any individual. The right pane represents one possible set of outcomes from an RCT. That is, we randomly selected one outcome for each individual from the left pane.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:rct1"></span>
+<img src="01-Introduction_files/figure-html/rct1-1.png" alt="Example conterfactuals (left panel) with one possible randomized control trial." width="100%"><p class="caption">
+Figure 1.3: Example conterfactuals (left panel) with one possible randomized control trial.
+</p>
+</div>
+<p>Figure <a href="chapter-introduction.html#fig:rct2">1.4</a> includes the mean differences between treatment and control as vertical lines in blue and red, respectively. On the left where we observe the true counterfactuals the difference between the treatment (in red) and control (in blue) vertical lines is 4.5. However, on the right the difference between treatment and control is -5.3!</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:rct2"></span>
+<img src="01-Introduction_files/figure-html/rct2-1.png" alt="Estimated differences for full counterfactual model and one RCT." width="100%"><p class="caption">
+Figure 1.4: Estimated differences for full counterfactual model and one RCT.
+</p>
+</div>
+<p>In this example not only did the RCT not estimate the true effect, it estimated in the wrong direction. However, Figure <a href="chapter-introduction.html#fig:rctc">1.5</a> represents the distribution of effects after conducting 1,000 RCTs from the 30 individuals above. The point here is that the RCT is already compromise to estimating the true counterfactual (i.e. causal effect). It is consider the gold standard because over many trials it will nearly approximate the true counterfactual.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:rctc"></span>
+<img src="01-Introduction_files/figure-html/rctc-1.png" alt="Distribution of differences across many RCTs" width="100%"><p class="caption">
+Figure 1.5: Distribution of differences across many RCTs
+</p>
+</div>
+<p>The RCT works because the probability of anyone being in the treatment is 50%. Statistically, we call this the strong ignorability assumption. The strong ignorability assumption states that an outcome is independent of any observed or unobserved covariates<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Covariates used in this book and in the context of propensity score analysis are the independent variables that influence statistical models for predicting treatment placement and outcomes.&lt;/p&gt;"><sup>1</sup></a> under randomization. This is represented mathematically as:</p>
+<p><span class="math display" id="eq:eq1">\[\begin{equation}
+\begin{aligned}
+\left( { Y }_{ i }\left( 1 \right) ,{ Y }_{ i }\left( 0 \right)  \right) \bot { T }_{ i }
+\end{aligned}
+\tag{1.1}
+\end{equation}\]</span></p>
+<p>For all <span class="math inline">\({X}_{i}\)</span> Here, <span class="math inline">\(Y\)</span> is our outcome of interest and <em>i</em> is an individual response such that <span class="math inline">\(Y_i(1)\)</span> is the outcome for subject <em>i</em> if assigned to the treatment group and <span class="math inline">\(Y_i(0)\)</span> is the outcome for subject <em>i</em> if assigned to the control group. The <span class="math inline">\(\bot\)</span> means independent and <span class="math inline">\(T_i\)</span> is assignment indicator subject <em>i</em>. Therefore, it follows that the causal effect of a treatment is the difference in an individual’s outcome under the situation they were given the treatment and not (referred to as a counterfactual).</p>
+<p><span class="math display" id="eq:eq2">\[\begin{equation}
+\begin{aligned}
+{\delta}_{i} = { Y }_{ i1 }-{ Y }_{ i0 }
+\end{aligned}
+\tag{1.2}
+\end{equation}\]</span></p>
+<p>However, it is impossible to directly observe \({}_{i}\) (referred to as The Fundamental Problem of Causal Inference, Holland 1986). Rubin framed this problem as a missing data problem and the details will be discussed in the next section.</p>
+<div id="rubins-causal-model" class="section level3" number="1.2.1">
+<h3>
+<span class="header-section-number">1.2.1</span> Rubin’s Causal Model<a class="anchor" aria-label="anchor" href="#rubins-causal-model"><i class="fas fa-link"></i></a>
+</h3>
+<p>Returning to Figure <a href="chapter-introduction.html#fig:introduction-causality">1.2</a>, the problem with getting a true causal effect is that we only observe outcome A <strong>or</strong> outcome B, never both. As a result, we are missing data to estimate the causal effect. <span class="citation">Neyman (1923)</span> first coined the term <em>potential outcomes</em> when referring to randomized trials. However, Donald Rubin extended Neyman’s idea to include both observational and experimental data. Rubin’s student <span class="citation">Holland (1986)</span> later coined this the Rubin Causal Model.</p>
+<p><span class="citation">Rubin (1974)</span> discussed an example of the effect of aspirin on a headache:</p>
+<blockquote>
+<p>“Intuitively, the causal effect of one treatment, E, over another, C, for a particular unit and an interval of time from <span class="math inline">\(t_{1}\)</span>
+to <span class="math inline">\(t_{2}\)</span> is the difference between what would have happened at time <span class="math inline">\(t_{2}\)</span> if the unit had been exposed to E initiated at <span class="math inline">\(t_{1}\)</span> and what would have happened at <span class="math inline">\(t_{2}\)</span> if the unit had been exposed to C initiated at <span class="math inline">\(t_{1}\)</span>: ‘If an hour ago I had taken two aspirins instead of just a glass of water, my headache would now be gone,’ or ‘because an hour ago I took two aspirins instead of just a glass of water, my headache is now gone.’ Our definition of the causal effect of the E versus C treatment will reflect this intuitive meaning.”</p>
+</blockquote>
+<p>Under the Rubin Causal Model, whether or not you have a headache is the cause of whether or not your took aspirin one hour ago, but we can only observe one. The key to estimating the causal effect has to do with understanding the mechanism for the selecting whether or nor to take the aspirin. Imagine you get chronic headaches so you need to decide many times whether or not to take an aspirin. Let’s also stimulate that the aspirin is more likely to be effective if you take it in the morning than the afternoon. If you decide to flip a coin to decide whether or not to take the aspirin there should be balance between observed headaches in morning and afternoon. That is, even though there is a difference between morning and afternoon, that does not influence the observed outcomes. However, you decide that you will take the aspirin only if it is above 50 degrees outside. Since it is more likely to be warmer in the afternoon then the morning, comparing the outcomes will provide a bias estimate, in part because deciding whether to take the aspirin is no longer 50%. But if we observed the weather we can potentially determine the probability of taking the aspirin or not. With enough observations, we compare situations where the probability of taking the aspirin was low, but there were some observations with and without aspirin all the way across the spectrum to where there was a high probability fo taking the aspirin.</p>
+</div>
+<div id="propensity-scores" class="section level3" number="1.2.2">
+<h3>
+<span class="header-section-number">1.2.2</span> Propensity Scores<a class="anchor" aria-label="anchor" href="#propensity-scores"><i class="fas fa-link"></i></a>
+</h3>
+<p>Propensity scores were first introduced by <span class="citation">Rosenbaum and Rubin (1983)</span>. They defined propensity scores as “the conditional probability of assignment to a particular treatment given a vector of observed covariates.” What Rosenbaum and Rubin showed in their seminal 1983 paper, <em>The Central Role of the Propensity Score in Observational Studies for Causal Effects</em> is that the “scalar propensity score is sufficient to remove bias due to all observed covariates.” Propensity scores can then be used in a variety of ways including matching, stratification, or weighting.</p>
+<p>Mathematically we can define the probability of being in the treatment group as:</p>
+<p><span class="math display" id="eq:eq3">\[\begin{equation}
+\begin{aligned}
+\pi(X_i) = Pr(T_i = 1 \; | \; X_i)
+\end{aligned}
+\tag{1.3}
+\end{equation}\]</span></p>
+<p>Where <span class="math inline">\(X\)</span> is a matrix of observed covariates and <span class="math inline">\(\pi(X_i)\)</span> is the propensity score. The balancing property under exogeneity states that,</p>
+<p><span class="math display" id="eq:eq4">\[\begin{equation}
+\begin{aligned}
+T_i \; \mathrel{\unicode{x2AEB}} \; X_i \; | \; \pi (X_i)
+\end{aligned}
+\tag{1.4}
+\end{equation}\]</span></p>
+<p>Where Ti is the treatment indicator for subject i. In the case of randomized experiments, the strong ignobility assumption states,</p>
+<p><span class="math display" id="eq:eq5">\[\begin{equation}
+\begin{aligned}
+Y_i(1), \;  Y_i(0)) \; \mathrel{\unicode{x2AEB}} \; T_i  \; | \; X_i
+\end{aligned}
+\tag{1.5}
+\end{equation}\]</span></p>
+<p>For all <span class="math inline">\(X_i\)</span>. That is, treatment is independent of all covariates, observed or otherwise. However, the strong ignorability assumption can be restated with the propensity score as,</p>
+<p><span class="math display" id="eq:eq6">\[\begin{equation}
+\begin{aligned}
+({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \mathrel{\unicode{x2AEB}} \; { T }_{ i } \; | \; \pi({ X }_{ i })
+\end{aligned}
+\tag{1.6}
+\end{equation}\]</span></p>
+<p>So that treatment placement is ignorable given the propensity score presuming sufficient balance<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Balance in the context of PSA refers to differences in observed covariates between treatment and control units is minimized.&lt;/p&gt;"><sup>2</sup></a> is achieved.</p>
+<p>The average treatment effect (ATE) is defined as <span class="math inline">\(E(r_1) - E(r_0)\)</span> where <span class="math inline">\(E(.)\)</span> is the expected value in the population. Given a set of covariates, <span class="math inline">\(X\)</span>, and outcomes <span class="math inline">\(Y\)</span>, where 0 denotes the control group and 1 denotes the treatment group, ATE is defined as:</p>
+<p><span class="math display" id="eq:eq7">\[\begin{equation}
+\begin{aligned}
+ATE \; = \; E(Y_1 - Y_0 \; | \; X) \; = \; E(Y_1 \; | \; X) - E(Y_0 \; | \; X)
+\end{aligned}
+\tag{1.7}
+\end{equation}\]</span></p>
+<p>Or the difference treatment and control groups given the set observed covariates. In section <a href="chapter-introduction.html#introduction-effects">1.3.2</a> we will discuss ATE in addition to other causal estimators in detail.</p>
+<div class="rmdtip">
+<p>Simply put, what Rosenbaum and Rubin (1983) proved was that observations similar propensity scores should be roughly equivalent (balanced) across all observed covariates. As we will see in the rest of this chapter, having a scalar that summarizes many variables is convenient for finding matches, stratifying, and for applying regression weights. Although we will verify that balance is achieved as some methods for estimating propensity scores are better than others.</p>
+</div>
+</div>
+</div>
+<div id="phases-of-propensity-score-analysis" class="section level2" number="1.3">
+<h2>
+<span class="header-section-number">1.3</span> Phases of Propensity Score Analysis<a class="anchor" aria-label="anchor" href="#phases-of-propensity-score-analysis"><i class="fas fa-link"></i></a>
+</h2>
+<p>Propensity score analysis is typically conducted in three phases, namely:</p>
+<ol style="list-style-type: decimal">
+<li>Model for selection bias (i.e. estimate propensity scores).</li>
+<li>Estimate causal effects.</li>
+<li>Check for sensitivity to unobserved confounders.</li>
+</ol>
+<p>The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification, matching, and weighting.</p>
+<div id="phase-i-estimate-propensity-scores" class="section level3" number="1.3.1">
+<h3>
+<span class="header-section-number">1.3.1</span> Phase I: Estimate Propensity Scores<a class="anchor" aria-label="anchor" href="#phase-i-estimate-propensity-scores"><i class="fas fa-link"></i></a>
+</h3>
+<p>Phase one of propensity score analysis is a cyclical process where propensity scores are estimated using a statistical model, balance in observed covariates is checked, and modifications to the statistical model are modified until sufficient balance is achieved. For simplicity we will use logistic regression to estimate propensity scores throughout the book. However, will introduce classification trees in chapter <a href="chapter-stratification.html#chapter-stratification">2</a> given how they are uniquely applicable to stratification methods in and in appendix <a href="appendix-psmodels.html#appendix-psmodels">C</a> outlines some additional statistical methods, with R code, for estimating propensity scores.</p>
+<p>Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous. Very often logistic regression is used, but with the advances in predictive models we have an increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis will use a simulated dataset with two pre-treatment covariates, <code>x1</code> and <code>x2</code>, treatment indicator, and an outcome variable with a treatment_effect of 2. Figure <a href="chapter-introduction.html#fig:sim-scatter">1.6</a> is a scatter plot of the simulated data.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;This simulated dataset is adapted from a &lt;a href="https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html"&gt;blog post&lt;/a&gt; by &lt;a href="https://www.lucymcgowan.com"&gt;Lucy D’Agostino McGowan&lt;/a&gt;&lt;/p&gt;'><sup>3</sup></a></p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sim-scatter"></span>
+<img src="01-Introduction_files/figure-html/sim-scatter-1.png" alt="Scatterplot of simulated datatset" width="100%"><p class="caption">
+Figure 1.6: Scatterplot of simulated datatset
+</p>
+</div>
+<p>Figure <a href="chapter-introduction.html#fig:sim-ggpairs">1.7</a> is a pairs plot <span class="citation">(Schloerke et al. 2021)</span> showing the relationship between the covariates (i.e. <code>x1</code> and <code>x2</code>) with the outcome grouped by treatment. There is a statistically significant correlation between each of the covariates and the outcome suggesting there is selection bias that would bias any causal estimate.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sim-ggpairs"></span>
+<img src="01-Introduction_files/figure-html/sim-ggpairs-1.png" alt="Pairs plot showing the relationships between covariates, treatment, and outcome" width="100%"><p class="caption">
+Figure 1.7: Pairs plot showing the relationships between covariates, treatment, and outcome
+</p>
+</div>
+<p>Indeed a simple null hypothesis test resulted in a difference of 4.55 (<span class="math inline">\(t_{959} = -32.75\)</span>, <em>p</em> &lt; 0.01), however we setup the simulation to have a mean difference of 2!</p>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  outcome by treatment
+## t = -32.748, df = 959.11, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
+## 95 percent confidence interval:
+##  -4.821017 -4.275883
+## sample estimates:</code></pre>
+<p>Propensity scores allow us to adjust for this selection bias.</p>
+<p>After estimating the propensity scores we can plot the distributions by treatment and control as represented in figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a>. Note how the distributions are skewed; treatment group is negatively skewed and the control group is positively skewed. This should hopefully make intuitive sense. As the probability of being in the treatment increases, we should see the number of treatment observations increase while the number of control observation decreases.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sim-dist"></span>
+<img src="01-Introduction_files/figure-html/sim-dist-1.png" alt="Distribution of propensity scores" width="100%"><p class="caption">
+Figure 1.8: Distribution of propensity scores
+</p>
+</div>
+<div id="evaluate-balance" class="section level4" number="1.3.1.1">
+<h4>
+<span class="header-section-number">1.3.1.1</span> Evaluate Balance<a class="anchor" aria-label="anchor" href="#evaluate-balance"><i class="fas fa-link"></i></a>
+</h4>
+<div class="rmdtip">
+<p><strong>Which matching method should you use?</strong><br><em>Whichever one gives the best balance!</em></p>
+</div>
+</div>
+</div>
+<div id="introduction-effects" class="section level3" number="1.3.2">
+<h3>
+<span class="header-section-number">1.3.2</span> Phase II: Estimate Causal Effects<a class="anchor" aria-label="anchor" href="#introduction-effects"><i class="fas fa-link"></i></a>
+</h3>
+<p>Chapter <a href="chapter-weighting.html#chapter-weighting">4</a></p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sim-loess"></span>
+<img src="01-Introduction_files/figure-html/sim-loess-1.png" alt="Scatter plot of propensity scores against outcome with Loess regression lines" width="100%"><p class="caption">
+Figure 1.9: Scatter plot of propensity scores against outcome with Loess regression lines
+</p>
+</div>
+<div id="average-treatment_effect-ate" class="section level4" number="1.3.2.1">
+<h4>
+<span class="header-section-number">1.3.2.1</span> Average treatment_effect (ATE)<a class="anchor" aria-label="anchor" href="#average-treatment_effect-ate"><i class="fas fa-link"></i></a>
+</h4>
+<p><span class="math display" id="eq:eqate">\[\begin{equation}
+\begin{aligned}
+ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X)
+\end{aligned}
+\tag{1.8}
+\end{equation}\]</span></p>
+<p>Figure <a href="chapter-introduction.html#fig:ate-hist">1.10</a></p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:ate-hist"></span>
+<img src="01-Introduction_files/figure-html/ate-hist-1.png" alt="Histogram of average treatement effect" width="100%"><p class="caption">
+Figure 1.10: Histogram of average treatement effect
+</p>
+</div>
+</div>
+<div id="average-treatment_effect-among-the-treated-att" class="section level4" number="1.3.2.2">
+<h4>
+<span class="header-section-number">1.3.2.2</span> Average treatment_effect Among the Treated (ATT)<a class="anchor" aria-label="anchor" href="#average-treatment_effect-among-the-treated-att"><i class="fas fa-link"></i></a>
+</h4>
+<p><span class="math display" id="eq:eqatt">\[\begin{equation}
+\begin{aligned}
+ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1)
+\end{aligned}
+\tag{1.9}
+\end{equation}\]</span></p>
+<p>Figure <a href="chapter-introduction.html#fig:att-hist">1.11</a></p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:att-hist"></span>
+<img src="01-Introduction_files/figure-html/att-hist-1.png" alt="Histogram of average treatement among the treated" width="100%"><p class="caption">
+Figure 1.11: Histogram of average treatement among the treated
+</p>
+</div>
+</div>
+<div id="average-treatment_effect-among-the-control-atc" class="section level4" number="1.3.2.3">
+<h4>
+<span class="header-section-number">1.3.2.3</span> Average treatment_effect Among the Control (ATC)<a class="anchor" aria-label="anchor" href="#average-treatment_effect-among-the-control-atc"><i class="fas fa-link"></i></a>
+</h4>
+<p><span class="math display" id="eq:eqatc">\[\begin{equation}
+\begin{aligned}
+ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0)
+\end{aligned}
+\tag{1.10}
+\end{equation}\]</span></p>
+<p>Figure <a href="chapter-introduction.html#fig:atc-hist">1.12</a></p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:atc-hist"></span>
+<img src="01-Introduction_files/figure-html/atc-hist-1.png" alt="Histogram of average treatement among the control" width="100%"><p class="caption">
+Figure 1.12: Histogram of average treatement among the control
+</p>
+</div>
+</div>
+<div id="average-treatment_effect-among-the-evenly-matched-atm" class="section level4" number="1.3.2.4">
+<h4>
+<span class="header-section-number">1.3.2.4</span> Average treatment_effect Among the Evenly Matched (ATM)<a class="anchor" aria-label="anchor" href="#average-treatment_effect-among-the-evenly-matched-atm"><i class="fas fa-link"></i></a>
+</h4>
+<p><span class="citation">Li and Greene (2013)</span></p>
+<p><span class="math display" id="eq:eqatm">\[\begin{equation}
+\begin{aligned}
+ATM_d = E(Y_1 - Y_0 | M_d = 1)
+\end{aligned}
+\tag{1.11}
+\end{equation}\]</span></p>
+<p>Figure <a href="chapter-introduction.html#fig:acm-hist">1.13</a></p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:acm-hist"></span>
+<img src="01-Introduction_files/figure-html/acm-hist-1.png" alt="Histogram of average treatment effect among the evenly matched" width="100%"><p class="caption">
+Figure 1.13: Histogram of average treatment effect among the evenly matched
+</p>
+</div>
+</div>
+</div>
+<div id="phase-iii-sensitivity-analysis" class="section level3" number="1.3.3">
+<h3>
+<span class="header-section-number">1.3.3</span> Phase III: Sensitivity Analysis<a class="anchor" aria-label="anchor" href="#phase-iii-sensitivity-analysis"><i class="fas fa-link"></i></a>
+</h3>
+<p>The final phase of propensity score analysis is to evaluate the robustness of causal estimates. We will discuss two approaches to test the robustness: sensitivity analysis (covered in detail in chapter <a href="chapter-sensitivity.html#chapter-sensitivity">6</a>) and bootstrapping (covered in detail in chapter <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a>). Sensitivity analysis is a procedure where the results are tested under increasing factors of an unmeasured confounder in changing the randomization process. That is, it tests how much another variable would have change the prediction of treatment to result in non rejecting the null hypothesis.</p>
+<p>Sensitivity analysis is only well defined for matching methods. <span class="citation">Rosenbaum (2012)</span> proposed testing the null hypothesis more than once, in part, to also test the sensitivity to the chosen method. In this spirit of testing the null hypothesis more than once, I have developed a method for conducting bootstrapping for propensity score analysis. This framework addresses the issues sensitivity to method choice, but also provides a framework for addressing issues of imbalance in treatment placement. Bootstrapping <span class="citation">(Efron 1979)</span> has become an effective approach to estimating parameters. The approach discussed in chapter <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a> avoids the issues of multiple hypothesis testing and increased type I error rates by using the bootstrap samples to estimate the standard errors and confidence intervals.</p>
+</div>
+</div>
+<div id="r-packages" class="section level2" number="1.4">
+<h2>
+<span class="header-section-number">1.4</span> R Packages<a class="anchor" aria-label="anchor" href="#r-packages"><i class="fas fa-link"></i></a>
+</h2>
+<p>R is a statistical software language designed to be extended vis-à-vis packages. As of April 04, 2023, there are currently 19,333 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.</p>
+<ul>
+<li>
+<a href="http://gking.harvard.edu/gking/matchit"><code>MatchIt</code></a> <span class="citation">(Ho et al. 2023)</span> Nonparametric Preprocessing for Parametric Causal Inference</li>
+<li>
+<a href="http://sekhon.berkeley.edu/matching/"><code>Matching</code></a> <span class="citation">(Singh Sekhon and Saarinen 2022)</span> Multivariate and Propensity Score Matching Software for Causal Inference</li>
+<li>
+<a href="https://github.com/jbryer/multilevelPSA"><code>multilevelPSA</code></a> <span class="citation">(Bryer 2018)</span> Multilevel Propensity Score Analysis</li>
+<li>
+<a href="http://cran.r-project.org/web/packages/party/index.html"><code>party</code></a> <span class="citation">(Hothorn et al. 2023)</span> A Laboratory for Recursive Partytioning</li>
+<li>
+<a href="https://github.com/jbryer/PSAboot"><code>PSAboot</code></a> <span class="citation">(Bryer 2023)</span> Bootstrapping for Propensity Score Analysis</li>
+<li>
+<a href="http://www.jstatsoft.org/v29/i06/paper"><code>PSAgraphics</code></a> <span class="citation">(Helmreich and Pruzek 2023)</span> An R Package to Support Propensity Score Analysis</li>
+<li>
+<a href="http://www.personal.psu.edu/ljk20/rbounds%20vignette.pdf"><code>rbounds</code></a> <span class="citation">(Keele 2022)</span> An Overview of rebounds: An R Package for Rosenbaum bounds sensitivity analysis with matched data.</li>
+<li>
+<a href="http://cran.r-project.org/web/packages/rpart/index.html"><code>rpart</code></a> <span class="citation">(Therneau and Atkinson 2022)</span> Recursive Partitioning</li>
+<li>
+<a href="https://github.com/jbryer/TriMatch"><code>TriMatch</code></a> <span class="citation">(Bryer 2017)</span> Propensity Score Matching for Non-Binary Treatments</li>
+</ul>
+<p>The following command will install the R packages we will use in this book.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'jbryer/psa'</span>, dependencies <span class="op">=</span> <span class="st">'Enhances'</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="datasets" class="section level2" number="1.5">
+<h2>
+<span class="header-section-number">1.5</span> Datasets<a class="anchor" aria-label="anchor" href="#datasets"><i class="fas fa-link"></i></a>
+</h2>
+<p>This section provides a description of the datasets that will be used throughout this book.</p>
+<div id="lalonde" class="section level3" number="1.5.1">
+<h3>
+<span class="header-section-number">1.5.1</span> National Supported Work Demonstration (<code>lalonde</code>)<a class="anchor" aria-label="anchor" href="#lalonde"><i class="fas fa-link"></i></a>
+</h3>
+<p>The <code>lalonde</code> dataset is perhaps one of the most used datasets when introducing or evaluating propensity score methods. The data was collected by <span class="citation">Lalonde (1986)</span> but became widely used in the PSA literature after <span class="citation">Dehejia and Wahba (1999)</span> used it in their paper to evaluate propensity score matching. The dataset originated from the National Supported Work Demonstration study conducted in the 1970s. The program provided 12 to 18 months of employment to people with longstanding employment problems. The dataset contains 445 observations of 12 variables. The primary outcome is <code>re78</code> which is real earnings in 1978. Observed covariates used to ajdust for selection bias include <code>age</code> (age in years), <code>edu</code> (number of years of education), <code>black</code> (black or not), <code>hisp</code> (Hispanic or not), <code>married</code> (married or not), <code>nodegr</code> (whether the worker has a degree or not, note that 1 = no degree), <code>re74</code> (real earnings in 1974), and <code>re75</code> (real earnings in 1975).</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lalonde</span>, package<span class="op">=</span><span class="st">'Matching'</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li>
+<code>age</code>: Integer with mean = 25 and SD = 7.1</li>
+<li>
+<code>educ</code>: Integer with mean = 10 and SD = 1.8</li>
+<li>
+<code>black</code>: Integer with mean = 0.83 and SD = 0.37</li>
+<li>
+<code>hisp</code>: Integer with mean = 0.088 and SD = 0.28</li>
+<li>
+<code>married</code>: Integer with mean = 0.17 and SD = 0.37</li>
+<li>
+<code>nodegr</code>: Integer with mean = 0.78 and SD = 0.41</li>
+<li>
+<code>re74</code>: Numeric with mean = 2,102 and SD = 5,364</li>
+<li>
+<code>re75</code>: Numeric with mean = 1,377 and SD = 3,151</li>
+<li>
+<code>re78</code>: Numeric with mean = 5,301 and SD = 6,631</li>
+<li>
+<code>u74</code>: Integer with mean = 0.73 and SD = 0.44</li>
+<li>
+<code>u75</code>: Integer with mean = 0.65 and SD = 0.48</li>
+<li>
+<code>treat</code>: Integer with mean = 0.42 and SD = 0.49</li>
+</ul>
+</div>
+<div id="lindner" class="section level3" number="1.5.2">
+<h3>
+<span class="header-section-number">1.5.2</span> Lindner Center (<code>lindner</code>)<a class="anchor" aria-label="anchor" href="#lindner"><i class="fas fa-link"></i></a>
+</h3>
+<p>Data from an observational study of 996 patients receiving a PCI at Ohio Heart Health in 1997 and followed for at least 6 months by the staff of the Lindner Center. This is a landmark dataset in the literature on propensity score adjustment for treatment selection bias due to practice of evidence based medicine; patients receiving <code>abciximab</code> tended to be more severely diseased than those who did not receive a IIb/IIIa cascade blocker.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lindner</span>, package<span class="op">=</span><span class="st">'PSAgraphics'</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li>
+<code>lifepres</code>: Numeric with mean = 11 and SD = 1.9</li>
+<li>
+<code>cardbill</code>: Integer with mean = 15,674 and SD = 11,182</li>
+<li>
+<code>abcix</code>: Integer with mean = 0.7 and SD = 0.46</li>
+<li>
+<code>stent</code>: Integer with mean = 0.67 and SD = 0.47</li>
+<li>
+<code>height</code>: Integer with mean = 171 and SD = 11</li>
+<li>
+<code>female</code>: Integer with mean = 0.35 and SD = 0.48</li>
+<li>
+<code>diabetic</code>: Integer with mean = 0.22 and SD = 0.42</li>
+<li>
+<code>acutemi</code>: Integer with mean = 0.14 and SD = 0.35</li>
+<li>
+<code>ejecfrac</code>: Integer with mean = 51 and SD = 10</li>
+<li>
+<code>ves1proc</code>: Integer with mean = 1.4 and SD = 0.66</li>
+</ul>
+</div>
+<div id="tutoring" class="section level3" number="1.5.3">
+<h3>
+<span class="header-section-number">1.5.3</span> Tutoring (<code>tutoring</code>)<a class="anchor" aria-label="anchor" href="#tutoring"><i class="fas fa-link"></i></a>
+</h3>
+<p>The <code>tutoring</code> dataset originates from a study conducted at an online adult serving institution examining the effects of tutoring services for students in English 101, English 201, and History 310. Tutoring services were available to all students but Treatment (<code>treat</code>) is operationalized as students who used tutoring services at least once during the course. Only 19.6% of students used tutoring services with approximately half using it more than once. We will use this dataset with both a dichotomous treatment (used tutoring or not) or as a two level treatment (used tutoring services once, used tutoring services two or more times).</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">tutoring</span>, package<span class="op">=</span><span class="st">'TriMatch'</span><span class="op">)</span></span>
+<span><span class="va">tutoring</span><span class="op">$</span><span class="va">treat2</span> <span class="op">&lt;-</span> <span class="va">tutoring</span><span class="op">$</span><span class="va">treat</span> <span class="op">!=</span> <span class="st">'Control'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">tutoring</span><span class="op">$</span><span class="va">Course</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">treat</span><span class="op">)</span></span></code></pre></div>
+<pre><code>##          
+##           Control Treat1 Treat2
+##   ENG*101     349     22     31
+##   ENG*201     518     36     32
+##   HSC*310      51     76     27</code></pre>
+<ul>
+<li>
+<code>treat</code>: Factor with 3 levels: Control; Treat1; Treat2</li>
+<li>
+<code>Course</code>: Character with 3 unique values</li>
+<li>
+<code>Grade</code>: Integer with mean = 2.9 and SD = 1.5</li>
+<li>
+<code>Gender</code>: Factor with 2 levels: FEMALE; MALE</li>
+<li>
+<code>Ethnicity</code>: Factor with 3 levels: Other; White; Black</li>
+<li>
+<code>Military</code>: Logical with 31% TRUE and 69% FALSE</li>
+<li>
+<code>ESL</code>: Logical with 8.1% TRUE and 92% FALSE</li>
+<li>
+<code>EdMother</code>: Integer with mean = 3.8 and SD = 1.5</li>
+<li>
+<code>EdFather</code>: Integer with mean = 3.7 and SD = 1.7</li>
+<li>
+<code>Age</code>: Numeric with mean = 37 and SD = 9</li>
+<li>
+<code>Employment</code>: Integer with mean = 2.7 and SD = 0.68</li>
+<li>
+<code>Income</code>: Numeric with mean = 5.1 and SD = 2.3</li>
+<li>
+<code>Transfer</code>: Numeric with mean = 52 and SD = 25</li>
+<li>
+<code>GPA</code>: Numeric with mean = 3.2 and SD = 0.57</li>
+<li>
+<code>GradeCode</code>: Character with 6 unique values</li>
+<li>
+<code>Level</code>: Factor with 2 levels: Lower; Upper</li>
+<li>
+<code>ID</code>: Integer with mean = 572 and SD = 330</li>
+<li>
+<code>treat2</code>: Logical with 20% TRUE and 80% FALSE</li>
+</ul>
+</div>
+<div id="pisa" class="section level3" number="1.5.4">
+<h3>
+<span class="header-section-number">1.5.4</span> Programme of International Student Assessment (<code>pisana</code>)<a class="anchor" aria-label="anchor" href="#pisa"><i class="fas fa-link"></i></a>
+</h3>
+<p><a href="https://www.oecd.org/pisa">The Programme of International Student Assessment</a> (PISA) is a study conducted by <a href="https://www.oecd.org">OECD</a> every three years to measure 15-year-olds’ academic abilities in reading, mathematics, and science along with a rich set of demographic and background information. The <code>pisana</code> dataset included in the <code>multilevelPSA</code> package contains the results from the 2009 study for North America (i.e. Canada, Mexico, and the United States).</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">pisana</span>, package<span class="op">=</span><span class="st">'multilevelPSA'</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li>
+<code>Country</code>: Character with 3 unique values</li>
+<li>
+<code>CNT</code>: Character with 3 unique values</li>
+<li>
+<code>SCHOOLID</code>: Factor with 1,534 levels</li>
+<li>
+<code>ST01Q01</code>: Factor with 0 levels: NA (66,548 missing values)</li>
+<li>
+<code>ST04Q01</code>: Factor with 2 levels: Female; Male</li>
+<li>
+<code>ST05Q01</code>: Factor with 3 levels: Yes, more than one year; Yes, one year or less; No</li>
+<li>
+<code>ST06Q01</code>: Numeric with mean = 5.7 and SD = 0.81</li>
+<li>
+<code>ST07Q01</code>: Factor with 3 levels: No, never; Yes, once; Yes, twice or more</li>
+<li>
+<code>ST08Q01</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST08Q02</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST08Q03</code>: Factor with 2 levels: No; Yes</li>
+<li>
+<code>ST08Q04</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST08Q05</code>: Factor with 2 levels: No; Yes</li>
+<li>
+<code>ST08Q06</code>: Factor with 2 levels: No; Yes</li>
+<li>
+<code>ST10Q01</code>: Factor with 5 levels: &lt;ISCED level 3A&gt;; &lt;ISCED level 2&gt;; &lt;ISCED level 3B, 3C&gt;; Did not complete &lt;ISCED level 1&gt;; &lt;ISCED level 1&gt;</li>
+<li>
+<code>ST12Q01</code>: Factor with 4 levels: Working Full-time; Working Part-Time; Other; Looking for work</li>
+<li>
+<code>ST14Q01</code>: Factor with 5 levels: &lt;ISCED level 3A&gt;; &lt;ISCED level 2&gt;; &lt;ISCED level 1&gt;; Did Not Complete &lt;ISCED level 1&gt;; &lt;ISCED level 3B, 3C&gt;</li>
+<li>
+<code>ST16Q01</code>: Factor with 4 levels: Working Full-time; Working Part-Time; Looking for work; Other</li>
+<li>
+<code>ST19Q01</code>: Factor with 2 levels: Language of test; Another language</li>
+<li>
+<code>ST20Q01</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q02</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q03</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q04</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q05</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q06</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q07</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q08</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q09</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q10</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q12</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q13</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST20Q14</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST21Q01</code>: Factor with 4 levels: Three or more; Two; One; None</li>
+<li>
+<code>ST21Q02</code>: Factor with 4 levels: Three or more; Two; One; None</li>
+<li>
+<code>ST21Q03</code>: Factor with 4 levels: Three or more; One; Two; None</li>
+<li>
+<code>ST21Q04</code>: Factor with 4 levels: Two; One; Three or more; None</li>
+<li>
+<code>ST21Q05</code>: Factor with 4 levels: One; Two; Three or more; None</li>
+<li>
+<code>ST22Q01</code>: Factor with 6 levels: 26-100 books; 0-10 books; 201-500 books; 11-25 books; 101-200 books; More than 500 books</li>
+<li>
+<code>ST23Q01</code>: Factor with 5 levels: More than 2 hours a day; 30 minutes or less a day; I don’t read for enjoyment; Between 30 and 60 minutes; 1 to 2 hours a day</li>
+<li>
+<code>ST31Q01</code>: Factor with 2 levels: No; Yes</li>
+<li>
+<code>ST31Q02</code>: Factor with 2 levels: No; Yes</li>
+<li>
+<code>ST31Q03</code>: Factor with 2 levels: No; Yes</li>
+<li>
+<code>ST31Q05</code>: Factor with 2 levels: No; Yes</li>
+<li>
+<code>ST31Q06</code>: Factor with 2 levels: No; Yes</li>
+<li>
+<code>ST31Q07</code>: Factor with 2 levels: Yes; No</li>
+<li>
+<code>ST32Q01</code>: Factor with 5 levels: Do not attend; Less than 2 hours a week; 2 up to 4 Hours a week; 6 or more hours a week; 4 up to 6 hours per week</li>
+<li>
+<code>ST32Q02</code>: Factor with 5 levels: Less than 2 hours a week; Do not attend; 6 or more hours a week; 2 up to 4 Hours a week; 4 up to 6 hours per week</li>
+<li>
+<code>ST32Q03</code>: Factor with 5 levels: Do not attend; Less than 2 hours a week; 4 up to 6 hours per week; 2 up to 4 Hours a week; 6 or more hours a week</li>
+<li>
+<code>PV1MATH</code>: Numeric with mean = 461 and SD = 92</li>
+<li>
+<code>PV2MATH</code>: Numeric with mean = 461 and SD = 92</li>
+<li>
+<code>PV3MATH</code>: Numeric with mean = 461 and SD = 92</li>
+<li>
+<code>PV4MATH</code>: Numeric with mean = 461 and SD = 92</li>
+<li>
+<code>PV5MATH</code>: Numeric with mean = 461 and SD = 92</li>
+<li>
+<code>PV1READ</code>: Numeric with mean = 465 and SD = 94</li>
+<li>
+<code>PV2READ</code>: Numeric with mean = 465 and SD = 94</li>
+<li>
+<code>PV3READ</code>: Numeric with mean = 465 and SD = 94</li>
+<li>
+<code>PV4READ</code>: Numeric with mean = 465 and SD = 94</li>
+<li>
+<code>PV5READ</code>: Numeric with mean = 465 and SD = 94</li>
+<li>
+<code>PV1SCIE</code>: Numeric with mean = 460 and SD = 94</li>
+<li>
+<code>PV2SCIE</code>: Numeric with mean = 460 and SD = 94</li>
+<li>
+<code>PV3SCIE</code>: Numeric with mean = 460 and SD = 94</li>
+<li>
+<code>PV4SCIE</code>: Numeric with mean = 460 and SD = 94</li>
+<li>
+<code>PV5SCIE</code>: Numeric with mean = 460 and SD = 94</li>
+<li>
+<code>PUBPRIV</code>: Factor with 2 levels: Public; Private</li>
+<li>
+<code>STRATIO</code>: Numeric with mean = 26 and SD = 31 (8,576 missing values)</li>
+</ul>
+</div>
+<div id="nmes" class="section level3" number="1.5.5">
+<h3>
+<span class="header-section-number">1.5.5</span> National Medical Expenditure Study (<code>nmes</code>)<a class="anchor" aria-label="anchor" href="#nmes"><i class="fas fa-link"></i></a>
+</h3>
+<p>The National Medical Expenditure Study dataset was used by <span class="citation">Imai and Dyk (2004)</span> in evaluating a method for non-binary treatments. This study examined the relationship between smoking status and medical expenditures.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">nmes</span>, package<span class="op">=</span><span class="st">'TriMatch'</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li>
+<code>PIDX</code>: Integer with mean = 2.9e+07 and SD = 5,107,973</li>
+<li>
+<code>LASTAGE</code>: Integer with mean = 46 and SD = 19</li>
+<li>
+<code>MALE</code>: Integer with mean = 0.44 and SD = 0.5</li>
+<li>
+<code>RACE3</code>: Factor with 3 levels: 3; 1; 2</li>
+<li>
+<code>eversmk</code>: Integer with mean = 0.52 and SD = 0.5</li>
+<li>
+<code>current</code>: Integer with mean = 0.55 and SD = 0.5 (9,872 missing values)</li>
+<li>
+<code>former</code>: Integer with mean = 0.23 and SD = 0.42</li>
+<li>
+<code>smoke</code>: Factor with 3 levels: 0; 1; 2</li>
+<li>
+<code>AGESMOKE</code>: Integer with mean = 18 and SD = 5.4 (10,382 missing values)</li>
+<li>
+<code>CIGSSMOK</code>: Integer with mean = 18 and SD = 12 (11,362 missing values)</li>
+<li>
+<code>SMOKENOW</code>: Integer with mean = 1.4 and SD = 0.5 (9,872 missing values)</li>
+<li>
+<code>SMOKED</code>: Integer with mean = 1.5 and SD = 0.5</li>
+<li>
+<code>CIGSADAY</code>: Integer with mean = 19 and SD = 12 (14,990 missing values)</li>
+<li>
+<code>AGESTOP</code>: Integer with mean = 39 and SD = 16 (16,242 missing values)</li>
+<li>
+<code>packyears</code>: Numeric with mean = 12 and SD = 21 (1,119 missing values)</li>
+<li>
+<code>yearsince</code>: Integer with mean = 3 and SD = 8.2 (416 missing values)</li>
+<li>
+<code>INCALPER</code>: Numeric with mean = 7,171 and SD = 3,560</li>
+<li>
+<code>HSQACCWT</code>: Numeric with mean = 7,850 and SD = 3,796</li>
+<li>
+<code>TOTALEXP</code>: Numeric with mean = 1,947 and SD = 6,207</li>
+<li>
+<code>TOTALSP3</code>: Numeric with mean = 494 and SD = 3,418</li>
+<li>
+<code>lc5</code>: Integer with mean = 0.011 and SD = 0.1</li>
+<li>
+<code>chd5</code>: Integer with mean = 0.053 and SD = 0.23</li>
+<li>
+<code>beltuse</code>: Factor with 3 levels: 3; 2; 1</li>
+<li>
+<code>educate</code>: Factor with 4 levels: 1; 2; 3; 4</li>
+<li>
+<code>marital</code>: Factor with 5 levels: 2; 1; 5; 3; 4; NA (76 missing values)</li>
+<li>
+<code>SREGION</code>: Factor with 4 levels: 1; 2; 3; 4</li>
+<li>
+<code>POVSTALB</code>: Factor with 5 levels: 1; 3; 4; 5; 2; NA (85 missing values)</li>
+<li>
+<code>flag</code>: Integer with mean = 0.15 and SD = 0.53</li>
+<li>
+<code>age</code>: Integer with mean = 0.56 and SD = 0.5</li>
+</ul>
+</div>
+</div>
+</div>
+
+  <div class="chapter-nav">
+<div class="prev"><a href="index.html">Preface</a></div>
+<div class="next"><a href="chapter-stratification.html"><span class="header-section-number">2</span> Stratification</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>In this chapter</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#chapter-introduction"><span class="header-section-number">1</span> Introduction</a></li>
+<li><a class="nav-link" href="#counterfactual-model-for-causality"><span class="header-section-number">1.1</span> Counterfactual Model for Causality</a></li>
+<li>
+<a class="nav-link" href="#randomized-control-trials-the-gold-standard"><span class="header-section-number">1.2</span> Randomized Control Trials: “The Gold Standard”</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#rubins-causal-model"><span class="header-section-number">1.2.1</span> Rubin’s Causal Model</a></li>
+<li><a class="nav-link" href="#propensity-scores"><span class="header-section-number">1.2.2</span> Propensity Scores</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#phases-of-propensity-score-analysis"><span class="header-section-number">1.3</span> Phases of Propensity Score Analysis</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#phase-i-estimate-propensity-scores"><span class="header-section-number">1.3.1</span> Phase I: Estimate Propensity Scores</a></li>
+<li><a class="nav-link" href="#introduction-effects"><span class="header-section-number">1.3.2</span> Phase II: Estimate Causal Effects</a></li>
+<li><a class="nav-link" href="#phase-iii-sensitivity-analysis"><span class="header-section-number">1.3.3</span> Phase III: Sensitivity Analysis</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#r-packages"><span class="header-section-number">1.4</span> R Packages</a></li>
+<li>
+<a class="nav-link" href="#datasets"><span class="header-section-number">1.5</span> Datasets</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#lalonde"><span class="header-section-number">1.5.1</span> National Supported Work Demonstration (lalonde)</a></li>
+<li><a class="nav-link" href="#lindner"><span class="header-section-number">1.5.2</span> Lindner Center (lindner)</a></li>
+<li><a class="nav-link" href="#tutoring"><span class="header-section-number">1.5.3</span> Tutoring (tutoring)</a></li>
+<li><a class="nav-link" href="#pisa"><span class="header-section-number">1.5.4</span> Programme of International Student Assessment (pisana)</a></li>
+<li><a class="nav-link" href="#nmes"><span class="header-section-number">1.5.5</span> National Medical Expenditure Study (nmes)</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/jbryer/psa/blob/master/book/01-Introduction.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/jbryer/psa/edit/master/book/01-Introduction.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a href="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml"><img src="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg" alt="Bookdown Status"></a></li>
+          <li><a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" border="0" alt="Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

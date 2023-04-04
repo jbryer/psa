@@ -11,12 +11,12 @@
 <meta property="og:title" content="Preface | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://psa.bryer.org">
-<meta property="og:image" content="https://psa.bryer.org/images/psa.png">
+<meta property="og:image" content="https://psa.bryer.org/images/cover.png">
 <meta property="og:description" content="An introduction to conducting propensity score analysis with R.">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Preface | Applied Propensity Score Analysis with R">
 <meta name="twitter:description" content="An introduction to conducting propensity score analysis with R.">
-<meta name="twitter:image" content="https://psa.bryer.org/images/psa.png">
+<meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
@@ -69,17 +69,17 @@
       <nav aria-label="Table of contents"><h2>Table of contents</h2>
         <ul class="book-toc list-unstyled">
 <li><a class="active" href="index.html">Preface</a></li>
-<li><a class="" href="introduction.html"><span class="header-section-number">1</span> Introduction</a></li>
+<li><a class="" href="chapter-introduction.html"><span class="header-section-number">1</span> Introduction</a></li>
 <li><a class="" href="chapter-stratification.html"><span class="header-section-number">2</span> Stratification</a></li>
 <li><a class="" href="chapter-matching.html"><span class="header-section-number">3</span> Matching</a></li>
 <li><a class="" href="chapter-weighting.html"><span class="header-section-number">4</span> Weighting</a></li>
-<li><a class="" href="missing-data.html"><span class="header-section-number">5</span> Missing Data</a></li>
+<li><a class="" href="chapter-missing.html"><span class="header-section-number">5</span> Missing Data</a></li>
 <li><a class="" href="chapter-sensitivity.html"><span class="header-section-number">6</span> Sensitivity Analysis</a></li>
 <li><a class="" href="chapter-bootstrapping.html"><span class="header-section-number">7</span> Bootstrapping</a></li>
 <li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
 <li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">9</span> Multilevel PSA</a></li>
 <li class="book-part">Appendix</li>
-<li><a class="" href="psa_shiny.html"><span class="header-section-number">A</span> Shiny Application</a></li>
+<li><a class="" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Application</a></li>
 <li><a class="" href="appendix-psranges.html"><span class="header-section-number">B</span> Propensity Score Ranges</a></li>
 <li><a class="" href="appendix-psmodels.html"><span class="header-section-number">C</span> Methods for Estimating Propensity Scores</a></li>
 <li><a class="" href="references.html">References</a></li>
@@ -93,13 +93,19 @@
   </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><!--bookdown:title:end--><!--bookdown:title:start--><div id="preface" class="section level1 unnumbered">
 <h1>Preface<a class="anchor" aria-label="anchor" href="#preface"><i class="fas fa-link"></i></a>
 </h1>
-<p><a href="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml"><img src="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg" alt="Bookdown Status"></a>
-<a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></p>
-<p>I first encountered propensity score analysis (PSA) by my late dissertation advisor Robert Pruzek in 2006 when I entered graduate school. The notion that you could get reasonable causal estimates without the need of randomization was foreign to me and at first, I was skeptical. Many years later having used PSA for many projects, not only am I convinced it is possible, I believe there are instances where this may be preferred over the randomized control trial. I have been the Principal Investigator for two Federal grants to develop and test the <a href="https://daacs.net">Diagnostic Assessment and Achievement of College Skills (DAACS)</a> where have attempted to conduct large scale randomized control trials (RCT) involving thousands of students. Through those experiences I have found that there are numerous compromises made in delivering an intervention that the generalizability of the results to a context where we are not concerned about the RCT make interpretations difficult. Moreover, RCTs assume a single effect for everyone. With PSA, particularly in the stratification section, it is possible to tease out how an intervention may vary by the observed covariates.</p>
-<p>I have taught PSA many times over the years. This “book” is my attempt to collect my notes and experiences on conducting PSA. For the most part I will emphasize the applied and provide links to references if the reader wishes to explore the theoretical in more details. The <code>psa</code> R package that accompanies this book is available on Github and can be installed using the <code>remotes</code> package with the command below. By setting the <code>dependencies = TRUE</code> parameter will ensure that all the R packages used in this book are installed as well. The <code>psa</code> package contains a number of datasets and utility functions used throughout the book. But it also contains a <a href="https://shiny.rstudio.com">Shiny</a> application designed to conduct PSA using a graphical user interface. Details on using the application are provided in the <a href="psa_shiny.html#psa_shiny">appendix</a>.</p>
+<p>Last updated: April 04, 2023</p>
+<p><a href="https://psa.bryer.org" target="_blank"><img src="figures/cover.png" width="40%" style="float:right; padding:10px"></a></p>
+<p>I was first introduced to propensity score analysis (PSA) by my late dissertation advisor Robert Pruzek in 2006 when I entered graduate school. The notion that you could get reasonable causal estimates without the need of randomization was foreign to me and at first, I was skeptical. Many years later having used PSA for many projects, not only am I convinced it is possible, I believe there are instances where this may be preferred over the randomized control trial. I have been the Principal Investigator for two Federal grants to develop and test the <a href="https://daacs.net">Diagnostic Assessment and Achievement of College Skills (DAACS)</a> where have attempted to conduct large scale randomized control trials (RCT) involving thousands of students. Through those experiences I have found that there are numerous compromises made in delivering an intervention that the generalizability of the results to a context where we are not concerned about the RCT make interpretations difficult. Moreover, RCTs assume a single effect for everyone. With PSA, particularly in the stratification section, it is possible to tease out how an intervention may vary by the observed covariates.</p>
+<p>I have taught PSA many times over the years. This “book” is my attempt to collect my notes and experiences on conducting PSA. For the most part I will emphasize the applied and provide links to references if the reader wishes to explore the theoretical in more details. The <code>psa</code> R package that accompanies this book is available on Github and can be installed using the <code>remotes</code> package with the command below. By setting the <code>dependencies = 'Enhances'</code> parameter will ensure that all the R packages used in this book are installed as well. The <code>psa</code> package contains a number of datasets and utility functions used throughout the book. But it also contains a <a href="https://shiny.rstudio.com">Shiny</a> application designed to conduct PSA using a graphical user interface. Details on using the application are provided in the <a href="#psa_shiny">appendix</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span>build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>, dependencies <span class="op">=</span> <span class="st">'Enhances'</span><span class="op">)</span></span></code></pre></div>
-<p>This books is very much a work in progress and contributions are welcome. Please adhere to the <a href="https://github.com/jbryer/psa/blob/master/CODE_OF_CONDUCT.md">code of conduct</a>. Each page has an edit link which will take you directly to the source file on <a href="https://github.com/jbryer/psa">Github.</a> You are also submit feedback using the <a href="https://github.com/jbryer/psa/issues">Github Issues</a> tracker.</p>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'jbryer/psa'</span>,</span>
+<span>                        build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                        dependencies <span class="op">=</span> <span class="st">'Enhances'</span><span class="op">)</span></span></code></pre></div>
+<div id="contributing" class="section level2 unnumbered">
+<h2>Contributing<a class="anchor" aria-label="anchor" href="#contributing"><i class="fas fa-link"></i></a>
+</h2>
+<p>This books is a work in progress and contributions are welcome. Please adhere to the <a href="https://github.com/jbryer/psa/blob/master/CODE_OF_CONDUCT.md">code of conduct</a>. Each page has an edit link which will take you directly to the source file on <a href="https://github.com/jbryer/psa">Github</a>. You can also submit feedback using the <a href="https://github.com/jbryer/psa/issues">Github Issues</a> tracker.</p>
+</div>
 <div id="acknowledgements" class="section level2 unnumbered">
 <h2>Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"><i class="fas fa-link"></i></a>
 </h2>
@@ -120,15 +126,13 @@
 ##  collate  C.UTF-8
 ##  ctype    C.UTF-8
 ##  tz       UTC
-##  date     2023-04-03
+##  date     2023-04-04
 ##  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────
 ##  ! package       * version  date (UTC) lib source
 ##    abind           1.4-5    2016-07-21 [1] CRAN (R 4.2.3)
 ##  P backports       1.4.1    2021-12-13 [?] RSPM (R 4.2.0)
-##  P badger          0.2.3    2023-01-28 [?] RSPM (R 4.2.0)
-##  P BiocManager     1.30.20  2023-02-24 [?] RSPM (R 4.2.0)
 ##    bookdown        0.33     2023-03-06 [1] CRAN (R 4.2.3)
 ##  P boot            1.3-28.1 2022-11-22 [3] CRAN (R 4.2.3)
 ##  P bslib           0.4.2    2022-12-16 [?] RSPM (R 4.2.0)
@@ -143,7 +147,6 @@
 ##  P crayon          1.5.2    2022-09-29 [?] RSPM (R 4.2.0)
 ##  P devtools        2.4.5    2022-10-11 [?] RSPM (R 4.2.0)
 ##  P digest          0.6.31   2022-12-11 [?] RSPM (R 4.2.0)
-##  P dlstats         0.1.6    2022-12-09 [?] RSPM (R 4.2.0)
 ##  P downlit         0.4.2    2022-07-05 [?] RSPM (R 4.2.0)
 ##  P dplyr         * 1.1.1    2023-03-22 [?] RSPM (R 4.2.0)
 ##  P ellipsis        0.3.2    2021-04-29 [?] RSPM (R 4.2.0)
@@ -160,6 +163,7 @@
 ##  P granovaGG     * 1.4.0    2015-12-18 [?] RSPM (R 4.2.0)
 ##  P gridExtra       2.3      2017-09-09 [?] RSPM (R 4.2.0)
 ##  P gtable          0.3.3    2023-03-21 [?] RSPM (R 4.2.0)
+##  P highr           0.10     2022-12-22 [?] RSPM (R 4.2.0)
 ##  P htmltools       0.5.5    2023-03-23 [?] RSPM (R 4.2.0)
 ##  P htmlwidgets     1.6.2    2023-03-17 [?] RSPM (R 4.2.0)
 ##  P httpuv          1.6.9    2023-02-14 [?] RSPM (R 4.2.0)
@@ -200,7 +204,7 @@
 ##  P processx        3.8.0    2022-10-26 [?] RSPM (R 4.2.0)
 ##  P profvis         0.3.7    2020-11-02 [?] RSPM (R 4.2.0)
 ##  P promises        1.2.0.1  2021-02-11 [?] RSPM (R 4.2.0)
-##  P ps              1.7.3    2023-03-21 [?] RSPM (R 4.2.0)
+##  P ps              1.7.4    2023-04-02 [?] RSPM (R 4.2.0)
 ##    PSAboot       * 1.3.6    2023-03-22 [1] CRAN (R 4.2.3)
 ##    PSAgraphics   * 2.1.2    2023-03-21 [1] CRAN (R 4.2.3)
 ##    psych           2.3.3    2023-03-18 [1] CRAN (R 4.2.3)
@@ -215,7 +219,6 @@
 ##  P rlang           1.1.0    2023-03-14 [?] RSPM (R 4.2.0)
 ##  P rmarkdown       2.21     2023-03-26 [?] RSPM (R 4.2.0)
 ##  P rpart         * 4.1.19   2022-10-21 [3] CRAN (R 4.2.3)
-##  P rvcheck         0.2.1    2021-10-22 [?] RSPM (R 4.2.0)
 ##    sandwich        3.0-2    2022-06-15 [1] CRAN (R 4.2.3)
 ##  P sass            0.4.5    2023-01-24 [?] RSPM (R 4.2.0)
 ##  P scales        * 1.2.1    2022-08-20 [?] RSPM (R 4.2.0)
@@ -238,7 +241,6 @@
 ##  P xml2            1.3.3    2021-11-30 [?] RSPM (R 4.2.0)
 ##  P xtable        * 1.8-4    2019-04-21 [?] RSPM (R 4.2.0)
 ##  P yaml            2.3.7    2023-01-23 [?] RSPM (R 4.2.0)
-##  P yulab.utils     0.0.6    2022-12-20 [?] RSPM (R 4.2.0)
 ##    zoo             1.8-11   2022-09-17 [1] CRAN (R 4.2.3)
 ## 
 ##  [1] /home/runner/.cache/R/renv/library/psa-1b3136f9/R-4.2/x86_64-pc-linux-gnu
@@ -258,11 +260,12 @@
 </div>
   <div class="chapter-nav">
 <div class="empty"></div>
-<div class="next"><a href="introduction.html"><span class="header-section-number">1</span> Introduction</a></div>
+<div class="next"><a href="chapter-introduction.html"><span class="header-section-number">1</span> Introduction</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
-    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>In this chapter</h2>
       <ul class="nav navbar-nav">
 <li><a class="nav-link" href="#preface">Preface</a></li>
+<li><a class="nav-link" href="#contributing">Contributing</a></li>
 <li><a class="nav-link" href="#acknowledgements">Acknowledgements</a></li>
 <li><a class="nav-link" href="#colophon">Colophon</a></li>
 <li><a class="nav-link" href="#license">License</a></li>
@@ -274,6 +277,12 @@
           <li><a id="book-edit" href="https://github.com/jbryer/psa/edit/master/book/index.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
         </ul>
 </div>
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a href="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml"><img src="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg" alt="Bookdown Status"></a></li>
+          <li><a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" border="0" alt="Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></li>
+        </ul>
+</div>
     </nav>
 </div>
 
@@ -283,7 +292,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-03.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-04.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

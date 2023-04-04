@@ -3,34 +3,35 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Introduction
+# Introduction {#chapter-introduction}
 
-The use of propensity score methods [@RosenbaumRubin1983] for estimating causal effects in observational studies or certain kinds of quasi-experiments has been increasing in the social sciences [@ThoemmesKim2011] and in medical research [@Austin2008a] in the last decade. Propensity score analysis (PSA) attempts to adjust selection bias that occurs due to the lack of randomization. Analysis is typically conducted in two phases where in phase I, the probability of placement in the treatment is estimated to identify matched pairs or clusters so that in phase II, comparisons on the dependent variable can be made between matched pairs or within clusters. R [@R-base] is ideal for conducting PSA given its wide availability of the most current statistical methods vis-à-vis add-on packages as well as its superior graphics capabilities.
+The use of propensity score methods [@RosenbaumRubin1983] for estimating causal effects in observational studies or certain kinds of quasi-experiments has been increasing over the last couple of decades (see Figure \@ref(fig:popularity)), especially in the social sciences [@ThoemmesKim2011] and medical research [@Austin2008a]. Propensity score analysis (PSA) attempts to adjust selection bias that occurs due to the lack of randomization. Analysis is typically conducted in three phases where in phase I, the probability of placement in the treatment is estimated to identify matched pairs or clusters so that in phase II, comparisons on the dependent variable can be made between matched pairs or within clusters. Lastly, phase III involves testing the robustness of estimates to any unobserved confounders. R [@R-base] is ideal for conducting PSA given its wide availability of the most current statistical methods vis-à-vis add-on packages as well as its superior graphics capabilities.
 
-This book will provide a theoretical overview of propensity score methods as well as illustrations and discussion of PSA applications. Methods used in phase I of PSA (i.e. models or methods for estimating propensity scores) include logistic regression, classification trees, and matching. Discussions on appropriate comparisons and estimations of effect size and confidence intervals in phase II will also be covered. The use of graphics for diagnosing covariate balance as well as summarizing overall results will be emphasized. Lastly, the extension of PSA methods for multilevel data will also be presented.
+This book will provide a theoretical overview of propensity score methods as well as illustrations and discussion of implementing PSA methods in R. Chapter \@ref(chapter-introduction) provides an overview of all three phases of PSA with minimal R code. Chapters \@ref(chapter-stratification), \@ref(chapter-matching), and \@ref(chapter-weighting) will discuss the details of implementing the three major approaches to PSA. Chapter \@ref(chapter-missing) provides some strategies to conducting PSA when there is missing data. Chapters \@ref(chapter-sensitivity) and \@ref(chapter-bootstrapping) provide details for phase III of PSA using sensitivity analysis and bootstrapping, respectively. Lastly, chapter \@ref(chapter-non-binary) provides methods for implementing PSA with non-binary treatments and chapter \@ref(chapter-multilevelpsa) discusses methods for PSA with cluster, or Hierarchical, data. The appendices contain additional details regarding the PSA Shiny application (Appendix \@ref{appendix-shiny}), limitations of interpreting fitted values from logistic regression (Appendix \@ref(appendix-psranges)), and additional methods and packages for estimating propensity scores (Appendix \@ref(appendix-psmodels)).
+
 
 <div class="figure" style="text-align: center">
-<img src="01-Introduction_files/figure-html/popularity-1.png" alt="PSA Citations per Year" width="100%" />
-<p class="caption">(\#fig:popularity)PSA Citations per Year</p>
+<img src="01-Introduction_files/figure-html/popularity-1.png" alt="PSA Citations per year" width="100%" />
+<p class="caption">(\#fig:popularity)PSA Citations per year</p>
 </div>
 
 
 ## Counterfactual Model for Causality
 
-In order to understand how propensity score analysis allows us to make causal estimates from observational data, we must first understand the basic principals of causality, particulary the counterfactual model. Figure \@ref(fig:introduction-causality) depicts a conterfactual model. We begin with our research subject. This can be a student, patient, rat, asteroid, or any other object we wish to know whether some condition has an effect on. Consider two parallel universes: one where the subject receives condition A and another where they receive condition B. Typically one condition is some treatment whereas the other condition is the absense of that treatment (also referred to as the control). We will use treatment and control throughout this book to refer to these two conditions. Once the individual has been exposed to the two conditions, the outcome is measured. The difference between these outcomes is the true causal effect. However, it is impossible for an object to exist in two universes at the same time, therefore we can never actually observe the true causal effect. @Holland1986 referred to this as the *Fundamental Problem of Causal Inference*.
+In order to understand how propensity score analysis allows us to make causal estimates from observational data, we must first understand the basic principals of causality, particularly the counterfactual model. Figure \@ref(fig:introduction-causality) depicts a conterfactual model. We begin with our research subject. This can be a student, patient, mouse, asteroid, or any other object we wish to know whether some condition has an effect on. Consider two parallel universes: one where the subject receives condition A and another where they receive condition B. Typically one condition is some treatment whereas the other condition is the absence of that treatment (also referred to as the control). We will use treatment and control throughout this book to refer to these two conditions. Once the individual has been exposed to the two conditions, the outcome is measured. The difference between these outcomes is the true causal effect. However, unless your Dr. Strange living in the Marvell multiverse, it is impossible for an object to exist in two universes at the same time, therefore we can never actually observe the true causal effect. @Holland1986 referred to this as the *Fundamental Problem of Causal Inference*.
 
 <div class="figure" style="text-align: center">
 <img src="figures/Causality.png" alt="Theoretical Causal Model" width="100%" />
 <p class="caption">(\#fig:introduction-causality)Theoretical Causal Model</p>
 </div>
 
-## Randomized Control Trials "The Gold Standard"
+## Randomized Control Trials: "The Gold Standard"
 
-The randomized experiment has been the goals standard for estimating causal effects. Effects can be estimated using simple means between groups, or blocks in randomized block design. Randomization presumes unbiasedness and balance between groups. However, randomization is often not feasible for many reasons, especially in educational contexts.
+The randomized control trials (RCT) has been the gold standard for estimating causal effects. Effects can be estimated using simple means between groups, or blocks in randomized block design. Randomization presumes unbiasedness and balance between groups. However, randomization is often not feasible for many reasons, especially in educational contexts. Although the RCT is the gold standard, it is important to recognize that it only *estimates* the causal effect. We will look at an example of where the RCT can be wrong and why on average it provides good estimates of the true causal effect so we can build a model to closely mimick the RCT with non-randomized data.
 
 
 
-The Intelligence Quotient (IQ) is a common measure of intelligence. It is designed such that the mean is 100 and the standard deviation is 15. Consider we have developed an intervention that is known to increase anyone's IQ by 4.5 points. Figure \@ref(fig:rct1) represents such a scenario with 30 individuals. The left panel has the individual's outcome if they were assigned to the control condition (in blue) and to the treatment condition (in red). The distance between the red and blue points for any individual is 4.5, our stipulated counterfactual difference. For RCTs we only ever get to observe one outcome for any individual. The right pane represents one possible outcome from an RCT.
+The Intelligence Quotient (IQ) is a common measure of intelligence. It is designed such that the mean is 100 and the standard deviation is 15. Consider we have developed an intervention that is known to increase anyone's IQ by 4.5 points (or a standardized effect size of 0.3). Figure \@ref(fig:rct1) represents such a scenario with 30 individuals. The left panel has the individual's outcome if they were assigned to the control condition (in blue) and to the treatment condition (in red). The distance between the red and blue points for any individual is 4.5, our stipulated counterfactual difference. For RCTs we only ever get to observe one outcome for any individual. The right pane represents one possible set of outcomes from an RCT. That is, we randomly selected one outcome for each individual from the left pane.
 
 <div class="figure" style="text-align: center">
 <img src="01-Introduction_files/figure-html/rct1-1.png" alt="Example conterfactuals (left panel) with one possible randomized control trial." width="100%" />
@@ -45,34 +46,104 @@ Figure \@ref(fig:rct2) includes the mean differences between treatment and contr
 <p class="caption">(\#fig:rct2)Estimated differences for full counterfactual model and one RCT.</p>
 </div>
 
-In this exmaple not only did the RCT not estimate the true effect, it estimated in the wrong direction. However, Figure \@ref(fig:rctc) represents the distribution of effects after conducting 1,000 RCTs from the 30 individuals above. The point here is that the RCT is already compromise to estimating the true counterfactual (i.e. causal effect). It is consider the gold standard because over many trials it will nearly approximate the true counterfactual.
+In this example not only did the RCT not estimate the true effect, it estimated in the wrong direction. However, Figure \@ref(fig:rctc) represents the distribution of effects after conducting 1,000 RCTs from the 30 individuals above. The point here is that the RCT is already compromise to estimating the true counterfactual (i.e. causal effect). It is consider the gold standard because over many trials it will nearly approximate the true counterfactual.
 
 <div class="figure" style="text-align: center">
 <img src="01-Introduction_files/figure-html/rctc-1.png" alt="Distribution of differences across many RCTs" width="100%" />
 <p class="caption">(\#fig:rctc)Distribution of differences across many RCTs</p>
 </div>
 
+The RCT works because the probability of anyone being in the treatment is 50%. Statistically, we call this the strong ignorability assumption. The strong ignorability assumption states that an outcome is independent of any observed or unobserved covariates^[Covariates used in this book and in the context of propensity score analysis are the independent variables that influence statistical models for predicting treatment placement and outcomes.] under randomization. This is represented mathematically as:
 
+\begin{equation}
+\begin{aligned}
+\left( { Y }_{ i }\left( 1 \right) ,{ Y }_{ i }\left( 0 \right)  \right) \bot { T }_{ i }
+\end{aligned}
+(\#eq:eq1)
+\end{equation}
 
+For all ${X}_{i}$ Here, $Y$ is our outcome of interest and *i* is an individual response such that $Y_i(1)$ is the outcome for subject *i* if assigned to the treatment group and $Y_i(0)$ is the outcome for subject *i* if assigned to the control group. The $\bot$ means independent and $T_i$ is assignment indicator subject *i*. Therefore, it follows that the causal effect of a treatment is the difference in an individual's outcome under the situation they were given the treatment and not (referred to as a counterfactual).
 
+\begin{equation}
+\begin{aligned}
+{\delta}_{i} = { Y }_{ i1 }-{ Y }_{ i0 }
+\end{aligned}
+(\#eq:eq2)
+\end{equation}
 
-
-The strong ignorability assumption states that an outcome is independent of any observed or unobserved covariates under randomization. This is represented mathematically as:
-
-$$\left( { Y }_{ i }\left( 1 \right) ,{ Y }_{ i }\left( 0 \right)  \right) \bot { T }_{ i }$$
-
-For all ${X}_{i}$
-
-Therefore, it follows that the causal effect of a treatment is the difference in an individual’s outcome under the situation they were given the treatment and not (referred to as a counterfactual).
-
-$${\delta}_{i} = { Y }_{ i1 }-{ Y }_{ i0 }$$
-
-However, it is impossible to directly observe \\({\delta}_{i}\\) (referred to as The Fundamental Problem of Causal Inference, Holland 1986). Rubin framed this problem as a missing data problem.
+However, it is impossible to directly observe \\({\delta}_{i}\\) (referred to as The Fundamental Problem of Causal Inference, Holland 1986). Rubin framed this problem as a missing data problem and the details will be discussed in the next section. 
 
 
 ### Rubin's Causal Model
 
-## Conceptual Phases of Propensity Score Analysis
+Returning to Figure \@ref(fig:introduction-causality), the problem with getting a true causal effect is that we only observe outcome A **or** outcome B, never both. As a result, we are missing data to estimate the causal effect. @Neyman1923 first coined the term *potential outcomes* when referring to randomized trials. However, Donald Rubin extended Neyman's idea to include both observational and experimental data. Rubin's student @Holland1986 later coined this the Rubin Causal Model.
+
+@Rubin1974 discussed an example of the effect of aspirin on a headache:
+
+> "Intuitively, the causal effect of one treatment, E, over another, C, for a particular unit and an interval of time from $t_{1}$
+ to $t_{2}$ is the difference between what would have happened at time $t_{2}$ if the unit had been exposed to E initiated at $t_{1}$ and what would have happened at $t_{2}$ if the unit had been exposed to C initiated at $t_{1}$: 'If an hour ago I had taken two aspirins instead of just a glass of water, my headache would now be gone,' or 'because an hour ago I took two aspirins instead of just a glass of water, my headache is now gone.' Our definition of the causal effect of the E versus C treatment will reflect this intuitive meaning."
+
+Under the Rubin Causal Model, whether or not you have a headache is the cause of whether or not your took aspirin one hour ago, but we can only observe one. The key to estimating the causal effect has to do with understanding the mechanism for the selecting whether or nor to take the aspirin. Imagine you get chronic headaches so you need to decide many times whether or not to take an aspirin. Let's also stimulate that the aspirin is more likely to be effective if you take it in the morning than the afternoon. If you decide to flip a coin to decide whether or not to take the aspirin there should be balance between observed headaches in morning and afternoon. That is, even though there is a difference between morning and afternoon, that does not influence the observed outcomes. However, you decide that you will take the aspirin only if it is above 50 degrees outside. Since it is more likely to be warmer in the afternoon then the morning, comparing the outcomes will provide a bias estimate, in part because deciding whether to take the aspirin is no longer 50%. But if we observed the weather we can potentially determine the probability of taking the aspirin or not. With enough observations, we compare situations where the probability of taking the aspirin was low, but there were some observations with and without aspirin all the way across the spectrum to where there was a high probability fo taking the aspirin. 
+
+
+### Propensity Scores
+
+Propensity scores were first introduced by @RosenbaumRubin1983. They defined propensity scores as "the conditional probability of assignment to a particular treatment given a vector of observed covariates." What Rosenbaum and Rubin showed in their seminal 1983 paper, *The Central Role of the Propensity Score in Observational Studies for Causal Effects* is that the "scalar propensity score is sufficient to remove bias due to all observed covariates." Propensity scores can then be used in a variety of ways including matching, stratification, or weighting. 
+
+Mathematically we can define the probability of being in the treatment group as:
+
+\begin{equation}
+\begin{aligned}
+\pi(X_i) = Pr(T_i = 1 \; | \; X_i)
+\end{aligned}
+(\#eq:eq3)
+\end{equation}
+
+Where $X$ is a matrix of observed covariates and $\pi(X_i)$ is the propensity score. The balancing property under exogeneity states that,
+
+\begin{equation}
+\begin{aligned}
+T_i \; \mathrel{\unicode{x2AEB}} \; X_i \; | \; \pi (X_i)
+\end{aligned}
+(\#eq:eq4)
+\end{equation}
+
+Where Ti is the treatment indicator for subject i. In the case of randomized experiments, the strong ignobility assumption states,
+
+\begin{equation}
+\begin{aligned}
+Y_i(1), \;  Y_i(0)) \; \mathrel{\unicode{x2AEB}} \; T_i  \; | \; X_i
+\end{aligned}
+(\#eq:eq5)
+\end{equation}
+
+For all $X_i$. That is, treatment is independent of all covariates, observed or otherwise. However, the strong ignorability assumption can be restated with the propensity score as,
+
+\begin{equation}
+\begin{aligned}
+({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \mathrel{\unicode{x2AEB}} \; { T }_{ i } \; | \; \pi({ X }_{ i })
+\end{aligned}
+(\#eq:eq6)
+\end{equation}
+
+So that treatment placement is ignorable given the propensity score presuming sufficient balance^[Balance in the context of PSA refers to differences in observed covariates between treatment and control units is minimized.] is achieved. 
+
+The average treatment effect (ATE) is defined as $E(r_1) - E(r_0)$ where $E(.)$ is the expected value in the population. Given a set of covariates, $X$, and outcomes $Y$, where 0 denotes the control group and 1 denotes the treatment group, ATE is defined as:
+
+\begin{equation}
+\begin{aligned}
+ATE \; = \; E(Y_1 - Y_0 \; | \; X) \; = \; E(Y_1 \; | \; X) - E(Y_0 \; | \; X)
+\end{aligned}
+(\#eq:eq7)
+\end{equation}
+
+Or the difference treatment and control groups given the set observed covariates. In section \@ref(introduction-effects) we will discuss ATE in addition to other causal estimators in detail.
+
+::: {.rmdtip}
+Simply put, what Rosenbaum and Rubin (1983) proved was that observations similar propensity scores should be roughly equivalent (balanced) across all observed covariates. As we will see in the rest of this chapter, having a scalar that summarizes many variables is convenient for finding matches, stratifying, and for applying regression weights. Although we will verify that balance is achieved as some methods for estimating propensity scores are better than others.
+:::
+
+## Phases of Propensity Score Analysis
 
 Propensity score analysis is typically conducted in three phases, namely:
 
@@ -82,11 +153,9 @@ Propensity score analysis is typically conducted in three phases, namely:
 
 The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification, matching, and weighting.
 
-### Phase I: Modeling for Selection Bias
+### Phase I: Estimate Propensity Scores
 
 Phase one of propensity score analysis is a cyclical process where propensity scores are estimated using a statistical model, balance in observed covariates is checked, and modifications to the statistical model are modified until sufficient balance is achieved. For simplicity we will use logistic regression to estimate propensity scores throughout the book. However, will introduce classification trees in chapter \@ref(chapter-stratification) given how they are uniquely applicable to stratification methods in and in appendix \@ref(appendix-psmodels) outlines some additional statistical methods, with R code, for estimating propensity scores.
-
-#### Estimate Propensity Scores
 
 
 
@@ -106,7 +175,7 @@ Figure \@ref(fig:sim-ggpairs) is a pairs plot [@R-GGally] showing the relationsh
 
 
 
-Indeed a simple null hypothesis test resulted in a difference of 4.63 ($t_{447} = -24.19$, *p* < 0.01), however we setup the simulation to have a mean difference of 2!
+Indeed a simple null hypothesis test resulted in a difference of 4.55 ($t_{959} = -32.75$, *p* < 0.01), however we setup the simulation to have a mean difference of 2!
 
 
 ```
@@ -114,10 +183,10 @@ Indeed a simple null hypothesis test resulted in a difference of 4.63 ($t_{447} 
 ## 	Welch Two Sample t-test
 ## 
 ## data:  outcome by treatment
-## t = -24.188, df = 446.5, p-value < 2.2e-16
+## t = -32.748, df = 959.11, p-value < 2.2e-16
 ## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
 ## 95 percent confidence interval:
-##  -5.006033 -4.253672
+##  -4.821017 -4.275883
 ## sample estimates:
 ```
 
@@ -137,9 +206,12 @@ After estimating the propensity scores we can plot the distributions by treatmen
 #### Evaluate Balance
 
 
+::: {.rmdtip}
+**Which matching method should you use?**  
+*Whichever one gives the best balance!*
+:::
 
-
-### Phase II: Estimate Causal Effects
+### Phase II: Estimate Causal Effects {#introduction-effects}
 
 
 
@@ -161,7 +233,14 @@ Chapter \@ref(chapter-weighting)
 #### Average treatment_effect (ATE)
 
 
-$$ ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X) $$
+\begin{equation}
+\begin{aligned}
+ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X)
+\end{aligned}
+(\#eq:eqate)
+\end{equation}
+
+
 Figure \@ref(fig:ate-hist)
 
 <div class="figure" style="text-align: center">
@@ -171,7 +250,13 @@ Figure \@ref(fig:ate-hist)
 
 #### Average treatment_effect Among the Treated (ATT)
 
-$$ ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1) $$
+\begin{equation}
+\begin{aligned}
+ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1)
+\end{aligned}
+(\#eq:eqatt)
+\end{equation}
+
 Figure \@ref(fig:att-hist)
 
 <div class="figure" style="text-align: center">
@@ -181,7 +266,12 @@ Figure \@ref(fig:att-hist)
 
 #### Average treatment_effect Among the Control (ATC)
 
-$$ ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0) $$
+\begin{equation}
+\begin{aligned}
+ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0)
+\end{aligned}
+(\#eq:eqatc)
+\end{equation}
 
 Figure \@ref(fig:atc-hist)
 
@@ -194,23 +284,30 @@ Figure \@ref(fig:atc-hist)
 
 @LiGreene2013 
 
-$$ ATM_d = E(Y_1 - Y_0 | M_d = 1) $$
+\begin{equation}
+\begin{aligned}
+ATM_d = E(Y_1 - Y_0 | M_d = 1)
+\end{aligned}
+(\#eq:eqatm)
+\end{equation}
 
 Figure \@ref(fig:acm-hist)
 
 <div class="figure" style="text-align: center">
-<img src="01-Introduction_files/figure-html/acm-hist-1.png" alt="Histogram of average treatment_effect among the evenly matched" width="100%" />
-<p class="caption">(\#fig:acm-hist)Histogram of average treatment_effect among the evenly matched</p>
+<img src="01-Introduction_files/figure-html/acm-hist-1.png" alt="Histogram of average treatment effect among the evenly matched" width="100%" />
+<p class="caption">(\#fig:acm-hist)Histogram of average treatment effect among the evenly matched</p>
 </div>
 
 
 ### Phase III: Sensitivity Analysis
 
+The final phase of propensity score analysis is to evaluate the robustness of causal estimates. We will discuss two approaches to test the robustness: sensitivity analysis (covered in detail in chapter \@ref(chapter-sensitivity)) and bootstrapping (covered in detail in chapter \@ref(chapter-bootstrapping)). Sensitivity analysis is a procedure where the results are tested under increasing factors of an unmeasured confounder in changing the randomization process. That is, it tests how much another variable would have change the prediction of treatment to result in non rejecting the null hypothesis. 
 
+Sensitivity analysis is only well defined for matching methods. @Rosenbaum2012 proposed testing the null hypothesis more than once, in part, to also test the sensitivity to the chosen method. In this spirit of testing the null hypothesis more than once, I have developed a method for conducting bootstrapping for propensity score analysis. This framework addresses the issues sensitivity to method choice, but also provides a framework for addressing issues of imbalance in treatment placement. Bootstrapping [@Efron1979] has become an effective approach to estimating parameters. The approach discussed in chapter \@ref(chapter-bootstrapping) avoids the issues of multiple hypothesis testing and increased type I error rates by using the bootstrap samples to estimate the standard errors and confidence intervals.
 
-## R Primer
+## R Packages
 
-R is a statistical software language designed to be extended vis-à-vis packages. As of April 03, 2023, there are currently 19,330 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.
+R is a statistical software language designed to be extended vis-à-vis packages. As of April 04, 2023, there are currently 19,333 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend [*R for Data Science*](https://r4ds.had.co.nz) [@Wickham2016] as an excellent introduction to R. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.
 
 * [`MatchIt`](http://gking.harvard.edu/gking/matchit) [@R-MatchIt] Nonparametric Preprocessing for Parametric Causal Inference
 * [`Matching`](http://sekhon.berkeley.edu/matching/) [@R-Matching] Multivariate and Propensity Score Matching Software for Causal Inference
@@ -226,65 +323,58 @@ The following command will install the R packages we will use in this book.
 
 
 ```r
-pkgs <- c('granova', 'granovaGG', 'Matching', 'MatchIt', 'mice', 
-          'multilevelPSA', 'party', 'PSAboot', 'PSAgraphics', 'rbounds', 
-		  'TriMatch')
-install.packages(pkgs)
+remotes::install_github('jbryer/psa', dependencies = 'Enhances')
 ```
 
 ## Datasets
 
-### National Supported Work Demonstration {#lalonde}
+
+
+This section provides a description of the datasets that will be used throughout this book.
+
+### National Supported Work Demonstration (`lalonde`) {#lalonde}
 
 The `lalonde` dataset is perhaps one of the most used datasets when introducing or evaluating propensity score methods. The data was collected by @Lalonde1986 but became widely used in the PSA literature after @DehejiaWahba1999 used it in their paper to evaluate propensity score matching. The dataset originated from the National Supported Work Demonstration study conducted in the 1970s. The program provided 12 to 18 months of employment to people with longstanding employment problems. The dataset contains 445 observations of 12 variables. The primary outcome is `re78` which is real earnings in 1978. Observed covariates used to ajdust for selection bias include `age` (age in years), `edu` (number of years of education), `black` (black or not), `hisp` (Hispanic or not), `married` (married or not), `nodegr` (whether the worker has a degree or not, note that 1 = no degree), `re74` (real earnings in 1974), and `re75` (real earnings in 1975).
 
 
 ```r
 data(lalonde, package='Matching')
-str(lalonde)
 ```
 
-```
-## 'data.frame':	445 obs. of  12 variables:
-##  $ age    : int  37 22 30 27 33 22 23 32 22 33 ...
-##  $ educ   : int  11 9 12 11 8 9 12 11 16 12 ...
-##  $ black  : int  1 0 1 1 1 1 1 1 1 0 ...
-##  $ hisp   : int  0 1 0 0 0 0 0 0 0 0 ...
-##  $ married: int  1 0 0 0 0 0 0 0 0 1 ...
-##  $ nodegr : int  1 1 0 1 1 1 0 1 0 0 ...
-##  $ re74   : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ re75   : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ re78   : num  9930 3596 24910 7506 290 ...
-##  $ u74    : int  1 1 1 1 1 1 1 1 1 1 ...
-##  $ u75    : int  1 1 1 1 1 1 1 1 1 1 ...
-##  $ treat  : int  1 1 1 1 1 1 1 1 1 1 ...
-```
+* `age`: Integer with mean = 25 and SD = 7.1
+* `educ`: Integer with mean = 10 and SD = 1.8
+* `black`: Integer with mean = 0.83 and SD = 0.37
+* `hisp`: Integer with mean = 0.088 and SD = 0.28
+* `married`: Integer with mean = 0.17 and SD = 0.37
+* `nodegr`: Integer with mean = 0.78 and SD = 0.41
+* `re74`: Numeric with mean = 2,102 and SD = 5,364
+* `re75`: Numeric with mean = 1,377 and SD = 3,151
+* `re78`: Numeric with mean = 5,301 and SD = 6,631
+* `u74`: Integer with mean = 0.73 and SD = 0.44
+* `u75`: Integer with mean = 0.65 and SD = 0.48
+* `treat`: Integer with mean = 0.42 and SD = 0.49
 
-### Lindner Center {#lindner}
+### Lindner Center (`lindner`) {#lindner}
 
 Data from an observational study of 996 patients receiving a PCI at Ohio Heart Health in 1997 and followed for at least 6 months by the staff of the Lindner Center. This is a landmark dataset in the literature on propensity score adjustment for treatment selection bias due to practice of evidence based medicine; patients receiving `abciximab` tended to be more severely diseased than those who did not receive a IIb/IIIa cascade blocker.
 
 
 ```r
 data(lindner, package='PSAgraphics')
-str(lindner)
 ```
 
-```
-## 'data.frame':	996 obs. of  10 variables:
-##  $ lifepres: num  0 11.6 11.6 11.6 11.6 11.6 11.6 11.6 11.6 11.6 ...
-##  $ cardbill: int  14301 3563 4694 7366 8247 8319 8410 8517 8763 8823 ...
-##  $ abcix   : int  1 1 1 1 1 1 1 1 1 1 ...
-##  $ stent   : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ height  : int  163 168 188 175 168 178 185 173 152 180 ...
-##  $ female  : int  1 0 0 0 1 0 0 1 1 0 ...
-##  $ diabetic: int  1 0 0 1 0 0 0 0 0 0 ...
-##  $ acutemi : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ ejecfrac: int  56 56 50 50 55 50 58 30 60 60 ...
-##  $ ves1proc: int  1 1 1 1 1 1 1 1 1 1 ...
-```
+* `lifepres`: Numeric with mean = 11 and SD = 1.9
+* `cardbill`: Integer with mean = 15,674 and SD = 11,182
+* `abcix`: Integer with mean = 0.7 and SD = 0.46
+* `stent`: Integer with mean = 0.67 and SD = 0.47
+* `height`: Integer with mean = 171 and SD = 11
+* `female`: Integer with mean = 0.35 and SD = 0.48
+* `diabetic`: Integer with mean = 0.22 and SD = 0.42
+* `acutemi`: Integer with mean = 0.14 and SD = 0.35
+* `ejecfrac`: Integer with mean = 51 and SD = 10
+* `ves1proc`: Integer with mean = 1.4 and SD = 0.66
 
-### Tutoring {#tutoring}
+### Tutoring (`tutoring`) {#tutoring}
 
 The `tutoring` dataset originates from a study conducted at an online adult serving institution examining the effects of tutoring services for students in English 101, English 201, and History 310. Tutoring services were available to all students but Treatment (`treat`) is operationalized as students who used tutoring services at least once during the course. Only 19.6% of students used tutoring services with approximately half using it more than once. We will use this dataset with both a dichotomous treatment (used tutoring or not) or as a two level treatment (used tutoring services once, used tutoring services two or more times).
 
@@ -292,32 +382,6 @@ The `tutoring` dataset originates from a study conducted at an online adult serv
 ```r
 data(tutoring, package='TriMatch')
 tutoring$treat2 <- tutoring$treat != 'Control'
-str(tutoring)
-```
-
-```
-## 'data.frame':	1142 obs. of  18 variables:
-##  $ treat     : Factor w/ 3 levels "Control","Treat1",..: 1 1 1 1 1 2 1 1 1 1 ...
-##  $ Course    : chr  "ENG*201" "ENG*201" "ENG*201" "ENG*201" ...
-##  $ Grade     : int  4 4 4 4 4 3 4 3 0 4 ...
-##  $ Gender    : Factor w/ 2 levels "FEMALE","MALE": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ Ethnicity : Factor w/ 3 levels "Black","Other",..: 2 3 3 3 3 3 3 3 1 3 ...
-##  $ Military  : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
-##  $ ESL       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
-##  $ EdMother  : int  3 5 1 3 2 3 4 4 3 6 ...
-##  $ EdFather  : int  6 6 1 5 2 3 4 4 2 6 ...
-##  $ Age       : num  48 49 53 52 47 53 54 54 59 40 ...
-##  $ Employment: int  3 3 1 3 1 3 3 3 1 3 ...
-##  $ Income    : num  9 9 5 5 5 9 6 6 1 8 ...
-##  $ Transfer  : num  24 25 39 48 23 ...
-##  $ GPA       : num  3 2.72 2.71 4 3.5 3.55 3.57 3.57 3.43 2.81 ...
-##  $ GradeCode : chr  "A" "A" "A" "A" ...
-##  $ Level     : Factor w/ 2 levels "Lower","Upper": 1 1 1 1 1 2 1 1 1 1 ...
-##  $ ID        : int  377 882 292 215 252 265 1016 282 39 911 ...
-##  $ treat2    : logi  FALSE FALSE FALSE FALSE FALSE TRUE ...
-```
-
-```r
 table(tutoring$Course, tutoring$treat)
 ```
 
@@ -329,120 +393,135 @@ table(tutoring$Course, tutoring$treat)
 ##   HSC*310      51     76     27
 ```
 
-### Programme of International Student Assessment (PISA) {#pisa}
+* `treat`: Factor with 3 levels: Control; Treat1; Treat2
+* `Course`: Character with 3 unique values
+* `Grade`: Integer with mean = 2.9 and SD = 1.5
+* `Gender`: Factor with 2 levels: FEMALE; MALE
+* `Ethnicity`: Factor with 3 levels: Other; White; Black
+* `Military`: Logical with 31% TRUE and 69% FALSE
+* `ESL`: Logical with 8.1% TRUE and 92% FALSE
+* `EdMother`: Integer with mean = 3.8 and SD = 1.5
+* `EdFather`: Integer with mean = 3.7 and SD = 1.7
+* `Age`: Numeric with mean = 37 and SD = 9
+* `Employment`: Integer with mean = 2.7 and SD = 0.68
+* `Income`: Numeric with mean = 5.1 and SD = 2.3
+* `Transfer`: Numeric with mean = 52 and SD = 25
+* `GPA`: Numeric with mean = 3.2 and SD = 0.57
+* `GradeCode`: Character with 6 unique values
+* `Level`: Factor with 2 levels: Lower; Upper
+* `ID`: Integer with mean = 572 and SD = 330
+* `treat2`: Logical with 20% TRUE and 80% FALSE
+
+### Programme of International Student Assessment (`pisana`) {#pisa}
+
+[The Programme of International Student Assessment](https://www.oecd.org/pisa) (PISA) is a study conducted by [OECD](https://www.oecd.org) every three years to measure 15-year-olds' academic abilities in reading, mathematics, and science along with a rich set of demographic and background information. The `pisana` dataset included in the `multilevelPSA` package contains the results from the 2009 study for North America (i.e. Canada, Mexico, and the United States).
 
 
 ```r
 data(pisana, package='multilevelPSA')
-str(pisana)
 ```
 
-```
-## 'data.frame':	66548 obs. of  65 variables:
-##  $ Country : chr  "Canada" "Canada" "Canada" "Canada" ...
-##  $ CNT     : chr  "CAN" "CAN" "CAN" "CAN" ...
-##  $ SCHOOLID: Factor w/ 1534 levels "00001","00002",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ ST01Q01 : Factor w/ 0 levels: NA NA NA NA NA NA NA NA NA NA ...
-##  $ ST04Q01 : Factor w/ 2 levels "Female","Male": 1 2 2 1 2 2 2 1 1 2 ...
-##  $ ST05Q01 : Factor w/ 3 levels "No","Yes, more than one year",..: 2 2 3 2 1 1 3 3 2 3 ...
-##  $ ST06Q01 : num  4 4 4 4 5 5 5 4 4 5 ...
-##  $ ST07Q01 : Factor w/ 3 levels "No, never","Yes, once",..: 1 1 1 1 1 1 2 1 1 1 ...
-##  $ ST08Q01 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ST08Q02 : Factor w/ 2 levels "No","Yes": 2 2 2 1 2 2 1 2 2 2 ...
-##  $ ST08Q03 : Factor w/ 2 levels "No","Yes": 1 2 2 2 1 1 1 2 2 2 ...
-##  $ ST08Q04 : Factor w/ 2 levels "No","Yes": 2 2 1 2 2 2 2 1 2 1 ...
-##  $ ST08Q05 : Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ ST08Q06 : Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ ST10Q01 : Factor w/ 5 levels "<ISCED level 1>",..: 3 3 3 3 3 3 3 3 3 3 ...
-##  $ ST12Q01 : Factor w/ 4 levels "Looking for work",..: 3 3 3 3 3 3 3 3 4 3 ...
-##  $ ST14Q01 : Factor w/ 5 levels "<ISCED level 1>",..: 3 3 3 3 3 3 3 3 3 3 ...
-##  $ ST16Q01 : Factor w/ 4 levels "Looking for work",..: 3 3 3 3 3 3 3 3 4 3 ...
-##  $ ST19Q01 : Factor w/ 2 levels "Another language",..: 2 2 2 1 2 2 2 2 2 1 ...
-##  $ ST20Q01 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ST20Q02 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ST20Q03 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ST20Q04 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ST20Q05 : Factor w/ 2 levels "No","Yes": 2 2 2 2 1 2 2 2 2 1 ...
-##  $ ST20Q06 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ST20Q07 : Factor w/ 2 levels "No","Yes": 2 2 1 2 1 1 1 1 1 1 ...
-##  $ ST20Q08 : Factor w/ 2 levels "No","Yes": 2 2 1 2 1 2 1 1 1 1 ...
-##  $ ST20Q09 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 1 1 2 ...
-##  $ ST20Q10 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 1 ...
-##  $ ST20Q12 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ST20Q13 : Factor w/ 2 levels "No","Yes": 2 2 1 2 2 2 2 2 2 2 ...
-##  $ ST20Q14 : Factor w/ 2 levels "No","Yes": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ ST21Q01 : Factor w/ 4 levels "None","One","Three or more",..: 3 3 3 3 3 4 4 3 3 3 ...
-##  $ ST21Q02 : Factor w/ 4 levels "None","One","Three or more",..: 3 3 3 3 4 3 2 3 3 3 ...
-##  $ ST21Q03 : Factor w/ 4 levels "None","One","Three or more",..: 3 2 2 3 4 4 4 4 3 3 ...
-##  $ ST21Q04 : Factor w/ 4 levels "None","One","Three or more",..: 4 4 2 3 4 3 2 4 4 3 ...
-##  $ ST21Q05 : Factor w/ 4 levels "None","One","Three or more",..: 2 4 4 3 3 4 2 4 4 3 ...
-##  $ ST22Q01 : Factor w/ 6 levels "0-10 books","101-200 books",..: 5 5 1 5 4 3 2 5 4 1 ...
-##  $ ST23Q01 : Factor w/ 5 levels "1 to 2 hours a day",..: 5 2 4 2 4 4 3 4 3 4 ...
-##  $ ST31Q01 : Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ ST31Q02 : Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 1 2 ...
-##  $ ST31Q03 : Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ ST31Q05 : Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 2 1 ...
-##  $ ST31Q06 : Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 2 1 ...
-##  $ ST31Q07 : Factor w/ 2 levels "No","Yes": 2 1 1 1 1 1 1 1 2 1 ...
-##  $ ST32Q01 : Factor w/ 5 levels "2 up to 4 Hours a week",..: 4 4 5 4 4 4 4 4 4 4 ...
-##  $ ST32Q02 : Factor w/ 5 levels "2 up to 4 Hours a week",..: 5 4 5 4 4 4 4 4 4 5 ...
-##  $ ST32Q03 : Factor w/ 5 levels "2 up to 4 Hours a week",..: 4 4 5 4 4 4 4 4 4 5 ...
-##  $ PV1MATH : num  474 673 348 518 420 ...
-##  $ PV2MATH : num  466 632 372 537 533 ...
-##  $ PV3MATH : num  438 571 397 511 441 ...
-##  $ PV4MATH : num  458 685 445 527 468 ...
-##  $ PV5MATH : num  471 586 375 490 420 ...
-##  $ PV1READ : num  503 613 390 570 407 ...
-##  $ PV2READ : num  492 578 421 542 452 ...
-##  $ PV3READ : num  522 553 442 527 434 ...
-##  $ PV4READ : num  509 594 410 584 423 ...
-##  $ PV5READ : num  460 564 372 518 416 ...
-##  $ PV1SCIE : num  460 686 378 500 417 ...
-##  $ PV2SCIE : num  444 589 399 575 556 ...
-##  $ PV3SCIE : num  484 593 388 505 471 ...
-##  $ PV4SCIE : num  489 643 444 540 436 ...
-##  $ PV5SCIE : num  435 646 385 476 479 ...
-##  $ PUBPRIV : Factor w/ 2 levels "Private","Public": 2 2 2 2 2 2 2 2 2 2 ...
-##  $ STRATIO : num  14.4 14.4 14.4 14.4 14.4 ...
-```
+* `Country`: Character with 3 unique values
+* `CNT`: Character with 3 unique values
+* `SCHOOLID`: Factor with 1,534 levels
+* `ST01Q01`: Factor with 0 levels: NA (66,548 missing values)
+* `ST04Q01`: Factor with 2 levels: Female; Male
+* `ST05Q01`: Factor with 3 levels: Yes, more than one year; Yes, one year or less; No
+* `ST06Q01`: Numeric with mean = 5.7 and SD = 0.81
+* `ST07Q01`: Factor with 3 levels: No, never; Yes, once; Yes, twice or more
+* `ST08Q01`: Factor with 2 levels: Yes; No
+* `ST08Q02`: Factor with 2 levels: Yes; No
+* `ST08Q03`: Factor with 2 levels: No; Yes
+* `ST08Q04`: Factor with 2 levels: Yes; No
+* `ST08Q05`: Factor with 2 levels: No; Yes
+* `ST08Q06`: Factor with 2 levels: No; Yes
+* `ST10Q01`: Factor with 5 levels: <ISCED level 3A>; <ISCED level 2>; <ISCED level 3B, 3C>; Did not complete <ISCED level 1>; <ISCED level 1>
+* `ST12Q01`: Factor with 4 levels: Working Full-time; Working Part-Time; Other; Looking for work
+* `ST14Q01`: Factor with 5 levels: <ISCED level 3A>; <ISCED level 2>; <ISCED level 1>; Did Not Complete <ISCED level 1>; <ISCED level 3B, 3C>
+* `ST16Q01`: Factor with 4 levels: Working Full-time; Working Part-Time; Looking for work; Other
+* `ST19Q01`: Factor with 2 levels: Language of test; Another language
+* `ST20Q01`: Factor with 2 levels: Yes; No
+* `ST20Q02`: Factor with 2 levels: Yes; No
+* `ST20Q03`: Factor with 2 levels: Yes; No
+* `ST20Q04`: Factor with 2 levels: Yes; No
+* `ST20Q05`: Factor with 2 levels: Yes; No
+* `ST20Q06`: Factor with 2 levels: Yes; No
+* `ST20Q07`: Factor with 2 levels: Yes; No
+* `ST20Q08`: Factor with 2 levels: Yes; No
+* `ST20Q09`: Factor with 2 levels: Yes; No
+* `ST20Q10`: Factor with 2 levels: Yes; No
+* `ST20Q12`: Factor with 2 levels: Yes; No
+* `ST20Q13`: Factor with 2 levels: Yes; No
+* `ST20Q14`: Factor with 2 levels: Yes; No
+* `ST21Q01`: Factor with 4 levels: Three or more; Two; One; None
+* `ST21Q02`: Factor with 4 levels: Three or more; Two; One; None
+* `ST21Q03`: Factor with 4 levels: Three or more; One; Two; None
+* `ST21Q04`: Factor with 4 levels: Two; One; Three or more; None
+* `ST21Q05`: Factor with 4 levels: One; Two; Three or more; None
+* `ST22Q01`: Factor with 6 levels: 26-100 books; 0-10 books; 201-500 books; 11-25 books; 101-200 books; More than 500 books
+* `ST23Q01`: Factor with 5 levels: More than 2 hours a day; 30 minutes or less a day; I don't read for enjoyment; Between 30 and 60 minutes; 1 to 2 hours a day
+* `ST31Q01`: Factor with 2 levels: No; Yes
+* `ST31Q02`: Factor with 2 levels: No; Yes
+* `ST31Q03`: Factor with 2 levels: No; Yes
+* `ST31Q05`: Factor with 2 levels: No; Yes
+* `ST31Q06`: Factor with 2 levels: No; Yes
+* `ST31Q07`: Factor with 2 levels: Yes; No
+* `ST32Q01`: Factor with 5 levels: Do not attend; Less than 2 hours a week; 2 up to 4 Hours a week; 6 or more hours a week; 4 up to 6 hours per week
+* `ST32Q02`: Factor with 5 levels: Less than 2 hours a week; Do not attend; 6 or more hours a week; 2 up to 4 Hours a week; 4 up to 6 hours per week
+* `ST32Q03`: Factor with 5 levels: Do not attend; Less than 2 hours a week; 4 up to 6 hours per week; 2 up to 4 Hours a week; 6 or more hours a week
+* `PV1MATH`: Numeric with mean = 461 and SD = 92
+* `PV2MATH`: Numeric with mean = 461 and SD = 92
+* `PV3MATH`: Numeric with mean = 461 and SD = 92
+* `PV4MATH`: Numeric with mean = 461 and SD = 92
+* `PV5MATH`: Numeric with mean = 461 and SD = 92
+* `PV1READ`: Numeric with mean = 465 and SD = 94
+* `PV2READ`: Numeric with mean = 465 and SD = 94
+* `PV3READ`: Numeric with mean = 465 and SD = 94
+* `PV4READ`: Numeric with mean = 465 and SD = 94
+* `PV5READ`: Numeric with mean = 465 and SD = 94
+* `PV1SCIE`: Numeric with mean = 460 and SD = 94
+* `PV2SCIE`: Numeric with mean = 460 and SD = 94
+* `PV3SCIE`: Numeric with mean = 460 and SD = 94
+* `PV4SCIE`: Numeric with mean = 460 and SD = 94
+* `PV5SCIE`: Numeric with mean = 460 and SD = 94
+* `PUBPRIV`: Factor with 2 levels: Public; Private
+* `STRATIO`: Numeric with mean = 26 and SD = 31 (8,576 missing values)
 
-### National Medical Expenditure Study {#nmes}
+### National Medical Expenditure Study (`nmes`) {#nmes}
+
+The National Medical Expenditure Study dataset was used by @Imai2004 in evaluating a method for non-binary treatments. This study examined the relationship between smoking status and medical expenditures.
 
 
 ```r
 data(nmes, package='TriMatch')
-str(nmes)
 ```
 
-```
-## 'data.frame':	20622 obs. of  29 variables:
-##  $ PIDX     : int  20843014 20836012 20836025 20835019 20832010 20829011 20825018 20821016 20819010 20819023 ...
-##  $ LASTAGE  : int  80 29 28 29 80 71 60 82 32 33 ...
-##  $ MALE     : int  0 0 1 0 1 1 0 0 1 0 ...
-##  $ RACE3    : Factor w/ 3 levels "1","2","3": 3 3 3 3 3 3 3 3 3 3 ...
-##  $ eversmk  : int  0 1 1 1 1 1 1 1 1 0 ...
-##  $ current  : int  NA 1 1 1 1 0 0 0 0 NA ...
-##  $ former   : int  0 0 0 0 0 1 1 1 1 0 ...
-##  $ smoke    : Factor w/ 3 levels "0","1","2": 1 2 2 2 2 3 3 3 3 1 ...
-##  $ AGESMOKE : int  NA 15 16 17 21 16 30 16 12 NA ...
-##  $ CIGSSMOK : int  NA 20 18 NA 10 NA 20 2 25 NA ...
-##  $ SMOKENOW : int  NA 1 1 1 1 2 2 2 2 NA ...
-##  $ SMOKED   : int  2 1 1 1 1 1 1 1 1 2 ...
-##  $ CIGSADAY : int  NA 35 19 NA 10 NA NA NA NA NA ...
-##  $ AGESTOP  : int  NA NA NA NA NA 46 38 35 29 NA ...
-##  $ packyears: num  0 15 11.7 NA 30 NA 9 2 22.5 0 ...
-##  $ yearsince: int  0 0 0 0 0 25 22 47 3 0 ...
-##  $ INCALPER : num  5806 9952 10839 13990 8221 ...
-##  $ HSQACCWT : num  6933 10607 11500 14766 9512 ...
-##  $ TOTALEXP : num  298 284 177 750 1369 ...
-##  $ TOTALSP3 : num  20 0 0 0 0 ...
-##  $ lc5      : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ chd5     : int  1 0 0 0 1 0 0 0 0 0 ...
-##  $ beltuse  : Factor w/ 3 levels "1","2","3": 3 3 2 2 1 3 3 3 3 3 ...
-##  $ educate  : Factor w/ 4 levels "1","2","3","4": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ marital  : Factor w/ 5 levels "1","2","3","4",..: 2 1 1 5 3 1 5 5 1 1 ...
-##  $ SREGION  : Factor w/ 4 levels "1","2","3","4": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ POVSTALB : Factor w/ 5 levels "1","2","3","4",..: 1 3 3 4 3 5 5 4 5 5 ...
-##  $ flag     : int  0 0 0 2 0 2 0 0 0 0 ...
-##  $ age      : int  1 0 0 0 1 1 1 1 0 0 ...
-```
+* `PIDX`: Integer with mean = 2.9e+07 and SD = 5,107,973
+* `LASTAGE`: Integer with mean = 46 and SD = 19
+* `MALE`: Integer with mean = 0.44 and SD = 0.5
+* `RACE3`: Factor with 3 levels: 3; 1; 2
+* `eversmk`: Integer with mean = 0.52 and SD = 0.5
+* `current`: Integer with mean = 0.55 and SD = 0.5 (9,872 missing values)
+* `former`: Integer with mean = 0.23 and SD = 0.42
+* `smoke`: Factor with 3 levels: 0; 1; 2
+* `AGESMOKE`: Integer with mean = 18 and SD = 5.4 (10,382 missing values)
+* `CIGSSMOK`: Integer with mean = 18 and SD = 12 (11,362 missing values)
+* `SMOKENOW`: Integer with mean = 1.4 and SD = 0.5 (9,872 missing values)
+* `SMOKED`: Integer with mean = 1.5 and SD = 0.5
+* `CIGSADAY`: Integer with mean = 19 and SD = 12 (14,990 missing values)
+* `AGESTOP`: Integer with mean = 39 and SD = 16 (16,242 missing values)
+* `packyears`: Numeric with mean = 12 and SD = 21 (1,119 missing values)
+* `yearsince`: Integer with mean = 3 and SD = 8.2 (416 missing values)
+* `INCALPER`: Numeric with mean = 7,171 and SD = 3,560
+* `HSQACCWT`: Numeric with mean = 7,850 and SD = 3,796
+* `TOTALEXP`: Numeric with mean = 1,947 and SD = 6,207
+* `TOTALSP3`: Numeric with mean = 494 and SD = 3,418
+* `lc5`: Integer with mean = 0.011 and SD = 0.1
+* `chd5`: Integer with mean = 0.053 and SD = 0.23
+* `beltuse`: Factor with 3 levels: 3; 2; 1
+* `educate`: Factor with 4 levels: 1; 2; 3; 4
+* `marital`: Factor with 5 levels: 2; 1; 5; 3; 4; NA (76 missing values)
+* `SREGION`: Factor with 4 levels: 1; 2; 3; 4
+* `POVSTALB`: Factor with 5 levels: 1; 3; 4; 5; 2; NA (85 missing values)
+* `flag`: Integer with mean = 0.15 and SD = 0.53
+* `age`: Integer with mean = 0.56 and SD = 0.5

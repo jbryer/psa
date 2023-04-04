@@ -1,11 +1,11 @@
 --- 
 title: "Applied Propensity Score Analysis with R"
 author: "Jason Bryer, Ph.D."
-date: "2023-04-03"
+date: "2023-04-04"
 site: bookdown::bookdown_site
 documentclass: book
 url: https://psa.bryer.org
-cover-image: images/psa.png
+cover-image: images/cover.png
 description: |
   An introduction to conducting propensity score analysis with R.
 biblio-style: apalike
@@ -14,21 +14,24 @@ bibliography: [book.bib, packages.bib]
 
 # Preface {-}
 
-[![Bookdown Status](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml)
-[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+Last updated: April 04, 2023
 
+<a href="https://psa.bryer.org" target="_blank"><img src="figures/cover.png" width="40%" style="float:right; padding:10px" style="display: block; margin: auto 0 auto auto;" /></a>
 
-I first encountered propensity score analysis (PSA) by my late dissertation advisor Robert Pruzek in 2006 when I entered graduate school. The notion that you could get reasonable causal estimates without the need of randomization was foreign to me and at first, I was skeptical. Many years later having used PSA for many projects, not only am I convinced it is possible, I believe there are instances where this may be preferred over the randomized control trial. I have been the Principal Investigator for two Federal grants to develop and test the [Diagnostic Assessment and Achievement of College Skills (DAACS)](https://daacs.net) where have attempted to conduct large scale randomized control trials (RCT) involving thousands of students. Through those experiences I have found that there are numerous compromises made in delivering an intervention that the generalizability of the results to a context where we are not concerned about the RCT make interpretations difficult. Moreover, RCTs assume a single effect for everyone. With PSA, particularly in the stratification section, it is possible to tease out how an intervention may vary by the observed covariates.
+I was first introduced to propensity score analysis (PSA) by my late dissertation advisor Robert Pruzek in 2006 when I entered graduate school. The notion that you could get reasonable causal estimates without the need of randomization was foreign to me and at first, I was skeptical. Many years later having used PSA for many projects, not only am I convinced it is possible, I believe there are instances where this may be preferred over the randomized control trial. I have been the Principal Investigator for two Federal grants to develop and test the [Diagnostic Assessment and Achievement of College Skills (DAACS)](https://daacs.net) where have attempted to conduct large scale randomized control trials (RCT) involving thousands of students. Through those experiences I have found that there are numerous compromises made in delivering an intervention that the generalizability of the results to a context where we are not concerned about the RCT make interpretations difficult. Moreover, RCTs assume a single effect for everyone. With PSA, particularly in the stratification section, it is possible to tease out how an intervention may vary by the observed covariates.
 
-I have taught PSA many times over the years. This "book" is my attempt to collect my notes and experiences on conducting PSA. For the most part I will emphasize the applied and provide links to references if the reader wishes to explore the theoretical in more details. The `psa` R package that accompanies this book is available on Github and can be installed using the `remotes` package with the command below. By setting the `dependencies = TRUE` parameter will ensure that all the R packages used in this book are installed as well. The `psa` package contains a number of datasets and utility functions used throughout the book. But it also contains a [Shiny](https://shiny.rstudio.com) application designed to conduct PSA using a graphical user interface. Details on using the application are provided in the [appendix](#psa_shiny).
+I have taught PSA many times over the years. This "book" is my attempt to collect my notes and experiences on conducting PSA. For the most part I will emphasize the applied and provide links to references if the reader wishes to explore the theoretical in more details. The `psa` R package that accompanies this book is available on Github and can be installed using the `remotes` package with the command below. By setting the `dependencies = 'Enhances'` parameter will ensure that all the R packages used in this book are installed as well. The `psa` package contains a number of datasets and utility functions used throughout the book. But it also contains a [Shiny](https://shiny.rstudio.com) application designed to conduct PSA using a graphical user interface. Details on using the application are provided in the [appendix](#psa_shiny).
 
 
 ```r
-remotes::install(build_vignettes = TRUE, dependencies = 'Enhances')
+remotes::install_github('jbryer/psa',
+						build_vignettes = TRUE,
+						dependencies = 'Enhances')
 ```
 
-This books is very much a work in progress and contributions are welcome. Please adhere to the [code of conduct](https://github.com/jbryer/psa/blob/master/CODE_OF_CONDUCT.md). Each page has an edit link which will take you directly to the source file on [Github.](https://github.com/jbryer/psa) You are also submit feedback using the [Github Issues](https://github.com/jbryer/psa/issues) tracker.
+## Contributing {.unnumbered}
 
+This books is a work in progress and contributions are welcome. Please adhere to the [code of conduct](https://github.com/jbryer/psa/blob/master/CODE_OF_CONDUCT.md). Each page has an edit link which will take you directly to the source file on [Github](https://github.com/jbryer/psa). You can also submit feedback using the [Github Issues](https://github.com/jbryer/psa/issues) tracker.
 
 ## Acknowledgements {.unnumbered}
 
@@ -52,15 +55,13 @@ devtools::session_info()
 ##  collate  C.UTF-8
 ##  ctype    C.UTF-8
 ##  tz       UTC
-##  date     2023-04-03
+##  date     2023-04-04
 ##  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────
 ##  ! package       * version  date (UTC) lib source
 ##    abind           1.4-5    2016-07-21 [1] CRAN (R 4.2.3)
 ##  P backports       1.4.1    2021-12-13 [?] RSPM (R 4.2.0)
-##  P badger          0.2.3    2023-01-28 [?] RSPM (R 4.2.0)
-##  P BiocManager     1.30.20  2023-02-24 [?] RSPM (R 4.2.0)
 ##    bookdown        0.33     2023-03-06 [1] CRAN (R 4.2.3)
 ##  P boot            1.3-28.1 2022-11-22 [3] CRAN (R 4.2.3)
 ##  P bslib           0.4.2    2022-12-16 [?] RSPM (R 4.2.0)
@@ -75,7 +76,6 @@ devtools::session_info()
 ##  P crayon          1.5.2    2022-09-29 [?] RSPM (R 4.2.0)
 ##  P devtools        2.4.5    2022-10-11 [?] RSPM (R 4.2.0)
 ##  P digest          0.6.31   2022-12-11 [?] RSPM (R 4.2.0)
-##  P dlstats         0.1.6    2022-12-09 [?] RSPM (R 4.2.0)
 ##  P downlit         0.4.2    2022-07-05 [?] RSPM (R 4.2.0)
 ##  P dplyr         * 1.1.1    2023-03-22 [?] RSPM (R 4.2.0)
 ##  P ellipsis        0.3.2    2021-04-29 [?] RSPM (R 4.2.0)
@@ -92,6 +92,7 @@ devtools::session_info()
 ##  P granovaGG     * 1.4.0    2015-12-18 [?] RSPM (R 4.2.0)
 ##  P gridExtra       2.3      2017-09-09 [?] RSPM (R 4.2.0)
 ##  P gtable          0.3.3    2023-03-21 [?] RSPM (R 4.2.0)
+##  P highr           0.10     2022-12-22 [?] RSPM (R 4.2.0)
 ##  P htmltools       0.5.5    2023-03-23 [?] RSPM (R 4.2.0)
 ##  P htmlwidgets     1.6.2    2023-03-17 [?] RSPM (R 4.2.0)
 ##  P httpuv          1.6.9    2023-02-14 [?] RSPM (R 4.2.0)
@@ -132,7 +133,7 @@ devtools::session_info()
 ##  P processx        3.8.0    2022-10-26 [?] RSPM (R 4.2.0)
 ##  P profvis         0.3.7    2020-11-02 [?] RSPM (R 4.2.0)
 ##  P promises        1.2.0.1  2021-02-11 [?] RSPM (R 4.2.0)
-##  P ps              1.7.3    2023-03-21 [?] RSPM (R 4.2.0)
+##  P ps              1.7.4    2023-04-02 [?] RSPM (R 4.2.0)
 ##    PSAboot       * 1.3.6    2023-03-22 [1] CRAN (R 4.2.3)
 ##    PSAgraphics   * 2.1.2    2023-03-21 [1] CRAN (R 4.2.3)
 ##    psych           2.3.3    2023-03-18 [1] CRAN (R 4.2.3)
@@ -147,7 +148,6 @@ devtools::session_info()
 ##  P rlang           1.1.0    2023-03-14 [?] RSPM (R 4.2.0)
 ##  P rmarkdown       2.21     2023-03-26 [?] RSPM (R 4.2.0)
 ##  P rpart         * 4.1.19   2022-10-21 [3] CRAN (R 4.2.3)
-##  P rvcheck         0.2.1    2021-10-22 [?] RSPM (R 4.2.0)
 ##    sandwich        3.0-2    2022-06-15 [1] CRAN (R 4.2.3)
 ##  P sass            0.4.5    2023-01-24 [?] RSPM (R 4.2.0)
 ##  P scales        * 1.2.1    2022-08-20 [?] RSPM (R 4.2.0)
@@ -170,7 +170,6 @@ devtools::session_info()
 ##  P xml2            1.3.3    2021-11-30 [?] RSPM (R 4.2.0)
 ##  P xtable        * 1.8-4    2019-04-21 [?] RSPM (R 4.2.0)
 ##  P yaml            2.3.7    2023-01-23 [?] RSPM (R 4.2.0)
-##  P yulab.utils     0.0.6    2022-12-20 [?] RSPM (R 4.2.0)
 ##    zoo             1.8-11   2022-09-17 [1] CRAN (R 4.2.3)
 ## 
 ##  [1] /home/runner/.cache/R/renv/library/psa-1b3136f9/R-4.2/x86_64-pc-linux-gnu

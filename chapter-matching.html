@@ -11,12 +11,12 @@
 <meta property="og:title" content="Chapter 3 Matching | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://psa.bryer.org/chapter-matching.html">
-<meta property="og:image" content="https://psa.bryer.org/images/psa.png">
+<meta property="og:image" content="https://psa.bryer.org/images/cover.png">
 <meta property="og:description" content="lalonde.glm &lt;- glm(lalonde.formu, family=binomial, data=lalonde) ps &lt;- fitted(lalonde.glm) # Propensity scores Y &lt;- lalonde$re78 # Dependent variable, real earnings in 1978 Tr &lt;- lalonde$treat #...">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Chapter 3 Matching | Applied Propensity Score Analysis with R">
 <meta name="twitter:description" content="lalonde.glm &lt;- glm(lalonde.formu, family=binomial, data=lalonde) ps &lt;- fitted(lalonde.glm) # Propensity scores Y &lt;- lalonde$re78 # Dependent variable, real earnings in 1978 Tr &lt;- lalonde$treat #...">
-<meta name="twitter:image" content="https://psa.bryer.org/images/psa.png">
+<meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
@@ -69,17 +69,17 @@
       <nav aria-label="Table of contents"><h2>Table of contents</h2>
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">Preface</a></li>
-<li><a class="" href="introduction.html"><span class="header-section-number">1</span> Introduction</a></li>
+<li><a class="" href="chapter-introduction.html"><span class="header-section-number">1</span> Introduction</a></li>
 <li><a class="" href="chapter-stratification.html"><span class="header-section-number">2</span> Stratification</a></li>
 <li><a class="active" href="chapter-matching.html"><span class="header-section-number">3</span> Matching</a></li>
 <li><a class="" href="chapter-weighting.html"><span class="header-section-number">4</span> Weighting</a></li>
-<li><a class="" href="missing-data.html"><span class="header-section-number">5</span> Missing Data</a></li>
+<li><a class="" href="chapter-missing.html"><span class="header-section-number">5</span> Missing Data</a></li>
 <li><a class="" href="chapter-sensitivity.html"><span class="header-section-number">6</span> Sensitivity Analysis</a></li>
 <li><a class="" href="chapter-bootstrapping.html"><span class="header-section-number">7</span> Bootstrapping</a></li>
 <li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
 <li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">9</span> Multilevel PSA</a></li>
 <li class="book-part">Appendix</li>
-<li><a class="" href="psa_shiny.html"><span class="header-section-number">A</span> Shiny Application</a></li>
+<li><a class="" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Application</a></li>
 <li><a class="" href="appendix-psranges.html"><span class="header-section-number">B</span> Propensity Score Ranges</a></li>
 <li><a class="" href="appendix-psmodels.html"><span class="header-section-number">C</span> Methods for Estimating Propensity Scores</a></li>
 <li><a class="" href="references.html">References</a></li>
@@ -94,12 +94,12 @@
 <h1>
 <span class="header-section-number">3</span> Matching<a class="anchor" aria-label="anchor" href="#chapter-matching"><i class="fas fa-link"></i></a>
 </h1>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lalonde.glm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">lalonde.formu</span>, family<span class="op">=</span><span class="va">binomial</span>, data<span class="op">=</span><span class="va">lalonde</span><span class="op">)</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">lalonde.glm</span><span class="op">)</span>  <span class="co"># Propensity scores</span></span>
 <span><span class="va">Y</span>  <span class="op">&lt;-</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span>  <span class="co"># Dependent variable, real earnings in 1978</span></span>
 <span><span class="va">Tr</span> <span class="op">&lt;-</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span> <span class="co"># Treatment indicator</span></span></code></pre></div>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Matching</span></span>
 <span><span class="co"># one-to-one matching with replacement (the "M=1" option).</span></span>
 <span><span class="co"># Estimating the treatment effect on the treated (default is ATT).</span></span>
@@ -119,7 +119,7 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  185 
 ## Matched number of observations  (unweighted).  346</code></pre>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="va">rr.att</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##  [1] "caliper"           "ecaliper"          "est"              
 ##  [4] "est.noadj"         "estimand"          "exact"            
@@ -129,7 +129,7 @@
 ## [16] "orig.treated.nobs" "orig.wnobs"        "se"               
 ## [19] "se.cond"           "se.standard"       "version"          
 ## [22] "weights"           "wnobs"</code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rr.ate</span> <span class="op">&lt;-</span> <span class="fu">Match</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, M<span class="op">=</span><span class="fl">1</span>, estimand<span class="op">=</span><span class="st">'ATE'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr.ate</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
@@ -142,7 +142,7 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  445 
 ## Matched number of observations  (unweighted).  756</code></pre>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="va">rr.ate</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##  [1] "caliper"           "ecaliper"          "est"              
 ##  [4] "est.noadj"         "estimand"          "exact"            
@@ -152,7 +152,7 @@
 ## [16] "orig.treated.nobs" "orig.wnobs"        "se"               
 ## [19] "se.cond"           "se.standard"       "version"          
 ## [22] "weights"           "wnobs"</code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rr2</span> <span class="op">&lt;-</span> <span class="fu">Match</span><span class="op">(</span>Y <span class="op">=</span> <span class="va">Y</span>,</span>
 <span>             Tr <span class="op">=</span> <span class="va">Tr</span>,</span>
 <span>             X <span class="op">=</span> <span class="va">ps</span>,</span>
@@ -171,10 +171,10 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  185 
 ## Matched number of observations  (unweighted).  346</code></pre>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">rr2</span><span class="op">$</span><span class="va">index.control</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 173.00</code></pre>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="va">rr2</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##  [1] "caliper"           "ecaliper"          "est"              
 ##  [4] "est.noadj"         "estimand"          "exact"            
@@ -184,7 +184,7 @@
 ## [16] "orig.treated.nobs" "orig.wnobs"        "se"               
 ## [19] "se.cond"           "se.standard"       "version"          
 ## [22] "weights"           "wnobs"</code></pre>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Using the Matchit package</span></span>
 <span><span class="va">matchit.out</span> <span class="op">&lt;-</span> <span class="fu">matchit</span><span class="op">(</span><span class="va">lalonde.formu</span>, data<span class="op">=</span><span class="va">lalonde</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">matchit.out</span><span class="op">)</span></span></code></pre></div>
@@ -266,7 +266,7 @@
 ## Matched       185     185
 ## Unmatched      75       0
 ## Discarded       0       0</code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Same as above but calculate average treatment effect</span></span>
 <span><span class="va">rr.ate</span> <span class="op">&lt;-</span> <span class="fu">Match</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, M<span class="op">=</span><span class="fl">1</span>, ties<span class="op">=</span><span class="cn">FALSE</span>, replace<span class="op">=</span><span class="cn">FALSE</span>, estimand<span class="op">=</span><span class="st">'ATE'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr.ate</span><span class="op">)</span> <span class="co"># Here the estimate is ATE</span></span></code></pre></div>
@@ -280,14 +280,14 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  370 
 ## Matched number of observations  (unweighted).  370</code></pre>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Genetic Matching</span></span>
 <span><span class="va">rr.gen</span> <span class="op">&lt;-</span> <span class="fu">GenMatch</span><span class="op">(</span>Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, </span>
 <span>                   BalanceMatrix<span class="op">=</span><span class="va">lalonde</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/allnames.html">all.vars</a></span><span class="op">(</span><span class="va">lalonde.formu</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
 <span>                   estimand<span class="op">=</span><span class="st">'ATE'</span>, M<span class="op">=</span><span class="fl">1</span>, pop.size<span class="op">=</span><span class="fl">16</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## 
-## Mon Apr  3 15:22:57 2023
+## Tue Apr  4 01:50:25 2023
 ## Domains:
 ##  0.000000e+00   &lt;=  X1   &lt;=    1.000000e+03 
 ## 
@@ -446,9 +446,9 @@
 ## Solution Found Generation 9
 ## Number of Generations Run 14
 ## 
-## Mon Apr  3 15:22:59 2023
+## Tue Apr  4 01:50:27 2023
 ## Total run time : 0 hours 0 minutes and 2 seconds</code></pre>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rr.gen.mout</span> <span class="op">&lt;-</span> <span class="fu">Match</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, estimand<span class="op">=</span><span class="st">'ATE'</span>, Weight.matrix<span class="op">=</span><span class="va">rr.gen</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr.gen.mout</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
@@ -461,12 +461,12 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  445 
 ## Matched number of observations  (unweighted).  650</code></pre>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Partial exact matching</span></span>
 <span><span class="va">rr2</span> <span class="op">&lt;-</span> <span class="fu">Matchby</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">nodegr</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 1 of 2 groups
 ## 2 of 2 groups</code></pre>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr2</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## Estimate...  2333.2 
@@ -478,14 +478,14 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  185 
 ## Matched number of observations  (unweighted).  185</code></pre>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Partial exact matching on two covariates</span></span>
 <span><span class="va">rr3</span> <span class="op">&lt;-</span> <span class="fu">Matchby</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, by<span class="op">=</span><span class="va">lalonde</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'nodegr'</span>,<span class="st">'married'</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 1 of 4 groups
 ## 2 of 4 groups
 ## 3 of 4 groups
 ## 4 of 4 groups</code></pre>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr3</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## Estimate...  1961.7 
@@ -503,13 +503,19 @@
 <div class="prev"><a href="chapter-stratification.html"><span class="header-section-number">2</span> Stratification</a></div>
 <div class="next"><a href="chapter-weighting.html"><span class="header-section-number">4</span> Weighting</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
-    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>In this chapter</h2>
       <ul class="nav navbar-nav"><li><a class="nav-link" href="#chapter-matching"><span class="header-section-number">3</span> Matching</a></li></ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">
 <li><a id="book-source" href="https://github.com/jbryer/psa/blob/master/book/03-Matching.Rmd">View source <i class="fab fa-github"></i></a></li>
           <li><a id="book-edit" href="https://github.com/jbryer/psa/edit/master/book/03-Matching.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a href="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml"><img src="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg" alt="Bookdown Status"></a></li>
+          <li><a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" border="0" alt="Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></li>
         </ul>
 </div>
     </nav>
@@ -521,7 +527,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-03.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-04.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

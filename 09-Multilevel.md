@@ -110,6 +110,11 @@ prop.table(table(pisana$CNT, pisana$PUBPRIV, useNA='ifany'), 1) * 100
 ##   USA  6.592777 93.407223
 ```
 
+<div class="figure" style="text-align: center">
+<img src="figures/AnnotatedCircPlot.png" alt="Annotated multilevel PSA assessment plot. This plot compares private schools (x- axis) against public schools (y-axis) for North America from the Programme of International Student Assessment." width="100%" />
+<p class="caption">(\#fig:unnamed-chunk-2)Annotated multilevel PSA assessment plot. This plot compares private schools (x- axis) against public schools (y-axis) for North America from the Programme of International Student Assessment.</p>
+</div>
+
 Phase I
 
 Use conditional inference trees from the party package
