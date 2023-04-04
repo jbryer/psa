@@ -1,5 +1,13 @@
 # Matching {#chapter-matching}
 
+::: {.rmdtip}
+**match**  
+*verb*  
+1. correspond or cause to correspond in some essential respect; make or be harmonious.  
+2. be equal to (something) in quality or strength.
+:::
+
+
 ```{r}
 lalonde.glm <- glm(lalonde.formu, family=binomial, data=lalonde)
 ps <- fitted(lalonde.glm)  # Propensity scores
@@ -9,6 +17,22 @@ Tr <- lalonde$treat # Treatment indicator
 ```
 
 
+```{r introduction-logistic, eval = FALSE, echo=FALSE, fig.height=4, fig.cap='Propensity Scores from Logistic Regression with Sample of Matched Pairs'}
+lalonde.lr <- glm(lalonde.formu, family=binomial, data=lalonde)
+lalonde$ps <- fitted(lalonde.lr)
+lalonde.match <- Match(Y=lalonde$re78, Tr=lalonde$treat, X=lalonde$ps, M=1);
+lalonde.match.df <- data.frame(treated.ps=lalonde[lalonde.match$index.treated,]$ps,
+						       control.ps=lalonde[lalonde.match$index.control,]$ps,
+							   treated.y=1, control.y=0)
+lalonde.match.df <- lalonde.match.df[order(lalonde.match.df$control.ps),]
+rows <- (1:nrow(lalonde.match.df) - 1) %% floor(nrow(lalonde.match.df) / 5) == 0
+ggplot(lalonde, aes(x=ps, y=treat)) + geom_point(alpha=0.5) +
+	stat_smooth(method="glm", method.args=list(family="binomial"), se=FALSE) +
+	xlim(c(0,1)) + xlab('Propensity Score') + ylab('Treatment') +
+	geom_segment(data=lalonde.match.df[rows,], 
+				 aes(x=treated.ps, xend=control.ps, y=treated.y, yend=control.y),
+				 color='purple')
+```
 
 ```{r}
 ## Matching
