@@ -67,42 +67,6 @@ stan_ps <- predict(stan_out, type = 'response')
 library(BART)
 bart_out <- pbart(x.train = lalonde[,all.vars(lalonde.formu)[-1]],
 				  y.train = lalonde[,all.vars(lalonde.formu)[1]])
-```
-
-```
-## *****Into main of pbart
-## *****Data:
-## data:n,p,np: 445, 10, 0
-## y1,yn: 1, 0
-## x1,x[n*p]: 37.000000, 0.000000
-## *****Number of Trees: 50
-## *****Number of Cut Points: 33 ... 1
-## *****burn and ndpost: 100, 1000
-## *****Prior:mybeta,alpha,tau: 2.000000,0.950000,0.212132
-## *****binaryOffset: -0.212829
-## *****Dirichlet:sparse,theta,omega,a,b,rho,augment: 0,0,1,0.5,1,10,0
-## *****nkeeptrain,nkeeptest,nkeeptreedraws: 1000,1000,1000
-## *****printevery: 100
-## *****skiptr,skipte,skiptreedraws: 1,1,1
-## 
-## MCMC
-## done 0 (out of 1100)
-## done 100 (out of 1100)
-## done 200 (out of 1100)
-## done 300 (out of 1100)
-## done 400 (out of 1100)
-## done 500 (out of 1100)
-## done 600 (out of 1100)
-## done 700 (out of 1100)
-## done 800 (out of 1100)
-## done 900 (out of 1100)
-## done 1000 (out of 1100)
-## time: 1s
-## check counts
-## trcnt,tecnt: 1000,0
-```
-
-```r
 bart_ps <- bart_out$prob.test.mean
 ```
 

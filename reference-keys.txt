@@ -13,6 +13,7 @@ eq:eq7
 fig:sim-scatter
 fig:sim-ggpairs
 fig:sim-dist
+fig:intro-balance-plots
 fig:sim-loess
 eq:eqate
 fig:ate-hist
@@ -38,10 +39,10 @@ phases-of-propensity-score-analysis
 phase-i-estimate-propensity-scores
 evaluate-balance
 introduction-effects
-average-treatment_effect-ate
-average-treatment_effect-among-the-treated-att
-average-treatment_effect-among-the-control-atc
-average-treatment_effect-among-the-evenly-matched-atm
+average-treatment-effect-ate
+average-treatment-effect-among-the-treated-att
+average-treatment-effect-among-the-control-atc
+average-treatment-effect-among-the-evenly-matched-atm
 phase-iii-sensitivity-analysis
 r-packages
 datasets

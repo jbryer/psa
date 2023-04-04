@@ -94,12 +94,12 @@
 <h1>
 <span class="header-section-number">3</span> Matching<a class="anchor" aria-label="anchor" href="#chapter-matching"><i class="fas fa-link"></i></a>
 </h1>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lalonde.glm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">lalonde.formu</span>, family<span class="op">=</span><span class="va">binomial</span>, data<span class="op">=</span><span class="va">lalonde</span><span class="op">)</span></span>
 <span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">lalonde.glm</span><span class="op">)</span>  <span class="co"># Propensity scores</span></span>
 <span><span class="va">Y</span>  <span class="op">&lt;-</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span>  <span class="co"># Dependent variable, real earnings in 1978</span></span>
 <span><span class="va">Tr</span> <span class="op">&lt;-</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span> <span class="co"># Treatment indicator</span></span></code></pre></div>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Matching</span></span>
 <span><span class="co"># one-to-one matching with replacement (the "M=1" option).</span></span>
 <span><span class="co"># Estimating the treatment effect on the treated (default is ATT).</span></span>
@@ -119,7 +119,7 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  185 
 ## Matched number of observations  (unweighted).  346</code></pre>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="va">rr.att</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##  [1] "caliper"           "ecaliper"          "est"              
 ##  [4] "est.noadj"         "estimand"          "exact"            
@@ -129,7 +129,7 @@
 ## [16] "orig.treated.nobs" "orig.wnobs"        "se"               
 ## [19] "se.cond"           "se.standard"       "version"          
 ## [22] "weights"           "wnobs"</code></pre>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rr.ate</span> <span class="op">&lt;-</span> <span class="fu">Match</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, M<span class="op">=</span><span class="fl">1</span>, estimand<span class="op">=</span><span class="st">'ATE'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr.ate</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
@@ -142,7 +142,7 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  445 
 ## Matched number of observations  (unweighted).  756</code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="va">rr.ate</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##  [1] "caliper"           "ecaliper"          "est"              
 ##  [4] "est.noadj"         "estimand"          "exact"            
@@ -152,7 +152,7 @@
 ## [16] "orig.treated.nobs" "orig.wnobs"        "se"               
 ## [19] "se.cond"           "se.standard"       "version"          
 ## [22] "weights"           "wnobs"</code></pre>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rr2</span> <span class="op">&lt;-</span> <span class="fu">Match</span><span class="op">(</span>Y <span class="op">=</span> <span class="va">Y</span>,</span>
 <span>             Tr <span class="op">=</span> <span class="va">Tr</span>,</span>
 <span>             X <span class="op">=</span> <span class="va">ps</span>,</span>
@@ -171,10 +171,10 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  185 
 ## Matched number of observations  (unweighted).  346</code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">rr2</span><span class="op">$</span><span class="va">index.control</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 173.00</code></pre>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="va">rr2</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##  [1] "caliper"           "ecaliper"          "est"              
 ##  [4] "est.noadj"         "estimand"          "exact"            
@@ -184,7 +184,7 @@
 ## [16] "orig.treated.nobs" "orig.wnobs"        "se"               
 ## [19] "se.cond"           "se.standard"       "version"          
 ## [22] "weights"           "wnobs"</code></pre>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Using the Matchit package</span></span>
 <span><span class="va">matchit.out</span> <span class="op">&lt;-</span> <span class="fu">matchit</span><span class="op">(</span><span class="va">lalonde.formu</span>, data<span class="op">=</span><span class="va">lalonde</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">matchit.out</span><span class="op">)</span></span></code></pre></div>
@@ -266,7 +266,7 @@
 ## Matched       185     185
 ## Unmatched      75       0
 ## Discarded       0       0</code></pre>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Same as above but calculate average treatment effect</span></span>
 <span><span class="va">rr.ate</span> <span class="op">&lt;-</span> <span class="fu">Match</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, M<span class="op">=</span><span class="fl">1</span>, ties<span class="op">=</span><span class="cn">FALSE</span>, replace<span class="op">=</span><span class="cn">FALSE</span>, estimand<span class="op">=</span><span class="st">'ATE'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr.ate</span><span class="op">)</span> <span class="co"># Here the estimate is ATE</span></span></code></pre></div>
@@ -280,14 +280,14 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  370 
 ## Matched number of observations  (unweighted).  370</code></pre>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Genetic Matching</span></span>
 <span><span class="va">rr.gen</span> <span class="op">&lt;-</span> <span class="fu">GenMatch</span><span class="op">(</span>Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, </span>
 <span>                   BalanceMatrix<span class="op">=</span><span class="va">lalonde</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/allnames.html">all.vars</a></span><span class="op">(</span><span class="va">lalonde.formu</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
 <span>                   estimand<span class="op">=</span><span class="st">'ATE'</span>, M<span class="op">=</span><span class="fl">1</span>, pop.size<span class="op">=</span><span class="fl">16</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## 
-## Tue Apr  4 01:50:25 2023
+## Tue Apr  4 14:25:39 2023
 ## Domains:
 ##  0.000000e+00   &lt;=  X1   &lt;=    1.000000e+03 
 ## 
@@ -446,9 +446,9 @@
 ## Solution Found Generation 9
 ## Number of Generations Run 14
 ## 
-## Tue Apr  4 01:50:27 2023
+## Tue Apr  4 14:25:41 2023
 ## Total run time : 0 hours 0 minutes and 2 seconds</code></pre>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rr.gen.mout</span> <span class="op">&lt;-</span> <span class="fu">Match</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, estimand<span class="op">=</span><span class="st">'ATE'</span>, Weight.matrix<span class="op">=</span><span class="va">rr.gen</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr.gen.mout</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
@@ -461,12 +461,12 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  445 
 ## Matched number of observations  (unweighted).  650</code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Partial exact matching</span></span>
 <span><span class="va">rr2</span> <span class="op">&lt;-</span> <span class="fu">Matchby</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">nodegr</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 1 of 2 groups
 ## 2 of 2 groups</code></pre>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr2</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## Estimate...  2333.2 
@@ -478,14 +478,14 @@
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  185 
 ## Matched number of observations  (unweighted).  185</code></pre>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Partial exact matching on two covariates</span></span>
 <span><span class="va">rr3</span> <span class="op">&lt;-</span> <span class="fu">Matchby</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Y</span>, Tr<span class="op">=</span><span class="va">Tr</span>, X<span class="op">=</span><span class="va">ps</span>, by<span class="op">=</span><span class="va">lalonde</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'nodegr'</span>,<span class="st">'married'</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 1 of 4 groups
 ## 2 of 4 groups
 ## 3 of 4 groups
 ## 4 of 4 groups</code></pre>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">rr3</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## Estimate...  1961.7 

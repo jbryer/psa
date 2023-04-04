@@ -95,7 +95,7 @@
 <span class="header-section-number">1</span> Introduction<a class="anchor" aria-label="anchor" href="#chapter-introduction"><i class="fas fa-link"></i></a>
 </h1>
 <p>The use of propensity score methods <span class="citation">(Rosenbaum and Rubin 1983)</span> for estimating causal effects in observational studies or certain kinds of quasi-experiments has been increasing over the last couple of decades (see Figure <a href="chapter-introduction.html#fig:popularity">1.1</a>), especially in the social sciences <span class="citation">(Thoemmes and Kim 2011)</span> and medical research <span class="citation">(Austin 2008)</span>. Propensity score analysis (PSA) attempts to adjust selection bias that occurs due to the lack of randomization. Analysis is typically conducted in three phases where in phase I, the probability of placement in the treatment is estimated to identify matched pairs or clusters so that in phase II, comparisons on the dependent variable can be made between matched pairs or within clusters. Lastly, phase III involves testing the robustness of estimates to any unobserved confounders. R <span class="citation">(R Core Team 2023)</span> is ideal for conducting PSA given its wide availability of the most current statistical methods vis-à-vis add-on packages as well as its superior graphics capabilities.</p>
-<p>This book will provide a theoretical overview of propensity score methods as well as illustrations and discussion of implementing PSA methods in R. Chapter <a href="chapter-introduction.html#chapter-introduction">1</a> provides an overview of all three phases of PSA with minimal R code. Chapters <a href="chapter-stratification.html#chapter-stratification">2</a>, <a href="chapter-matching.html#chapter-matching">3</a>, and <a href="chapter-weighting.html#chapter-weighting">4</a> will discuss the details of implementing the three major approaches to PSA. Chapter <a href="chapter-missing.html#chapter-missing">5</a> provides some strategies to conducting PSA when there is missing data. Chapters <a href="chapter-sensitivity.html#chapter-sensitivity">6</a> and <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a> provide details for phase III of PSA using sensitivity analysis and bootstrapping, respectively. Lastly, chapter <a href="chapter-non-binary.html#chapter-non-binary">8</a> provides methods for implementing PSA with non-binary treatments and chapter <a href="chapter-multilevelpsa.html#chapter-multilevelpsa">9</a> discusses methods for PSA with cluster, or Hierarchical, data. The appendices contain additional details regarding the PSA Shiny application (Appendix @ref{appendix-shiny}), limitations of interpreting fitted values from logistic regression (Appendix <a href="appendix-psranges.html#appendix-psranges">B</a>), and additional methods and packages for estimating propensity scores (Appendix <a href="appendix-psmodels.html#appendix-psmodels">C</a>).</p>
+<p>This book will provide a theoretical overview of propensity score methods as well as illustrations and discussion of implementing PSA methods in R. Chapter <a href="chapter-introduction.html#chapter-introduction">1</a> provides an overview of all three phases of PSA with minimal R code. Chapters <a href="chapter-stratification.html#chapter-stratification">2</a>, <a href="chapter-matching.html#chapter-matching">3</a>, and <a href="chapter-weighting.html#chapter-weighting">4</a> will discuss the details of implementing the three major approaches to PSA. Chapter <a href="chapter-missing.html#chapter-missing">5</a> provides some strategies to conducting PSA when there is missing data. Chapters <a href="chapter-sensitivity.html#chapter-sensitivity">6</a> and <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a> provide details for phase III of PSA using sensitivity analysis and bootstrapping, respectively. Lastly, chapter <a href="chapter-non-binary.html#chapter-non-binary">8</a> provides methods for implementing PSA with non-binary treatments and chapter <a href="chapter-multilevelpsa.html#chapter-multilevelpsa">9</a> discusses methods for PSA with cluster, or Hierarchical, data. The appendices contain additional details regarding the PSA Shiny application (Appendix <a href="appendix-shiny.html#appendix-shiny">A</a>), limitations of interpreting fitted values from logistic regression (Appendix <a href="appendix-psranges.html#appendix-psranges">B</a>), and additional methods and packages for estimating propensity scores (Appendix <a href="appendix-psmodels.html#appendix-psmodels">C</a>).</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:popularity"></span>
 <img src="01-Introduction_files/figure-html/popularity-1.png" alt="PSA Citations per year" width="100%"><p class="caption">
@@ -224,27 +224,28 @@ ATE \; = \; E(Y_1 - Y_0 \; | \; X) \; = \; E(Y_1 \; | \; X) - E(Y_0 \; | \; X)
 <li>Estimate causal effects.</li>
 <li>Check for sensitivity to unobserved confounders.</li>
 </ol>
-<p>The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification, matching, and weighting.</p>
+<p>The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification (chapter <a href="chapter-stratification.html#chapter-stratification">2</a>), matching (chapter <a href="chapter-matching.html#chapter-matching">3</a>), and weighting (chapter <a href="chapter-weighting.html#chapter-weighting">4</a>).</p>
 <div id="phase-i-estimate-propensity-scores" class="section level3" number="1.3.1">
 <h3>
 <span class="header-section-number">1.3.1</span> Phase I: Estimate Propensity Scores<a class="anchor" aria-label="anchor" href="#phase-i-estimate-propensity-scores"><i class="fas fa-link"></i></a>
 </h3>
-<p>Phase one of propensity score analysis is a cyclical process where propensity scores are estimated using a statistical model, balance in observed covariates is checked, and modifications to the statistical model are modified until sufficient balance is achieved. For simplicity we will use logistic regression to estimate propensity scores throughout the book. However, will introduce classification trees in chapter <a href="chapter-stratification.html#chapter-stratification">2</a> given how they are uniquely applicable to stratification methods in and in appendix <a href="appendix-psmodels.html#appendix-psmodels">C</a> outlines some additional statistical methods, with R code, for estimating propensity scores.</p>
-<p>Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous. Very often logistic regression is used, but with the advances in predictive models we have an increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis will use a simulated dataset with two pre-treatment covariates, <code>x1</code> and <code>x2</code>, treatment indicator, and an outcome variable with a treatment_effect of 2. Figure <a href="chapter-introduction.html#fig:sim-scatter">1.6</a> is a scatter plot of the simulated data.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;This simulated dataset is adapted from a &lt;a href="https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html"&gt;blog post&lt;/a&gt; by &lt;a href="https://www.lucymcgowan.com"&gt;Lucy D’Agostino McGowan&lt;/a&gt;&lt;/p&gt;'><sup>3</sup></a></p>
+<p>Phase one of propensity score analysis is a cyclical process where propensity scores are estimated using a statistical model, balance in observed covariates is checked, and modifications to the model are modified until sufficient balance is achieved. For simplicity we will use logistic regression to estimate propensity scores throughout the book. However, will introduce classification trees in chapter <a href="chapter-stratification.html#chapter-stratification">2</a> given how they are uniquely applicable to stratification methods in and in appendix <a href="appendix-psmodels.html#appendix-psmodels">C</a> outlines some additional statistical methods, with R code, for estimating propensity scores.</p>
+<p>Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous (treatment or control). Very often logistic regression is used, but with the advances in predictive models we have an ever increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis we will use a simulated dataset with two pre-treatment covariates, <code>x1</code> and <code>x2</code>, a treatment indicator, and an outcome variable with a treatment effect of 2. Figure <a href="chapter-introduction.html#fig:sim-scatter">1.6</a> is a scatter plot of the simulated data.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;This simulated dataset is adapted from a &lt;a href="https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html"&gt;blog post&lt;/a&gt; by &lt;a href="https://www.lucymcgowan.com"&gt;Lucy D’Agostino McGowan&lt;/a&gt;&lt;/p&gt;'><sup>3</sup></a></p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:sim-scatter"></span>
 <img src="01-Introduction_files/figure-html/sim-scatter-1.png" alt="Scatterplot of simulated datatset" width="100%"><p class="caption">
 Figure 1.6: Scatterplot of simulated datatset
 </p>
 </div>
-<p>Figure <a href="chapter-introduction.html#fig:sim-ggpairs">1.7</a> is a pairs plot <span class="citation">(Schloerke et al. 2021)</span> showing the relationship between the covariates (i.e. <code>x1</code> and <code>x2</code>) with the outcome grouped by treatment. There is a statistically significant correlation between each of the covariates and the outcome suggesting there is selection bias that would bias any causal estimate.</p>
+<p>Figure <a href="chapter-introduction.html#fig:sim-ggpairs">1.7</a> is a pairs plot <span class="citation">(Schloerke et al. 2021)</span> showing the relationship between the covariates (i.e. <code>x1</code> and <code>x2</code>) and the outcome grouped by treatment. There is a statistically significant correlation between each of the covariates and the outcome suggesting there is selection bias that would bias any causal estimate. Indeed a simple null hypothesis test resulted in a difference of 4.55 (<span class="math inline">\(t_{959} = -32.75\)</span>, <em>p</em> &lt; 0.01), however we setup the simulation to have a mean difference of 2!</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:sim-ggpairs"></span>
 <img src="01-Introduction_files/figure-html/sim-ggpairs-1.png" alt="Pairs plot showing the relationships between covariates, treatment, and outcome" width="100%"><p class="caption">
 Figure 1.7: Pairs plot showing the relationships between covariates, treatment, and outcome
 </p>
 </div>
-<p>Indeed a simple null hypothesis test resulted in a difference of 4.55 (<span class="math inline">\(t_{959} = -32.75\)</span>, <em>p</em> &lt; 0.01), however we setup the simulation to have a mean difference of 2!</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">outcome</span> <span class="op">~</span> <span class="va">treatment</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -254,8 +255,7 @@ Figure 1.7: Pairs plot showing the relationships between covariates, treatment, 
 ## 95 percent confidence interval:
 ##  -4.821017 -4.275883
 ## sample estimates:</code></pre>
-<p>Propensity scores allow us to adjust for this selection bias.</p>
-<p>After estimating the propensity scores we can plot the distributions by treatment and control as represented in figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a>. Note how the distributions are skewed; treatment group is negatively skewed and the control group is positively skewed. This should hopefully make intuitive sense. As the probability of being in the treatment increases, we should see the number of treatment observations increase while the number of control observation decreases.</p>
+<p>Our goal is to adjust for this selection bias using propensity scores. In this example we used logistic regression to estimate the propensity scores. Figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a> is a histogram showing the distribution of propensity scores for the treatment group in greee above and control group in orange below. Note how the distributions are skewed; treatment group is negatively skewed and the control group is positively skewed. This should hopefully make intuitive sense. As the probability of being in the treatment increases, we should see the number of treatment observations increase while the number of control observations decrease.</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:sim-dist"></span>
 <img src="01-Introduction_files/figure-html/sim-dist-1.png" alt="Distribution of propensity scores" width="100%"><p class="caption">
@@ -266,8 +266,17 @@ Figure 1.8: Distribution of propensity scores
 <h4>
 <span class="header-section-number">1.3.1.1</span> Evaluate Balance<a class="anchor" aria-label="anchor" href="#evaluate-balance"><i class="fas fa-link"></i></a>
 </h4>
+<p>Once propensity scores are estimated it is important to verify that balance between the observed covariates is achieved. There are a number of ways of doing this. For matching methods where treatment and control units are paired, dependent sample tests can be usedd (e.g. <em>t</em>-tests for continuous variables and <span class="math inline">\(\chi^2\)</span> tests for categorical variables). However, significance testing is generally is problematic. Given the number of covariates, and hence null hypothesis tests conducted, the likelihood of committing type I and type II errors is very high. Moreover, many observational studies that we wish to use PSA with have very large sample sizes which, all else being equal, will shrink the standard error estimate often resulting in small <em>p</em>-values. Instead utilizing standardized effect sizes and graphical representations will provide better evidence as to whether balance has been achieved. The <code>PSAgraphics</code> package <span class="citation">(Helmreich and Pruzek 2023)</span> provides a number of functions to assist. Figure <a href="chapter-introduction.html#fig:intro-balance-plots">1.9</a> provides two assessment plots. The left plot is a multiple covariate balance assessment plot. The <em>x</em>-axis is the standardized effect size and the <em>y</em>-axis is each covariate. The red line is the effect before propensity score adjustment and the blue is the effect after propensity score adjustment. Unfortunately there is not a conventional adjusted effect size threshold of achieving sufficient balance in the literature. <span class="citation">Cohen (1988)</span> is frequently cited for having indicated that an effect size between 0.2 and 0.3 is small. In general, I recommend trying to achieve adjdusted effect sizes less than 0.1.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:intro-balance-plots"></span>
+<img src="01-Introduction_files/figure-html/intro-balance-plots-1.png" alt="Multiple (left) and continuous (right) covariate balance assessment plots" width="50%"><img src="01-Introduction_files/figure-html/intro-balance-plots-2.png" alt="Multiple (left) and continuous (right) covariate balance assessment plots" width="50%"><p class="caption">
+Figure 1.9: Multiple (left) and continuous (right) covariate balance assessment plots
+</p>
+</div>
+<p>The plot on the right in figure <a href="chapter-introduction.html#fig:intro-balance-plots">1.9</a> is balance assessment plot for a continuous variable. The exact procedures for stratification will be discussed in chapter <a href="chapter-stratification.html#chapter-stratification">2</a> but in short, we divided the propensity scores into five strata using quintiles so that each stratum has the same number of observations. The yellow bars are the control group and the orange bars are the treatment group. We are looking for the center and spread to be roughly equivalent within each stratum. From this example we can see that stratum 5 has higher values than stratum 1. A counterpart to this plot for categorical data using box plots will be provided in chapter <a href="chapter-stratification.html#chapter-stratification">2</a>.</p>
+<p>We will see there are many choices for estimating propensity scores in the remainder of this book. In practice you will find that phase I of PSA will occupy most of your time. The robustness of your causal estimates will rely on achieving good balance in your observed covariates.</p>
 <div class="rmdtip">
-<p><strong>Which matching method should you use?</strong><br><em>Whichever one gives the best balance!</em></p>
+<p><strong>Which propensity score method should you use?</strong><br><em>Whichever one gives the best balance!</em></p>
 </div>
 </div>
 </div>
@@ -275,34 +284,35 @@ Figure 1.8: Distribution of propensity scores
 <h3>
 <span class="header-section-number">1.3.2</span> Phase II: Estimate Causal Effects<a class="anchor" aria-label="anchor" href="#introduction-effects"><i class="fas fa-link"></i></a>
 </h3>
-<p>Chapter <a href="chapter-weighting.html#chapter-weighting">4</a></p>
+<p>Now that sufficient balance has been achieved in the observed covariates, it is time to estimate the causal effect. For randomized control trials we typically conduct a null hypothesis test of the differences between the means of the treatment and control groups (as defined in equation <a href="chapter-introduction.html#eq:eq7">(1.7)</a> above). For PSA this is often done, but it is important to recognize that not all observations are counted equal in the causal estimation. And moreover, average treatment effect is not the only causal estimate measure we can calculate. This section defines four different causal estimates. They are presented in the context of propensity score weighting (see <a href="chapter-weighting.html#chapter-weighting">4</a>) but conceptually apply to stratification and matching.</p>
+<p>To begin, it is often helpful to plot the propensity scores against the outcome. Figure <a href="chapter-introduction.html#fig:sim-loess">1.10</a> is a scatter plot with propensity scores (<em>x</em>-axis) and outcome (<em>y</em>-axis), grouped/colored by treatment, along with a Loess regression line <span class="citation">(Cleveland 1979)</span>. There are a number of features to observe here. First, we see that the propensity score increases the outcome increases. This is a direct representation of selection bias. Second, the Loess regression lines with approximate 95% confidence intervals (in grey) do not overlap across the entire range of propensity scores. Additionally the distance between the two Loess regression lines is rougly equal. This is an indication that the treatment effect is homogeneous (i.e. the same for all units). We will see in later chapters that this is often not the case. This will become an important feature of PSA in detecting heterogeneous, or uneven, treatments based upon different “profiles.”</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:sim-loess"></span>
 <img src="01-Introduction_files/figure-html/sim-loess-1.png" alt="Scatter plot of propensity scores against outcome with Loess regression lines" width="100%"><p class="caption">
-Figure 1.9: Scatter plot of propensity scores against outcome with Loess regression lines
+Figure 1.10: Scatter plot of propensity scores against outcome with Loess regression lines
 </p>
 </div>
-<div id="average-treatment_effect-ate" class="section level4" number="1.3.2.1">
+<div id="average-treatment-effect-ate" class="section level4" number="1.3.2.1">
 <h4>
-<span class="header-section-number">1.3.2.1</span> Average treatment_effect (ATE)<a class="anchor" aria-label="anchor" href="#average-treatment_effect-ate"><i class="fas fa-link"></i></a>
+<span class="header-section-number">1.3.2.1</span> Average Treatment Effect (ATE)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-ate"><i class="fas fa-link"></i></a>
 </h4>
+<p>The average treatment effect (ATE) is the most understood estimate given that it has a direct analog to RCTs. We could estimate ATE from an RCT using this approach by simply assuming everyone has a propensity score of 0.5 since they all have a 50% of being in the treatment. For PSA though, each unit has a different propensity score. The goal is to compare units with similar propensity scores. And as we saw above in figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a> the distributions for treatment and control are not the same. Figure @ref{fig:ate-hist} depicts how the ATE works in practice, in particular how different units are weighted more or less towards the ATE estimate as we move across the propensity score range. The darker color represents the propensity score distribution as estimated above, but the light bars represent the distribution used in the ATE calculation. For treatment units with lower propensity scores (for which there are fewer of) a weighted more to ATE calculation. As we move right across the propensity score range control units with large propensity scores will be wieghed more in that range.</p>
 <p><span class="math display" id="eq:eqate">\[\begin{equation}
 \begin{aligned}
 ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X)
 \end{aligned}
 \tag{1.8}
 \end{equation}\]</span></p>
-<p>Figure <a href="chapter-introduction.html#fig:ate-hist">1.10</a></p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:ate-hist"></span>
 <img src="01-Introduction_files/figure-html/ate-hist-1.png" alt="Histogram of average treatement effect" width="100%"><p class="caption">
-Figure 1.10: Histogram of average treatement effect
+Figure 1.11: Histogram of average treatement effect
 </p>
 </div>
 </div>
-<div id="average-treatment_effect-among-the-treated-att" class="section level4" number="1.3.2.2">
+<div id="average-treatment-effect-among-the-treated-att" class="section level4" number="1.3.2.2">
 <h4>
-<span class="header-section-number">1.3.2.2</span> Average treatment_effect Among the Treated (ATT)<a class="anchor" aria-label="anchor" href="#average-treatment_effect-among-the-treated-att"><i class="fas fa-link"></i></a>
+<span class="header-section-number">1.3.2.2</span> Average Treatment Effect Among the Treated (ATT)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-treated-att"><i class="fas fa-link"></i></a>
 </h4>
 <p><span class="math display" id="eq:eqatt">\[\begin{equation}
 \begin{aligned}
@@ -310,17 +320,17 @@ ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1)
 \end{aligned}
 \tag{1.9}
 \end{equation}\]</span></p>
-<p>Figure <a href="chapter-introduction.html#fig:att-hist">1.11</a></p>
+<p>Figure <a href="chapter-introduction.html#fig:att-hist">1.12</a></p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:att-hist"></span>
 <img src="01-Introduction_files/figure-html/att-hist-1.png" alt="Histogram of average treatement among the treated" width="100%"><p class="caption">
-Figure 1.11: Histogram of average treatement among the treated
+Figure 1.12: Histogram of average treatement among the treated
 </p>
 </div>
 </div>
-<div id="average-treatment_effect-among-the-control-atc" class="section level4" number="1.3.2.3">
+<div id="average-treatment-effect-among-the-control-atc" class="section level4" number="1.3.2.3">
 <h4>
-<span class="header-section-number">1.3.2.3</span> Average treatment_effect Among the Control (ATC)<a class="anchor" aria-label="anchor" href="#average-treatment_effect-among-the-control-atc"><i class="fas fa-link"></i></a>
+<span class="header-section-number">1.3.2.3</span> Average Treatment Effect Among the Control (ATC)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-control-atc"><i class="fas fa-link"></i></a>
 </h4>
 <p><span class="math display" id="eq:eqatc">\[\begin{equation}
 \begin{aligned}
@@ -328,17 +338,17 @@ ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0)
 \end{aligned}
 \tag{1.10}
 \end{equation}\]</span></p>
-<p>Figure <a href="chapter-introduction.html#fig:atc-hist">1.12</a></p>
+<p>Figure <a href="chapter-introduction.html#fig:atc-hist">1.13</a></p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:atc-hist"></span>
 <img src="01-Introduction_files/figure-html/atc-hist-1.png" alt="Histogram of average treatement among the control" width="100%"><p class="caption">
-Figure 1.12: Histogram of average treatement among the control
+Figure 1.13: Histogram of average treatement among the control
 </p>
 </div>
 </div>
-<div id="average-treatment_effect-among-the-evenly-matched-atm" class="section level4" number="1.3.2.4">
+<div id="average-treatment-effect-among-the-evenly-matched-atm" class="section level4" number="1.3.2.4">
 <h4>
-<span class="header-section-number">1.3.2.4</span> Average treatment_effect Among the Evenly Matched (ATM)<a class="anchor" aria-label="anchor" href="#average-treatment_effect-among-the-evenly-matched-atm"><i class="fas fa-link"></i></a>
+<span class="header-section-number">1.3.2.4</span> Average Treatment Effect Among the Evenly Matched (ATM)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-evenly-matched-atm"><i class="fas fa-link"></i></a>
 </h4>
 <p><span class="citation">Li and Greene (2013)</span></p>
 <p><span class="math display" id="eq:eqatm">\[\begin{equation}
@@ -347,11 +357,11 @@ ATM_d = E(Y_1 - Y_0 | M_d = 1)
 \end{aligned}
 \tag{1.11}
 \end{equation}\]</span></p>
-<p>Figure <a href="chapter-introduction.html#fig:acm-hist">1.13</a></p>
+<p>Figure <a href="chapter-introduction.html#fig:acm-hist">1.14</a></p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:acm-hist"></span>
 <img src="01-Introduction_files/figure-html/acm-hist-1.png" alt="Histogram of average treatment effect among the evenly matched" width="100%"><p class="caption">
-Figure 1.13: Histogram of average treatment effect among the evenly matched
+Figure 1.14: Histogram of average treatment effect among the evenly matched
 </p>
 </div>
 </div>
@@ -368,7 +378,7 @@ Figure 1.13: Histogram of average treatment effect among the evenly matched
 <h2>
 <span class="header-section-number">1.4</span> R Packages<a class="anchor" aria-label="anchor" href="#r-packages"><i class="fas fa-link"></i></a>
 </h2>
-<p>R is a statistical software language designed to be extended vis-à-vis packages. As of April 04, 2023, there are currently 19,333 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.</p>
+<p>R is a statistical software language designed to be extended vis-à-vis packages. As of April 04, 2023, there are currently 19,337 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.</p>
 <ul>
 <li>
 <a href="http://gking.harvard.edu/gking/matchit"><code>MatchIt</code></a> <span class="citation">(Ho et al. 2023)</span> Nonparametric Preprocessing for Parametric Causal Inference</li>
@@ -390,7 +400,7 @@ Figure 1.13: Histogram of average treatment effect among the evenly matched
 <a href="https://github.com/jbryer/TriMatch"><code>TriMatch</code></a> <span class="citation">(Bryer 2017)</span> Propensity Score Matching for Non-Binary Treatments</li>
 </ul>
 <p>The following command will install the R packages we will use in this book.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'jbryer/psa'</span>, dependencies <span class="op">=</span> <span class="st">'Enhances'</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div id="datasets" class="section level2" number="1.5">
@@ -403,7 +413,7 @@ Figure 1.13: Histogram of average treatment effect among the evenly matched
 <span class="header-section-number">1.5.1</span> National Supported Work Demonstration (<code>lalonde</code>)<a class="anchor" aria-label="anchor" href="#lalonde"><i class="fas fa-link"></i></a>
 </h3>
 <p>The <code>lalonde</code> dataset is perhaps one of the most used datasets when introducing or evaluating propensity score methods. The data was collected by <span class="citation">Lalonde (1986)</span> but became widely used in the PSA literature after <span class="citation">Dehejia and Wahba (1999)</span> used it in their paper to evaluate propensity score matching. The dataset originated from the National Supported Work Demonstration study conducted in the 1970s. The program provided 12 to 18 months of employment to people with longstanding employment problems. The dataset contains 445 observations of 12 variables. The primary outcome is <code>re78</code> which is real earnings in 1978. Observed covariates used to ajdust for selection bias include <code>age</code> (age in years), <code>edu</code> (number of years of education), <code>black</code> (black or not), <code>hisp</code> (Hispanic or not), <code>married</code> (married or not), <code>nodegr</code> (whether the worker has a degree or not, note that 1 = no degree), <code>re74</code> (real earnings in 1974), and <code>re75</code> (real earnings in 1975).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lalonde</span>, package<span class="op">=</span><span class="st">'Matching'</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>
@@ -437,7 +447,7 @@ Figure 1.13: Histogram of average treatment effect among the evenly matched
 <span class="header-section-number">1.5.2</span> Lindner Center (<code>lindner</code>)<a class="anchor" aria-label="anchor" href="#lindner"><i class="fas fa-link"></i></a>
 </h3>
 <p>Data from an observational study of 996 patients receiving a PCI at Ohio Heart Health in 1997 and followed for at least 6 months by the staff of the Lindner Center. This is a landmark dataset in the literature on propensity score adjustment for treatment selection bias due to practice of evidence based medicine; patients receiving <code>abciximab</code> tended to be more severely diseased than those who did not receive a IIb/IIIa cascade blocker.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lindner</span>, package<span class="op">=</span><span class="st">'PSAgraphics'</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>
@@ -467,7 +477,7 @@ Figure 1.13: Histogram of average treatment effect among the evenly matched
 <span class="header-section-number">1.5.3</span> Tutoring (<code>tutoring</code>)<a class="anchor" aria-label="anchor" href="#tutoring"><i class="fas fa-link"></i></a>
 </h3>
 <p>The <code>tutoring</code> dataset originates from a study conducted at an online adult serving institution examining the effects of tutoring services for students in English 101, English 201, and History 310. Tutoring services were available to all students but Treatment (<code>treat</code>) is operationalized as students who used tutoring services at least once during the course. Only 19.6% of students used tutoring services with approximately half using it more than once. We will use this dataset with both a dichotomous treatment (used tutoring or not) or as a two level treatment (used tutoring services once, used tutoring services two or more times).</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">tutoring</span>, package<span class="op">=</span><span class="st">'TriMatch'</span><span class="op">)</span></span>
 <span><span class="va">tutoring</span><span class="op">$</span><span class="va">treat2</span> <span class="op">&lt;-</span> <span class="va">tutoring</span><span class="op">$</span><span class="va">treat</span> <span class="op">!=</span> <span class="st">'Control'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">tutoring</span><span class="op">$</span><span class="va">Course</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">treat</span><span class="op">)</span></span></code></pre></div>
@@ -520,7 +530,7 @@ Figure 1.13: Histogram of average treatment effect among the evenly matched
 <span class="header-section-number">1.5.4</span> Programme of International Student Assessment (<code>pisana</code>)<a class="anchor" aria-label="anchor" href="#pisa"><i class="fas fa-link"></i></a>
 </h3>
 <p><a href="https://www.oecd.org/pisa">The Programme of International Student Assessment</a> (PISA) is a study conducted by <a href="https://www.oecd.org">OECD</a> every three years to measure 15-year-olds’ academic abilities in reading, mathematics, and science along with a rich set of demographic and background information. The <code>pisana</code> dataset included in the <code>multilevelPSA</code> package contains the results from the 2009 study for North America (i.e. Canada, Mexico, and the United States).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">pisana</span>, package<span class="op">=</span><span class="st">'multilevelPSA'</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>
@@ -660,7 +670,7 @@ Figure 1.13: Histogram of average treatment effect among the evenly matched
 <span class="header-section-number">1.5.5</span> National Medical Expenditure Study (<code>nmes</code>)<a class="anchor" aria-label="anchor" href="#nmes"><i class="fas fa-link"></i></a>
 </h3>
 <p>The National Medical Expenditure Study dataset was used by <span class="citation">Imai and Dyk (2004)</span> in evaluating a method for non-binary treatments. This study examined the relationship between smoking status and medical expenditures.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">nmes</span>, package<span class="op">=</span><span class="st">'TriMatch'</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>
