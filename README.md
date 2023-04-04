@@ -113,13 +113,9 @@ imputed.
 
 ## Slides
 
-- Workshop at University at Albany, Division of Educational Psychology &
-  Methodology – April 30 and May 7, 2014 [Download
-  Slides](Slides/UAlbany2014/Slides.pdf?raw=true)  
-- NEAIR Conference Talk – November 11, 2013 [Download
-  Slides](Slides/NEAIR2013Slides/Slides.pdf?raw=true)
-- Pre-conference workshop for the 2013 useR! conference – July 9, 2013
-  [Download Slides](Slides/useR%202013/Slides.pdf?raw=true)
+[Click
+here](http://htmlpreview.github.io/?https://github.com/jbryer/psa/blob/master/Slides/Intro_PSA.html)
+for slides.
 
 ## R Scripts
 

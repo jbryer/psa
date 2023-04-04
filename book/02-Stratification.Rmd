@@ -101,9 +101,9 @@ ggplot(lalonde, aes(x = lr_ps, color = as.logical(treat))) +
 
 ```{r, echo = FALSE, fig.height = 4}
 ggplot() +
-	geom_vline(xintercept = breaks) +
+	geom_vline(xintercept = breaks5$breaks) +
 	geom_point(data = lalonde, aes(x = lr_ps, y = log(re78 + 1), color = as.logical(treat)), alpha = 0.5) +
-	geom_text(data = text_labels, aes(x = x, y = y, label = label), color = 'black', hjust = -1) +
+	geom_text(data = breaks5$labels, aes(x = xmid, y = 0, label = label), color = 'black', vjust = 1) +
 	scale_color_brewer('Treatment', type = 'qual', palette = 6)
 ```
 
@@ -112,11 +112,11 @@ ggplot() +
 
 ```{r}
 covars <- all.vars(lalonde.formu)
-covars <- lalonde[,covars[2:length(covars)]]
+covars <- lalonde[,covars[-1]]
 PSAgraphics::cv.bal.psa(covariates = covars, 
 						treatment = lalonde$treat,
 						propensity = lalonde$lr_ps,
-						strata = lalonde$strata)
+						strata = lalonde$lr_strata)
 ```
 
 
@@ -124,7 +124,7 @@ PSAgraphics::cv.bal.psa(covariates = covars,
 ```{r}
 PSAgraphics::box.psa(continuous = lalonde$age, 
 					 treatment = lalonde$treat, 
-					 strata = lalonde$strata,
+					 strata = lalonde$lr_strata,
 					 xlab = "Strata", 
 					 balance = FALSE)
 ```
@@ -133,7 +133,7 @@ PSAgraphics::box.psa(continuous = lalonde$age,
 ```{r, results = 'hide'}
 PSAgraphics::cat.psa(categorical = lalonde$nodegr, 
 					 treatment = lalonde$treat, 
-					 strata = lalonde$strata, 
+					 strata = lalonde$lr_strata, 
 					 xlab = 'Strata',
 					 balance = FALSE)
 ```
