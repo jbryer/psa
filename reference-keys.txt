@@ -23,7 +23,6 @@ eq:eqatc
 fig:atc-hist
 eq:eqatm
 fig:acm-hist
-fig:introduction-logistic
 fig:psaboot-plot
 fig:unnamed-chunk-2
 fig:multilevelpsa-treeplot
@@ -52,7 +51,7 @@ tutoring
 pisa
 nmes
 chapter-stratification
-estimating-propensity-scores
+estimate-propensity-scores-logistic-regression
 stratifying
 checking-balance
 estimate-effects

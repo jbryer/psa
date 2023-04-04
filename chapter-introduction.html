@@ -296,7 +296,7 @@ Figure 1.10: Scatter plot of propensity scores against outcome with Loess regres
 <h4>
 <span class="header-section-number">1.3.2.1</span> Average Treatment Effect (ATE)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-ate"><i class="fas fa-link"></i></a>
 </h4>
-<p>The average treatment effect (ATE) is the most understood estimate given that it has a direct analog to RCTs. We could estimate ATE from an RCT using this approach by simply assuming everyone has a propensity score of 0.5 since they all have a 50% of being in the treatment. For PSA though, each unit has a different propensity score. The goal is to compare units with similar propensity scores. And as we saw above in figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a> the distributions for treatment and control are not the same. Figure @ref{fig:ate-hist} depicts how the ATE works in practice, in particular how different units are weighted more or less towards the ATE estimate as we move across the propensity score range. The darker color represents the propensity score distribution as estimated above, but the light bars represent the distribution used in the ATE calculation. For treatment units with lower propensity scores (for which there are fewer of) a weighted more to ATE calculation. As we move right across the propensity score range control units with large propensity scores will be wieghed more in that range.</p>
+<p>The average treatment effect (ATE) is the most understood estimate given that it has a direct analog to RCTs. We could estimate ATE from an RCT using this approach by simply assuming everyone has a propensity score of 0.5 since they all have a 50% of being in the treatment. That is, we assume that every treatment unit could be interchangeable with a control unit. For PSA though, each unit has a different propensity score. The goal is to compare units with similar propensity scores. And as we saw above in figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a> the distributions for treatment and control are not the same. Figure @ref{fig:ate-hist} depicts how the ATE works in practice, in particular how different units are weighted more or less towards the ATE estimate as we move across the propensity score range. The darker color represents the propensity score distribution as estimated above, but the light bars represent the distribution used in the ATE calculation. For treatment units with lower propensity scores (for which there are fewer of) a weighted more to ATE calculation. As we move right across the propensity score range control units with large propensity scores will be wieghed more in that range.</p>
 <p><span class="math display" id="eq:eqate">\[\begin{equation}
 \begin{aligned}
 ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X)
@@ -314,13 +314,14 @@ Figure 1.11: Histogram of average treatement effect
 <h4>
 <span class="header-section-number">1.3.2.2</span> Average Treatment Effect Among the Treated (ATT)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-treated-att"><i class="fas fa-link"></i></a>
 </h4>
+<p>The average treatment effect among the treated (ATT) uses the treated units as the primary focus. From figure <a href="chapter-introduction.html#fig:att-hist">1.12</a> we see that the entire treatment group ise used and there is no weighting up or down. However, for the control group we weight down (the grey bars) their values on the lower end of the propensity score range to match the distribution of the treatment group. Conversely, control group observations are weighted up on the right side of the propensity score range, again, to closely match the distribution of the treatment group. In the context of matching where we wish to pair treatment and control units, the goal is to use all treatment observations, therefore it is possible to not use some control observations with smaller propensity scores whereas some control observations with larger propensity scores may be reused in order to find a match for every treatment observation.</p>
+<p>Mathematically, ATT is defined in equation <a href="chapter-introduction.html#eq:eqatt">(1.9)</a>. The important difference between this at ATE is that we are calculating the expected value given <span class="math inline">\(X = 1\)</span>, which indicates placement in the treatment.</p>
 <p><span class="math display" id="eq:eqatt">\[\begin{equation}
 \begin{aligned}
 ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1)
 \end{aligned}
 \tag{1.9}
 \end{equation}\]</span></p>
-<p>Figure <a href="chapter-introduction.html#fig:att-hist">1.12</a></p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:att-hist"></span>
 <img src="01-Introduction_files/figure-html/att-hist-1.png" alt="Histogram of average treatement among the treated" width="100%"><p class="caption">
@@ -332,13 +333,14 @@ Figure 1.12: Histogram of average treatement among the treated
 <h4>
 <span class="header-section-number">1.3.2.3</span> Average Treatment Effect Among the Control (ATC)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-control-atc"><i class="fas fa-link"></i></a>
 </h4>
+<p>The average treatment effect among the control (ATC) is exactly the opposte as ATT. Here, we wish to use every control observation which means some treatment observations with larger propensity scores will not be used (in the case of matching) or weighted down (in the case of weighting or stratification) as represented by the grey. Conversely, treatment observations with smaller propensity scores may be match with multiple control observations (in the case of matching) or weighted up (in the case of weighting or stratification).</p>
+<p>Mathematically, ATC is defined in equation <a href="chapter-introduction.html#eq:eqatc">(1.10)</a>. The important difference between this at ATE is that we are calculating the expected value given <span class="math inline">\(X = 1\)</span>, which indicates placement in the control</p>
 <p><span class="math display" id="eq:eqatc">\[\begin{equation}
 \begin{aligned}
 ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0)
 \end{aligned}
 \tag{1.10}
 \end{equation}\]</span></p>
-<p>Figure <a href="chapter-introduction.html#fig:atc-hist">1.13</a></p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:atc-hist"></span>
 <img src="01-Introduction_files/figure-html/atc-hist-1.png" alt="Histogram of average treatement among the control" width="100%"><p class="caption">
@@ -350,14 +352,13 @@ Figure 1.13: Histogram of average treatement among the control
 <h4>
 <span class="header-section-number">1.3.2.4</span> Average Treatment Effect Among the Evenly Matched (ATM)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-evenly-matched-atm"><i class="fas fa-link"></i></a>
 </h4>
-<p><span class="citation">Li and Greene (2013)</span></p>
+<p>The average treatment effect among the evenly matched (ATM) is a relatively new estimate developed specifically for propensity score weighting but is closely related to what is estimated when conducting one-to-one matching. Unlike ATT and ATC where not all observations are weighted equally, for the calculation of ATM all observations included in the estimation have equal weight. As depicted in figure <a href="chapter-introduction.html#fig:acm-hist">1.14</a> there are control observations with small propensity scores that are not used and treatment observations with large propensity scores that are not used (represented by the grey bars). This closely mimics what occurs in one-to-one matching. In one-to-one matching any observation can be used only once and can only be matched to one observation of the other group. Hence, it tends to work out that only observations near the mean of the propensity score range are included. See <span class="citation">Li and Greene (2013)</span>, <span class="citation">McGowan (2018)</span>, and <span class="citation">Samuels (2017)</span> for more details.</p>
 <p><span class="math display" id="eq:eqatm">\[\begin{equation}
 \begin{aligned}
 ATM_d = E(Y_1 - Y_0 | M_d = 1)
 \end{aligned}
 \tag{1.11}
 \end{equation}\]</span></p>
-<p>Figure <a href="chapter-introduction.html#fig:acm-hist">1.14</a></p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:acm-hist"></span>
 <img src="01-Introduction_files/figure-html/acm-hist-1.png" alt="Histogram of average treatment effect among the evenly matched" width="100%"><p class="caption">
@@ -371,14 +372,14 @@ Figure 1.14: Histogram of average treatment effect among the evenly matched
 <span class="header-section-number">1.3.3</span> Phase III: Sensitivity Analysis<a class="anchor" aria-label="anchor" href="#phase-iii-sensitivity-analysis"><i class="fas fa-link"></i></a>
 </h3>
 <p>The final phase of propensity score analysis is to evaluate the robustness of causal estimates. We will discuss two approaches to test the robustness: sensitivity analysis (covered in detail in chapter <a href="chapter-sensitivity.html#chapter-sensitivity">6</a>) and bootstrapping (covered in detail in chapter <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a>). Sensitivity analysis is a procedure where the results are tested under increasing factors of an unmeasured confounder in changing the randomization process. That is, it tests how much another variable would have change the prediction of treatment to result in non rejecting the null hypothesis.</p>
-<p>Sensitivity analysis is only well defined for matching methods. <span class="citation">Rosenbaum (2012)</span> proposed testing the null hypothesis more than once, in part, to also test the sensitivity to the chosen method. In this spirit of testing the null hypothesis more than once, I have developed a method for conducting bootstrapping for propensity score analysis. This framework addresses the issues sensitivity to method choice, but also provides a framework for addressing issues of imbalance in treatment placement. Bootstrapping <span class="citation">(Efron 1979)</span> has become an effective approach to estimating parameters. The approach discussed in chapter <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a> avoids the issues of multiple hypothesis testing and increased type I error rates by using the bootstrap samples to estimate the standard errors and confidence intervals.</p>
+<p>Sensitivity analysis is only well defined for matching methods. <span class="citation">Rosenbaum (2012)</span> proposed testing the null hypothesis more than once, in part, to also test the sensitivity to the chosen method. In this spirit of testing the null hypothesis more than once, the <code>PSAboot</code> R package <span class="citation">(Bryer 2023)</span> has been developed for conducting bootstrapping for propensity score analysis. This framework addresses the issues sensitivity to method choice, but also provides a framework for addressing issues of imbalance in treatment placement. Bootstrapping <span class="citation">(Efron 1979)</span> has become an effective approach to estimating parameters. The approach discussed in chapter <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a> avoids the issues of multiple hypothesis testing and increased type I error rates by using the bootstrap samples to estimate the standard errors and confidence intervals.</p>
 </div>
 </div>
 <div id="r-packages" class="section level2" number="1.4">
 <h2>
 <span class="header-section-number">1.4</span> R Packages<a class="anchor" aria-label="anchor" href="#r-packages"><i class="fas fa-link"></i></a>
 </h2>
-<p>R is a statistical software language designed to be extended vis-à-vis packages. As of April 04, 2023, there are currently 19,337 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of packages matching, multiple imputation of missing values, and to visualize results.</p>
+<p>R is a statistical software language designed to be extended vis-à-vis packages. As of April 04, 2023, there are currently 19,347 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of R</p>
 <ul>
 <li>
 <a href="http://gking.harvard.edu/gking/matchit"><code>MatchIt</code></a> <span class="citation">(Ho et al. 2023)</span> Nonparametric Preprocessing for Parametric Causal Inference</li>
@@ -399,7 +400,7 @@ Figure 1.14: Histogram of average treatment effect among the evenly matched
 <li>
 <a href="https://github.com/jbryer/TriMatch"><code>TriMatch</code></a> <span class="citation">(Bryer 2017)</span> Propensity Score Matching for Non-Binary Treatments</li>
 </ul>
-<p>The following command will install the R packages we will use in this book.</p>
+<p>The <a href="https://github.com/jbryer/psa"><code>psa</code> R package</a> was specifically designed to accompany this book including some utility functions to assist with conducting propensity score analysis. The following command will install the <code>psa</code> R package along with all the R packages we will use in this book.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'jbryer/psa'</span>, dependencies <span class="op">=</span> <span class="st">'Enhances'</span><span class="op">)</span></span></code></pre></div>
 </div>

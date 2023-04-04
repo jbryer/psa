@@ -1,5 +1,13 @@
 # Matching {#chapter-matching}
 
+::: {.rmdtip}
+**match**  
+*verb*  
+1. correspond or cause to correspond in some essential respect; make or be harmonious.  
+2. be equal to (something) in quality or strength.
+:::
+
+
 
 ```r
 lalonde.glm <- glm(lalonde.formu, family=binomial, data=lalonde)
@@ -7,6 +15,7 @@ ps <- fitted(lalonde.glm)  # Propensity scores
 Y  <- lalonde$re78  # Dependent variable, real earnings in 1978
 Tr <- lalonde$treat # Treatment indicator
 ```
+
 
 
 
@@ -253,7 +262,7 @@ rr.gen <- GenMatch(Tr=Tr, X=ps,
 ```
 ## 
 ## 
-## Tue Apr  4 14:25:39 2023
+## Tue Apr  4 22:12:02 2023
 ## Domains:
 ##  0.000000e+00   <=  X1   <=    1.000000e+03 
 ## 
@@ -412,8 +421,8 @@ rr.gen <- GenMatch(Tr=Tr, X=ps,
 ## Solution Found Generation 9
 ## Number of Generations Run 14
 ## 
-## Tue Apr  4 14:25:41 2023
-## Total run time : 0 hours 0 minutes and 2 seconds
+## Tue Apr  4 22:12:03 2023
+## Total run time : 0 hours 0 minutes and 1 seconds
 ```
 
 ```r
