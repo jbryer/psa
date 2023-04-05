@@ -1,6 +1,7 @@
 ---
-editor_options: 
+editor_options:
   chunk_output_type: console
+output: pdf_document
 ---
 
 # Introduction {#chapter-introduction}
@@ -103,6 +104,7 @@ Where $X$ is a matrix of observed covariates and $\pi(X_i)$ is the propensity sc
 
 \begin{equation}
 \begin{aligned}
+
 T_i \; \mathrel{\unicode{x2AEB}} \; X_i \; | \; \pi (X_i)
 \end{aligned}
 (\#eq:eq4)
@@ -112,7 +114,8 @@ Where Ti is the treatment indicator for subject i. In the case of randomized exp
 
 \begin{equation}
 \begin{aligned}
-Y_i(1), \;  Y_i(0)) \; \mathrel{\unicode{x2AEB}} \; T_i  \; | \; X_i
+
+Y_i(1), \; Y_i(0)) \; \mathrel{\unicode{x2AEB}} \; T_i \; | \; X_i
 \end{aligned}
 (\#eq:eq5)
 \end{equation}
@@ -121,6 +124,7 @@ For all $X_i$. That is, treatment is independent of all covariates, observed or 
 
 \begin{equation}
 \begin{aligned}
+
 ({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \mathrel{\unicode{x2AEB}} \; { T }_{ i } \; | \; \pi({ X }_{ i })
 \end{aligned}
 (\#eq:eq6)

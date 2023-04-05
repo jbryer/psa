@@ -27,6 +27,10 @@ fig:unnamed-chunk-7
 fig:unnamed-chunk-8
 fig:unnamed-chunk-12
 fig:unnamed-chunk-13
+eq:eqatew
+eq:eqattw
+eq:eqatcw
+eq:eqatmw
 fig:psaboot-plot
 fig:unnamed-chunk-2
 fig:multilevelpsa-treeplot
@@ -62,6 +66,11 @@ phase-ii-estimate-effects
 phase-iii-sensitivity-analysis-1
 chapter-matching
 chapter-weighting
+estimate-propensity-scores
+average-treatment-effect-ate-1
+average-treatment-effect-among-the-treated-att-1
+average-treatment-effect-among-the-control-atc-1
+average-treatment-effect-among-the-evenly-matched-atm-1
 chapter-missing
 chapter-sensitivity
 chapter-bootstrapping
