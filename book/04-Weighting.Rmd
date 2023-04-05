@@ -11,31 +11,23 @@ editor_options:
 2. attach importance or value to.
 :::
 
-For each of the formulas below, $w$ is the weight, $Z_i$ is the treatment assignment, $Z = 1$ is treatment, $Z = 0$ is control, and $\pi_i$ is the propensity score.
+Propensity score weighting is the approach to using propensity scores as weights in other statistical models such as regression or ANOVA. Like stratification (see Chapter \@ref(chapter-stratification)), propensity score weighting has the advantage of using all observations. In section \@ref(introduction-effects) we introduced four different treatment estimators. The histograms used to conceptually explain what observations are included, or not included, in their calculation used propensity score weights. In this chapter will discuss the mathematical details of how those weights are calculated and applied, include the R code to generate the estimates.
+
+We will present a formula for each of the treatment effects we wish to estimate. These formulas define the weights. Once we have the weights we can use them in a statistical model or using the following formula to estimate the treatment effect.
+
+\begin{equation}
+\begin{aligned}
+Treatment\ Effect = \frac{\sum Y_{i}Z_{i}w_{i}}{\sum Z_{i} w_{i}} - \frac{\sum Y_{i}(1 - Z_{i}) w_{i}}{\sum (1 - Z_{i}) w_{i} }
+\end{aligned}
+(\#eq:eqcalcte)
+\end{equation}
+
+For equation \@ref(eq:eqcalcte), $w$ is the weight (as defined in the following sections), $Z_i$ is the treatment assignment such that $Z = 1$ is treatment and $Z = 0$ is control, and $Y_i$ is the outcome.
 
 ## Estimate Propensity Scores
 
-```{r, echo=FALSE, eval=FALSE}
-data("tutoring", package = 'TriMatch')
-tutoring$treat2 <- tutoring$treat != 'Control'
+To begin, we estimate the propensity scores, here using logistic regression.
 
-lr_out <- glm(formula = tutoring.formu,
-			 data = tutoring,
-			 family = binomial(link = 'logit'))
-summary(lr_out)
-
-tutoring$lr_ps <- fitted(lr_out)
-tutoring$weights <- psa::calculate_ps_weights(treatment = tutoring$treat2,
-											  ps = tutoring$lr_ps,						  
-											  estimand = 'ATE')
-
-lm(formula = Grade ~ treat2,
-   data = tutoring,
-   weights = tutoring$weights) |> summary()
-
-ggplot(tutoring, aes(x = lr_ps, y = Grade, size = weights)) +
-	geom_point()
-```
 
 ```{r}
 data("lalonde", package = 'Matching')
@@ -47,6 +39,32 @@ lalonde$lr_weights <- psa::calculate_ps_weights(lalonde$treat,
 												ps = lalonde$lr_ps,
 												estimand = 'ATE')
 ```
+
+
+## Checking Balance
+
+
+```{r, fig.cap='Multiple covariate balance assessment plot for Lalonde data after estimating propensity scores with logistic regression'}
+PSAgraphics::cv.bal.psa(covariates = lalonde[,all.vars(lalonde.formu)[-1]],
+						treatment = lalonde$treat,
+						propensity = lalonde$lr_ps,
+						strata = 5)
+```
+
+```{r, echo=FALSE, eval=FALSE}
+# The glm call below will through an error but is ok.
+# https://stackoverflow.com/questions/12953045/warning-non-integer-successes-in-a-binomial-glm-survey-packages
+```
+
+```{r, warning=FALSE}
+ glm(formula = lalonde.formu,
+ 	 data = lalonde,
+ 	 family = quasibinomial(link = 'logit'),
+ 	 weights = lalonde$lr_weights
+) |> summary()
+```
+
+
 
 ```{r, eval = FALSE, echo = FALSE}
 # lalonde$treat <- as.logical(lalonde$treat)
@@ -79,6 +97,8 @@ lm(log(re78+1) ~ treat, data = lalonde, weights = lalonde$lr_weights) |> summary
 lm(log(re78+1) ~ treat, data = lalonde) |> summary()
 ```
 
+
+
 ## Average Treatment Effect (ATE)
 
 \begin{equation}
@@ -95,6 +115,11 @@ ate_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = ate_weights) |> summary()
+
+psa::treatment_effect(treatment = lalonde$treat,
+					  outcome = lalonde$re78,
+					  weights = ate_weights)
+
 ```
 
 ## Average Treatment Effect Among the Treated (ATT)
@@ -113,6 +138,10 @@ att_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = att_weights) |> summary()
+
+psa::treatment_effect(treatment = lalonde$treat,
+					  outcome = lalonde$re78,
+					  weights = att_weights)
 ```
 
 ## Average Treatment Effect Among the Control (ATC)
@@ -131,6 +160,11 @@ atc_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = atc_weights) |> summary()
+
+psa::treatment_effect(treatment = lalonde$treat,
+					  outcome = lalonde$re78,
+					  weights = atc_weights)
+
 ```
 
 #### Average Treatment Effect Among the Evenly Matched (ATM)
@@ -149,5 +183,9 @@ atm_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = atm_weights) |> summary()
+
+psa::treatment_effect(treatment = lalonde$treat,
+					  outcome = lalonde$re78,
+					  weights = atm_weights)
 
 ```

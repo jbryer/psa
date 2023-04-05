@@ -17,6 +17,9 @@ treatment_effect(treatment, outcome, ps, weights, ...)
 
 \item{...}{parameters passed [calculate_ps_weights()].}
 }
+\value{
+the treatment effect.
+}
 \description{
 Estimate the treatment effects.
 }

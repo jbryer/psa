@@ -37,6 +37,7 @@ calculate_ps_weights <- function(treatment, ps, estimand = 'ATE') {
 #' @param ps vector of propensity scores.
 #' @param weights vector of propensity score weights.
 #' @param ... parameters passed [calculate_ps_weights()].
+#' @return the treatment effect.
 #' @export
 treatment_effect <- function(treatment, outcome, ps, weights, ...) {
 	if(missing(weights)) {
@@ -52,7 +53,7 @@ treatment_effect <- function(treatment, outcome, ps, weights, ...) {
 	
 	return( 
 		(sum(treatment * outcome * weights) / 
-		 	sum(treatment * weights)) + 
+		 	sum(treatment * weights)) -
 			(sum((1 - treatment) * outcome * weights) / 
 			 	sum((1 - treatment) * weights))
 	)
