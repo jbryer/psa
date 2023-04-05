@@ -2,7 +2,7 @@
 % Please edit documentation in R/weighting.R
 \name{calculate_ps_weights}
 \alias{calculate_ps_weights}
-\title{Caluclates propensity score weights.}
+\title{Calculates propensity score weights.}
 \usage{
 calculate_ps_weights(treatment, ps, estimand = "ATE")
 }
@@ -20,5 +20,5 @@ ATM (Average Treatment Effect Among the Evenly Matchable),
 ATO (Average Treatment Effect Among the Overlap Populatio)}
 }
 \description{
-Caluclates propensity score weights.
+Calculates propensity score weights.
 }

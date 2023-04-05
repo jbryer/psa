@@ -6,7 +6,7 @@
 an experimental mlpsa plot that will combine the circular plot along with
 the two individual distributions.}
 \usage{
-\method{align}{plots}(gl, ...)
+align.plots(gl, ...)
 }
 \arguments{
 \item{gl}{grid.layout}

@@ -45,6 +45,7 @@ Enhances:
     rgenoud,
     scholar,
     rbounds,
+    tree,
     TriMatch
 VignetteBuilder: 
     knitr
