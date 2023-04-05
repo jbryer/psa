@@ -35,35 +35,21 @@ lr_out <- glm(formula = lalonde.formu,
 			  data = lalonde,
 			  family = binomial(link = 'logit'))
 lalonde$lr_ps <- fitted(lr_out)
-lalonde$lr_weights <- psa::calculate_ps_weights(lalonde$treat,
-												ps = lalonde$lr_ps,
-												estimand = 'ATE')
 ```
 
 
 ## Checking Balance
 
+Checking balance for propensity score weighting is the same as stratification. Figure \@ref(fig:weight-balance) is a multiple covariate balance assessment plot. See section \@ref(stratification-balance) in the stratification chapter for more details on how you can check for balance for individual covariates.
 
-```{r, fig.cap='Multiple covariate balance assessment plot for Lalonde data after estimating propensity scores with logistic regression'}
+```{r weight-balance, fig.cap='Multiple covariate balance assessment plot for Lalonde data after estimating propensity scores with logistic regression'}
 PSAgraphics::cv.bal.psa(covariates = lalonde[,all.vars(lalonde.formu)[-1]],
 						treatment = lalonde$treat,
 						propensity = lalonde$lr_ps,
 						strata = 5)
 ```
 
-```{r, echo=FALSE, eval=FALSE}
-# The glm call below will through an error but is ok.
-# https://stackoverflow.com/questions/12953045/warning-non-integer-successes-in-a-binomial-glm-survey-packages
-```
-
-```{r, warning=FALSE}
- glm(formula = lalonde.formu,
- 	 data = lalonde,
- 	 family = quasibinomial(link = 'logit'),
- 	 weights = lalonde$lr_weights
-) |> summary()
-```
-
+There is one additional balance check that can be done with propensity score weights. We can run the propensity score estimation model with the estimated propensity score weights. This should result in all the covariates having a non-statistically significant effect on the treatment. We will explore the details for the four treatment effects discussed in the next section.
 
 
 ```{r, eval = FALSE, echo = FALSE}
@@ -108,10 +94,30 @@ w_{ATE} = \frac{Z_i}{\pi_i} + \frac{1 - Z_i}{1 - \pi_i}
 (\#eq:eqatew)
 \end{equation}
 
-```{r, eval = TRUE}
+```{r}
 ate_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 						  
 										 estimand = 'ATE')
+```
+
+```{r, echo=FALSE, eval=FALSE}
+# The glm call below will through an error but is ok.
+# https://stackoverflow.com/questions/12953045/warning-non-integer-successes-in-a-binomial-glm-survey-packages
+```
+
+### Check Balance with ATE Weights
+
+```{r, warning=FALSE}
+glm(formula = lalonde.formu,
+	data = lalonde,
+	family = quasibinomial(link = 'logit'),
+	weights = ate_weights
+) |> summary()
+```
+
+### Estimate ATE
+
+```{r, eval = TRUE}
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = ate_weights) |> summary()
@@ -135,6 +141,22 @@ w_{ATT} = \frac{\pi_i Z_i}{\pi_i} + \frac{\pi_i (1 - Z_i)}{1 - \pi_i}
 att_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 
 										 estimand = 'ATT')
+```
+
+### Check Balance with ATT Weights
+
+```{r, warning=FALSE}
+glm(formula = lalonde.formu,
+	data = lalonde,
+	family = quasibinomial(link = 'logit'),
+	weights = att_weights
+) |> summary()
+```
+
+### Estimate ATT
+
+
+```{r}
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = att_weights) |> summary()
@@ -157,6 +179,21 @@ w_{ATC} = \frac{(1 - \pi_i) Z_i}{\pi_i} + \frac{(1 - e_i)(1 - Z_i)}{1 - \pi_i}
 atc_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 
 										 estimand = 'ATC')
+```
+
+### Check Balance with ATC Weights
+
+```{r, warning=FALSE}
+glm(formula = lalonde.formu,
+	data = lalonde,
+	family = quasibinomial(link = 'logit'),
+	weights = atc_weights
+) |> summary()
+```
+
+### Estimate ATC
+
+```{r}
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = atc_weights) |> summary()
@@ -167,11 +204,11 @@ psa::treatment_effect(treatment = lalonde$treat,
 
 ```
 
-#### Average Treatment Effect Among the Evenly Matched (ATM)
+## Average Treatment Effect Among the Evenly Matched (ATM)
 
 \begin{equation}
 \begin{aligned}
-w_{ATM} = \frac{min{\pi_i, 1 - \pi_i}}{Z_i \pi_i (1 - Z_i)(1 - \pi_i)}
+w_{ATM} = \frac{min\{\pi_i, 1 - \pi_i\}}{Z_i \pi_i (1 - Z_i)(1 - \pi_i)}
 \end{aligned}
 (\#eq:eqatmw)
 \end{equation}
@@ -180,6 +217,21 @@ w_{ATM} = \frac{min{\pi_i, 1 - \pi_i}}{Z_i \pi_i (1 - Z_i)(1 - \pi_i)}
 atm_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 
 										 estimand = 'ATM')
+```
+
+### Check Balance with ATM Weights
+
+```{r, warning=FALSE}
+glm(formula = lalonde.formu,
+	data = lalonde,
+	family = quasibinomial(link = 'logit'),
+	weights = atm_weights
+) |> summary()
+```
+
+### Estimate ATM
+
+```{r}
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = atm_weights) |> summary()
