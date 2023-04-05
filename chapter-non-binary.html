@@ -94,7 +94,7 @@
 <h1>
 <span class="header-section-number">8</span> Non-Binary Treatments<a class="anchor" aria-label="anchor" href="#chapter-non-binary"><i class="fas fa-link"></i></a>
 </h1>
-<div class="sourceCode" id="cb121"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb132"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://jason.bryer.org/TriMatch">TriMatch</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">tutoring</span><span class="op">)</span></span>
@@ -117,12 +117,12 @@
 ##  $ GradeCode : chr  "A" "A" "A" "A" ...
 ##  $ Level     : Factor w/ 2 levels "Lower","Upper": 1 1 1 1 1 2 1 1 1 1 ...
 ##  $ ID        : int  377 882 292 215 252 265 1016 282 39 911 ...</code></pre>
-<div class="sourceCode" id="cb123"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb134"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">tutoring</span><span class="op">$</span><span class="va">treat</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## Control  Treat1  Treat2 
 ##     918     134      90</code></pre>
-<div class="sourceCode" id="cb125"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb136"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Histogram of unadjusted grades</span></span>
 <span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/proportions.html">prop.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">tutoring</span><span class="op">$</span><span class="va">treat</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">Grade</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">tmp</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">Var2</span>, y<span class="op">=</span><span class="va">Freq</span>, fill<span class="op">=</span><span class="va">Var1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -130,7 +130,7 @@
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent_format</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">'Grade'</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">'Percent'</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_colour_hue</a></span><span class="op">(</span><span class="st">'Treatment'</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb126"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb137"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Phase I</span></span>
 <span></span>
 <span><span class="co"># Note that the dependent variable is not included in the formula. The TriMatch</span></span>
@@ -144,7 +144,7 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">tutoring.tpsa</span>, sample<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb127"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb138"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># trimatch finds matched triplets.</span></span>
 <span><span class="va">tutoring.matched</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/trimatch.html">trimatch</a></span><span class="op">(</span><span class="va">tutoring.tpsa</span><span class="op">)</span></span>
 <span></span>
@@ -156,7 +156,7 @@
 <span><span class="co"># will overlay matched triplets.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, rows<span class="op">=</span><span class="fl">1</span>, line.alpha<span class="op">=</span><span class="fl">1</span>, draw.segments<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-2.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb128"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb139"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Examine the unmatched students</span></span>
 <span><span class="va">unmatched</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/unmatched.html">unmatched</a></span><span class="op">(</span><span class="va">tutoring.matched</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">unmatched</span><span class="op">)</span></span></code></pre></div>
@@ -164,14 +164,14 @@
 ## Unmatched by treatment:
 ##     Control      Treat1      Treat2 
 ## 795 (86.6%)  17 (12.7%)   7 (7.78%)</code></pre>
-<div class="sourceCode" id="cb130"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb141"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">unmatched</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-3.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb131"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb142"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Check balance</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/multibalance.plot.html">multibalance.plot</a></span><span class="op">(</span><span class="va">tutoring.tpsa</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-4.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb132"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb143"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/balance.plot.html">balance.plot</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">Age</span>, label<span class="op">=</span><span class="st">'Age'</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ##  Friedman rank sum test
@@ -184,7 +184,7 @@
 ##      Effect DFn DFd        F         p p&lt;.05         ges
 ## 2 Treatment   2 294 1.707234 0.1831598       0.006613137</code></pre>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-5.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb134"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb145"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/balance.plot.html">balance.plot</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">Military</span>, label<span class="op">=</span><span class="st">'Military'</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ##  Friedman rank sum test
@@ -192,14 +192,14 @@
 ## data:  Covariate and Treatment and ID
 ## Friedman chi-squared = 0.4, df = 2, p-value = 0.8187</code></pre>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-6.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb136"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb147"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a grid of figures.</span></span>
 <span><span class="va">bplots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/balance.plot.html">balance.plot</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, <span class="va">tutoring</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/allnames.html">all.vars</a></span><span class="op">(</span><span class="va">tutoring.formu</span><span class="op">)</span><span class="op">]</span>, </span>
 <span>                       legend.position<span class="op">=</span><span class="st">'none'</span>, </span>
 <span>                       x.axis.labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'C'</span>,<span class="st">'T1'</span>,<span class="st">'T1'</span><span class="op">)</span>, x.axis.angle<span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">bplots</span><span class="op">[[</span><span class="st">'Military'</span><span class="op">]</span><span class="op">]</span> <span class="co"># We can plot one at at time.</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-7.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb137"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb148"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">bplots</span><span class="op">)</span> <span class="co"># Create a data frame with the statistical results</span></span></code></pre></div>
 <pre><code>##     Covariate   Friedman Friedman.p Friedman.sig    rmANOVA rmANOVA.p
 ## 1      Gender 2.16666667 0.33846543                      NA        NA
@@ -225,10 +225,10 @@
 ## 9             
 ## 10            
 ## 11</code></pre>
-<div class="sourceCode" id="cb139"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb150"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">bplots</span>, cols<span class="op">=</span><span class="fl">3</span>, byrow<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-8.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb140"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb151"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Phase II</span></span>
 <span><span class="co"># The summary function performs a number of statistical tests including Friedman</span></span>
 <span><span class="co"># rank sum test, repeated measures ANOVA, and if one or both of those tests have</span></span>
@@ -285,15 +285,15 @@
 ## 
 ## attr(,"class")
 ## [1] "trimatch.summary" "list"</code></pre>
-<div class="sourceCode" id="cb142"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb153"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="va">sout</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## [1] "friedman.test"        "pairwise.wilcox.test" "PercentMatched"      
 ## [4] "rmanova"              "t.tests"</code></pre>
-<div class="sourceCode" id="cb144"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb155"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># TODO: boxdiff.plot(tutoring.matched, tutoring$Grade, ordering=c('Treatment2','Treatment1','Control'))</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/parallel.plot.html">parallel.plot</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">Grade</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-9.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb145"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb156"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The Loess plot is imperfect with three sets of propensity scores. There is a</span></span>
 <span><span class="co"># model parameter to specify which model to use. Once we a model is selected</span></span>
 <span><span class="co"># we have propensity scores for two of the three groups. We impute a propensity</span></span>
@@ -301,21 +301,21 @@
 <span><span class="co"># the other two propensity scores that unit was matched to.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/loess3.plot.html">loess3.plot</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">Grade</span>, se<span class="op">=</span><span class="cn">FALSE</span>, method<span class="op">=</span><span class="st">'loess'</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-10.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb146"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb157"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Turn on 95% confidence interval (see also the level parameter)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/loess3.plot.html">loess3.plot</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">Grade</span>, se<span class="op">=</span><span class="cn">TRUE</span>, method<span class="op">=</span><span class="st">'loess'</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-11.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb147"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb158"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We can also pass other parameters to the loess function.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/loess3.plot.html">loess3.plot</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">Grade</span>, se<span class="op">=</span><span class="cn">TRUE</span>, method<span class="op">=</span><span class="st">'loess'</span>, span<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-12.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb148"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb159"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># This is a busy plot, but since all the lines are practically vertical, the</span></span>
 <span><span class="co"># distance between each pair of propensity scores is minimal.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/TriMatch/man/loess3.plot.html">loess3.plot</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">Grade</span>, se<span class="op">=</span><span class="cn">FALSE</span>, method<span class="op">=</span><span class="st">'loess'</span>, </span>
 <span>            plot.connections<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="08-TriMatch_files/figure-html/unnamed-chunk-3-13.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb149"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb160"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The merge function will add the outcome to the matched triplet data frame.</span></span>
 <span><span class="co"># This is useful for other approaches to analyzing the matched triplets.</span></span>
 <span><span class="va">tmatch.out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span><span class="va">tutoring.matched</span>, <span class="va">tutoring</span><span class="op">$</span><span class="va">Grade</span><span class="op">)</span></span>
