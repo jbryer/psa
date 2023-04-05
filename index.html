@@ -93,7 +93,7 @@
   </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><!--bookdown:title:end--><!--bookdown:title:start--><div id="preface" class="section level1 unnumbered">
 <h1>Preface<a class="anchor" aria-label="anchor" href="#preface"><i class="fas fa-link"></i></a>
 </h1>
-<p>Last updated: April 04, 2023</p>
+<p>Last updated: April 05, 2023</p>
 <p><a href="https://psa.bryer.org" target="_blank"><img src="figures/cover.png" width="40%" style="float:right; padding:10px"></a></p>
 <p>I was first introduced to propensity score analysis (PSA) by my late dissertation advisor Robert Pruzek in 2006 when I entered graduate school. The notion that you could get reasonable causal estimates without the need of randomization was foreign to me and at first, I was skeptical. Many years later having used PSA for many projects, not only am I convinced it is possible, I believe there are instances where this may be preferred over the randomized control trial. I have been the Principal Investigator for two Federal grants to develop and test the <a href="https://daacs.net">Diagnostic Assessment and Achievement of College Skills (DAACS)</a> where have attempted to conduct large scale randomized control trials (RCT) involving thousands of students. I have found through my experiences conducting these large scale RCTs that there are numerous compromises made in delivering an intervention that compromise the generalizability of the results. Moreover, RCTs assume a single, homogenous, causal effect for everyone. In reality this is rarely true. Not all interventions are equally effective for everyone. With PSA, particularly in the stratification section, it is possible to tease out how an intervention may vary by the observed covariates.</p>
 <p>I have taught PSA many times over the years. This “book” is my attempt to collect my notes and experiences on conducting PSA. For the most part I will emphasize the applied and provide links to references if the reader wishes to explore the theoretical in more details. The <code>psa</code> R package that accompanies this book is available on Github and can be installed using the <code>remotes</code> package with the command below. By setting the <code>dependencies = 'Enhances'</code> parameter will ensure that all the R packages used in this book are installed as well. The <code>psa</code> package contains a number of datasets and utility functions used throughout the book. But it also contains a <a href="https://shiny.rstudio.com">Shiny</a> application designed to conduct PSA using a graphical user interface. Details on using the application are provided in the <a href="#psa_shiny">appendix</a>.</p>
@@ -126,7 +126,7 @@
 ##  collate  C.UTF-8
 ##  ctype    C.UTF-8
 ##  tz       UTC
-##  date     2023-04-04
+##  date     2023-04-05
 ##  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────
@@ -292,7 +292,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-04.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-05.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

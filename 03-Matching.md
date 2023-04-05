@@ -262,7 +262,7 @@ rr.gen <- GenMatch(Tr=Tr, X=ps,
 ```
 ## 
 ## 
-## Tue Apr  4 22:12:02 2023
+## Wed Apr  5 01:17:12 2023
 ## Domains:
 ##  0.000000e+00   <=  X1   <=    1.000000e+03 
 ## 
@@ -421,8 +421,8 @@ rr.gen <- GenMatch(Tr=Tr, X=ps,
 ## Solution Found Generation 9
 ## Number of Generations Run 14
 ## 
-## Tue Apr  4 22:12:03 2023
-## Total run time : 0 hours 0 minutes and 1 seconds
+## Wed Apr  5 01:17:14 2023
+## Total run time : 0 hours 0 minutes and 2 seconds
 ```
 
 ```r

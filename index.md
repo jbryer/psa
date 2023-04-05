@@ -1,7 +1,7 @@
 --- 
 title: "Applied Propensity Score Analysis with R"
 author: "Jason Bryer, Ph.D."
-date: "2023-04-04"
+date: "2023-04-05"
 site: bookdown::bookdown_site
 documentclass: book
 url: https://psa.bryer.org
@@ -14,7 +14,7 @@ bibliography: [book.bib, packages.bib]
 
 # Preface {-}
 
-Last updated: April 04, 2023
+Last updated: April 05, 2023
 
 <a href="https://psa.bryer.org" target="_blank"><img src="figures/cover.png" width="40%" style="float:right; padding:10px" style="display: block; margin: auto 0 auto auto;" /></a>
 
@@ -55,7 +55,7 @@ devtools::session_info()
 ##  collate  C.UTF-8
 ##  ctype    C.UTF-8
 ##  tz       UTC
-##  date     2023-04-04
+##  date     2023-04-05
 ##  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────

@@ -94,7 +94,7 @@
 <h1>
 <span class="header-section-number">9</span> Multilevel PSA<a class="anchor" aria-label="anchor" href="#chapter-multilevelpsa"><i class="fas fa-link"></i></a>
 </h1>
-<div class="sourceCode" id="cb135"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb142"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/jbryer/multilevelPSA">multilevelPSA</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">grid</span><span class="op">)</span></span>
 <span></span>
@@ -168,14 +168,14 @@
 ##  $ PV5SCIE : num  435 646 385 476 479 ...
 ##  $ PUBPRIV : Factor w/ 2 levels "Private","Public": 2 2 2 2 2 2 2 2 2 2 ...
 ##  $ STRATIO : num  14.4 14.4 14.4 14.4 14.4 ...</code></pre>
-<div class="sourceCode" id="cb137"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb144"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">pisana</span><span class="op">$</span><span class="va">CNT</span>, <span class="va">pisana</span><span class="op">$</span><span class="va">PUBPRIV</span>, useNA<span class="op">=</span><span class="st">'ifany'</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##      
 ##       Private Public
 ##   CAN    1645  21484
 ##   MEX    4048  34138
 ##   USA     345   4888</code></pre>
-<div class="sourceCode" id="cb139"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb146"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/proportions.html">prop.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">pisana</span><span class="op">$</span><span class="va">CNT</span>, <span class="va">pisana</span><span class="op">$</span><span class="va">PUBPRIV</span>, useNA<span class="op">=</span><span class="st">'ifany'</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span></span></code></pre></div>
 <pre><code>##      
 ##         Private    Public
@@ -190,7 +190,7 @@ Figure 9.1: Annotated multilevel PSA assessment plot. This plot compares private
 </div>
 <p>Phase I</p>
 <p>Use conditional inference trees from the party package</p>
-<div class="sourceCode" id="cb141"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb148"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mlctree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/multilevelPSA/man/mlpsa.ctree.html">mlpsa.ctree</a></span><span class="op">(</span><span class="va">pisana</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'CNT'</span>,<span class="st">'PUBPRIV'</span>,<span class="va">pisa.psa.cols</span><span class="op">)</span><span class="op">]</span>, </span>
 <span>                       formula<span class="op">=</span><span class="va">PUBPRIV</span> <span class="op">~</span> <span class="va">.</span>, level2<span class="op">=</span><span class="st">'CNT'</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
@@ -202,9 +202,9 @@ Figure 9.1: Annotated multilevel PSA assessment plot. This plot compares private
   |===============================================                       |  67%
   |                                                                            
   |======================================================================| 100%</code></pre>
-<div class="sourceCode" id="cb143"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb150"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pisana.party</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/multilevelPSA/man/getStrata.html">getStrata</a></span><span class="op">(</span><span class="va">mlctree</span>, <span class="va">pisana</span>, level2<span class="op">=</span><span class="st">'CNT'</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb144"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb151"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/multilevelPSA/man/tree.plot.html">tree.plot</a></span><span class="op">(</span><span class="va">mlctree</span>, level2Col<span class="op">=</span><span class="va">pisana</span><span class="op">$</span><span class="va">CNT</span>, </span>
 <span>          colLabels<span class="op">=</span><span class="va">pisa.colnames</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Variable'</span>,<span class="st">'ShortDesc'</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
@@ -213,14 +213,14 @@ Figure 9.1: Annotated multilevel PSA assessment plot. This plot compares private
 Figure 9.2: Tree heat map showing relative importance of covariates used in each tree
 </p>
 </div>
-<div class="sourceCode" id="cb145"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb152"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#NOTE: This is not entirely correct but is sufficient for visualization purposes</span></span>
 <span><span class="co">#      See mitools package for combining multiple plausible values.</span></span>
 <span><span class="va">pisana.party</span><span class="op">$</span><span class="va">mathscore</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">pisana.party</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">'PV'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="st">'MATH'</span><span class="op">)</span><span class="op">]</span>,<span class="fl">1</span>,<span class="va">sum</span><span class="op">)</span><span class="op">/</span><span class="fl">5</span></span>
 <span><span class="va">pisana.party</span><span class="op">$</span><span class="va">readscore</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">pisana.party</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">'PV'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="st">'READ'</span><span class="op">)</span><span class="op">]</span>,<span class="fl">1</span>,<span class="va">sum</span><span class="op">)</span><span class="op">/</span><span class="fl">5</span></span>
 <span><span class="va">pisana.party</span><span class="op">$</span><span class="va">sciescore</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">pisana.party</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">'PV'</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="st">'SCIE'</span><span class="op">)</span><span class="op">]</span>,<span class="fl">1</span>,<span class="va">sum</span><span class="op">)</span><span class="op">/</span><span class="fl">5</span></span></code></pre></div>
 <p>Phase II</p>
-<div class="sourceCode" id="cb146"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb153"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results.psa.math</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/multilevelPSA/man/mlpsa.html">mlpsa</a></span><span class="op">(</span>response <span class="op">=</span> <span class="va">pisana.party</span><span class="op">$</span><span class="va">mathscore</span>, </span>
 <span>                          treatment <span class="op">=</span> <span class="va">pisana.party</span><span class="op">$</span><span class="va">PUBPRIV</span>, </span>
 <span>                          strata <span class="op">=</span> <span class="va">pisana.party</span><span class="op">$</span><span class="va">strata</span>, </span>
@@ -236,19 +236,19 @@ Figure 9.2: Tree heat map showing relative importance of covariates used in each
 ## 1 -59.572751 22652
 ## 2  -3.056743 38050
 ## 3  -8.756334  5213</code></pre>
-<div class="sourceCode" id="cb148"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb155"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Confidence interval</span></span>
 <span><span class="va">results.psa.math</span><span class="op">$</span><span class="va">overall.ci</span></span></code></pre></div>
 <pre><code>## -31.30
 
 ## -24.75</code></pre>
-<div class="sourceCode" id="cb150"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb157"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Effect Size</span></span>
 <span><span class="va">results.psa.math</span><span class="op">$</span><span class="va">overall.ci</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">pisana.party</span><span class="op">$</span><span class="va">mathscore</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## -0.35
 
 ## -0.28</code></pre>
-<div class="sourceCode" id="cb152"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb159"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">results.psa.math</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:multilevelpsa-plot"></span>
@@ -256,7 +256,7 @@ Figure 9.2: Tree heat map showing relative importance of covariates used in each
 Figure 9.3: Multilevel PSA assessment plot
 </p>
 </div>
-<div class="sourceCode" id="cb153"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb160"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/multilevelPSA/man/mlpsa.difference.plot.html">mlpsa.difference.plot</a></span><span class="op">(</span><span class="va">results.psa.math</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:multilevelpsa-difference-plot"></span>
@@ -301,7 +301,7 @@ Figure 9.4: Multilevel PSA difference plot
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-04.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-05.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
