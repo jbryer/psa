@@ -200,9 +200,9 @@ Figure 2.2: Scatter plot of propensity scores and log of real earnings 1978 by t
 </p>
 </div>
 </div>
-<div id="checking-balance" class="section level3" number="2.1.2">
+<div id="stratification-balance" class="section level3" number="2.1.2">
 <h3>
-<span class="header-section-number">2.1.2</span> Checking Balance<a class="anchor" aria-label="anchor" href="#checking-balance"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.1.2</span> Checking Balance<a class="anchor" aria-label="anchor" href="#stratification-balance"><i class="fas fa-link"></i></a>
 </h3>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">covars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/allnames.html">all.vars</a></span><span class="op">(</span><span class="va">lalonde.formu</span><span class="op">)</span></span>
@@ -242,7 +242,7 @@ Figure 2.4: Covariate balance plots for numeric variables
 </div>
 <div id="phase-ii-estimate-effects" class="section level2" number="2.2">
 <h2>
-<span class="header-section-number">2.2</span> PHase II: Estimate Effects<a class="anchor" aria-label="anchor" href="#phase-ii-estimate-effects"><i class="fas fa-link"></i></a>
+<span class="header-section-number">2.2</span> Phase II: Estimate Effects<a class="anchor" aria-label="anchor" href="#phase-ii-estimate-effects"><i class="fas fa-link"></i></a>
 </h2>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/loess.psa.html">loess.psa</a></span><span class="op">(</span>response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
@@ -323,6 +323,10 @@ Figure 2.4: Covariate balance plots for numeric variables
 <span class="header-section-number">2.3</span> Phase III: Sensitivity Analysis<a class="anchor" aria-label="anchor" href="#phase-iii-sensitivity-analysis-1"><i class="fas fa-link"></i></a>
 </h2>
 <p>Now that we have established there is a statistically significant effect of the intervention after adjusting for the selection bias using propensity scores we will want to evaluate the robustness of that effect. Sensitivity analysis is one approach but it is only well defined for matching methods. In chapter <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a> we will introduce a bootstrapping method that can help test the robustness. But <span class="citation">Rosenbaum (2012)</span> suggest another approach to test the sensitivity is to test the null hypothesis twice. We will do that here using a classification tree approach to estimating propensity scores and strata.</p>
+<div id="estimate-propensity-scores-classification-tree" class="section level3" number="2.3.1">
+<h3>
+<span class="header-section-number">2.3.1</span> Estimate Propensity Scores (classification tree)<a class="anchor" aria-label="anchor" href="#estimate-propensity-scores-classification-tree"><i class="fas fa-link"></i></a>
+</h3>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span>
 <span><span class="va">tree_out</span> <span class="op">&lt;-</span> <span class="fu">tree</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tree/man/tree.html">tree</a></span><span class="op">(</span><span class="va">lalonde_formu</span>,</span>
@@ -359,6 +363,7 @@ Figure 2.4: Covariate balance plots for numeric variables
 
 </div>
 </div>
+</div>
   <div class="chapter-nav">
 <div class="prev"><a href="chapter-introduction.html"><span class="header-section-number">1</span> Introduction</a></div>
 <div class="next"><a href="chapter-matching.html"><span class="header-section-number">3</span> Matching</a></div>
@@ -369,11 +374,13 @@ Figure 2.4: Covariate balance plots for numeric variables
 <li>
 <a class="nav-link" href="#phase-i-estimate-propensity-scores-logistic-regression"><span class="header-section-number">2.1</span> Phase I: Estimate Propensity Scores (Logistic regression)</a><ul class="nav navbar-nav">
 <li><a class="nav-link" href="#stratifying"><span class="header-section-number">2.1.1</span> Stratifying</a></li>
-<li><a class="nav-link" href="#checking-balance"><span class="header-section-number">2.1.2</span> Checking Balance</a></li>
+<li><a class="nav-link" href="#stratification-balance"><span class="header-section-number">2.1.2</span> Checking Balance</a></li>
 </ul>
 </li>
-<li><a class="nav-link" href="#phase-ii-estimate-effects"><span class="header-section-number">2.2</span> PHase II: Estimate Effects</a></li>
-<li><a class="nav-link" href="#phase-iii-sensitivity-analysis-1"><span class="header-section-number">2.3</span> Phase III: Sensitivity Analysis</a></li>
+<li><a class="nav-link" href="#phase-ii-estimate-effects"><span class="header-section-number">2.2</span> Phase II: Estimate Effects</a></li>
+<li>
+<a class="nav-link" href="#phase-iii-sensitivity-analysis-1"><span class="header-section-number">2.3</span> Phase III: Sensitivity Analysis</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#estimate-propensity-scores-classification-tree"><span class="header-section-number">2.3.1</span> Estimate Propensity Scores (classification tree)</a></li></ul>
+</li>
 </ul>
 
       <div class="book-extra">

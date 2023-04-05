@@ -148,7 +148,7 @@ table(lalonde$treat, lalonde$lr_strata5)
 </div>
 
 
-### Checking Balance
+### Checking Balance {#stratification-balance}
 
 
 ```r
@@ -197,7 +197,7 @@ PSAgraphics::cat.psa(categorical = lalonde$nodegr,
 <p class="caption">(\#fig:unnamed-chunk-13)Covariate balance plots for numeric variables</p>
 </div>
 
-## PHase II: Estimate Effects
+## Phase II: Estimate Effects
 
 
 ```r
@@ -294,6 +294,8 @@ PSAgraphics::circ.psa(response = log(lalonde$re78 + 1),
 ## Phase III: Sensitivity Analysis
 
 Now that we have established there is a statistically significant effect of the intervention after adjusting for the selection bias using propensity scores we will want to evaluate the robustness of that effect. Sensitivity analysis is one approach but it is only well defined for matching methods. In chapter \@ref(chapter-bootstrapping) we will introduce a bootstrapping method that can help test the robustness. But @Rosenbaum2012 suggest another approach to test the sensitivity is to test the null hypothesis twice. We will do that here using a classification tree approach to estimating propensity scores and strata.
+
+### Estimate Propensity Scores (classification tree)
 
 
 ```r

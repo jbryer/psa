@@ -36,14 +36,12 @@ lr_out <- glm(formula = lalonde.formu,
 			  data = lalonde,
 			  family = binomial(link = 'logit'))
 lalonde$lr_ps <- fitted(lr_out)
-lalonde$lr_weights <- psa::calculate_ps_weights(lalonde$treat,
-												ps = lalonde$lr_ps,
-												estimand = 'ATE')
 ```
 
 
 ## Checking Balance
 
+Checking balance for propensity score weighting is the same as stratification. Figure \@ref(fig:weight-balance) is a multiple covariate balance assessment plot. See section \@ref(stratification-balance) in the stratification chapter for more details on how you can check for balance for individual covariates.
 
 
 ```r
@@ -54,18 +52,43 @@ PSAgraphics::cv.bal.psa(covariates = lalonde[,all.vars(lalonde.formu)[-1]],
 ```
 
 <div class="figure" style="text-align: center">
-<img src="04-Weighting_files/figure-html/unnamed-chunk-2-1.png" alt="Multiple covariate balance assessment plot for Lalonde data after estimating propensity scores with logistic regression" width="100%" />
-<p class="caption">(\#fig:unnamed-chunk-2)Multiple covariate balance assessment plot for Lalonde data after estimating propensity scores with logistic regression</p>
+<img src="04-Weighting_files/figure-html/weight-balance-1.png" alt="Multiple covariate balance assessment plot for Lalonde data after estimating propensity scores with logistic regression" width="100%" />
+<p class="caption">(\#fig:weight-balance)Multiple covariate balance assessment plot for Lalonde data after estimating propensity scores with logistic regression</p>
 </div>
 
+There is one additional balance check that can be done with propensity score weights. We can run the propensity score estimation model with the estimated propensity score weights. This should result in all the covariates having a non-statistically significant effect on the treatment. We will explore the details for the four treatment effects discussed in the next section.
 
+
+
+
+
+
+## Average Treatment Effect (ATE)
+
+\begin{equation}
+\begin{aligned}
+w_{ATE} = \frac{Z_i}{\pi_i} + \frac{1 - Z_i}{1 - \pi_i}
+\end{aligned}
+(\#eq:eqatew)
+\end{equation}
 
 
 ```r
- glm(formula = lalonde.formu,
- 	 data = lalonde,
- 	 family = quasibinomial(link = 'logit'),
- 	 weights = lalonde$lr_weights
+ate_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
+										 ps = lalonde$lr_ps, 						  
+										 estimand = 'ATE')
+```
+
+
+
+### Check Balance with ATE Weights
+
+
+```r
+glm(formula = lalonde.formu,
+	data = lalonde,
+	family = quasibinomial(link = 'logit'),
+	weights = ate_weights
 ) |> summary()
 ```
 
@@ -73,7 +96,7 @@ PSAgraphics::cv.bal.psa(covariates = lalonde[,all.vars(lalonde.formu)[-1]],
 ## 
 ## Call:
 ## glm(formula = lalonde.formu, family = quasibinomial(link = "logit"), 
-##     data = lalonde, weights = lalonde$lr_weights)
+##     data = lalonde, weights = ate_weights)
 ## 
 ## Deviance Residuals: 
 ##    Min      1Q  Median      3Q     Max  
@@ -106,26 +129,10 @@ PSAgraphics::cv.bal.psa(covariates = lalonde[,all.vars(lalonde.formu)[-1]],
 ## Number of Fisher Scoring iterations: 4
 ```
 
-
-
-
-
-
-
-## Average Treatment Effect (ATE)
-
-\begin{equation}
-\begin{aligned}
-w_{ATE} = \frac{Z_i}{\pi_i} + \frac{1 - Z_i}{1 - \pi_i}
-\end{aligned}
-(\#eq:eqatew)
-\end{equation}
+### Estimate ATE
 
 
 ```r
-ate_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
-										 ps = lalonde$lr_ps, 						  
-										 estimand = 'ATE')
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = ate_weights) |> summary()
@@ -174,6 +181,61 @@ w_{ATT} = \frac{\pi_i Z_i}{\pi_i} + \frac{\pi_i (1 - Z_i)}{1 - \pi_i}
 att_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 
 										 estimand = 'ATT')
+```
+
+### Check Balance with ATT Weights
+
+
+```r
+glm(formula = lalonde.formu,
+	data = lalonde,
+	family = quasibinomial(link = 'logit'),
+	weights = att_weights
+) |> summary()
+```
+
+```
+## 
+## Call:
+## glm(formula = lalonde.formu, family = quasibinomial(link = "logit"), 
+##     data = lalonde, weights = att_weights)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.9694  -0.9382  -0.8097   1.1718   1.2765  
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)
+## (Intercept)  1.122e-01  1.754e+00   0.064    0.949
+## age          2.350e-02  8.362e-02   0.281    0.779
+## I(age^2)    -4.382e-04  1.352e-03  -0.324    0.746
+## educ        -1.279e-01  3.424e-01  -0.374    0.709
+## I(educ^2)    7.725e-03  1.931e-02   0.400    0.689
+## black       -5.090e-02  3.388e-01  -0.150    0.881
+## hisp        -7.925e-02  5.202e-01  -0.152    0.879
+## married     -2.667e-02  2.691e-01  -0.099    0.921
+## nodegr       1.449e-01  3.623e-01   0.400    0.689
+## re74         9.327e-06  7.444e-05   0.125    0.900
+## I(re74^2)   -9.597e-11  2.521e-09  -0.038    0.970
+## re75        -1.340e-05  9.575e-05  -0.140    0.889
+## I(re75^2)    7.444e-10  4.817e-09   0.155    0.877
+## u74         -6.362e-02  4.320e-01  -0.147    0.883
+## u75          8.469e-02  3.390e-01   0.250    0.803
+## 
+## (Dispersion parameter for quasibinomial family taken to be 0.8614842)
+## 
+##     Null deviance: 513.54  on 444  degrees of freedom
+## Residual deviance: 513.06  on 430  degrees of freedom
+## AIC: NA
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
+### Estimate ATT
+
+
+
+```r
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = att_weights) |> summary()
@@ -222,6 +284,60 @@ w_{ATC} = \frac{(1 - \pi_i) Z_i}{\pi_i} + \frac{(1 - e_i)(1 - Z_i)}{1 - \pi_i}
 atc_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 
 										 estimand = 'ATC')
+```
+
+### Check Balance with ATC Weights
+
+
+```r
+glm(formula = lalonde.formu,
+	data = lalonde,
+	family = quasibinomial(link = 'logit'),
+	weights = atc_weights
+) |> summary()
+```
+
+```
+## 
+## Call:
+## glm(formula = lalonde.formu, family = quasibinomial(link = "logit"), 
+##     data = lalonde, weights = atc_weights)
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -1.261  -1.182  -1.151   1.229   2.260  
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)
+## (Intercept) -6.598e-01  2.390e+00  -0.276    0.783
+## age          3.097e-02  8.728e-02   0.355    0.723
+## I(age^2)    -5.201e-04  1.449e-03  -0.359    0.720
+## educ         4.722e-02  4.975e-01   0.095    0.924
+## I(educ^2)   -3.225e-03  2.766e-02  -0.117    0.907
+## black        3.598e-02  4.033e-01   0.089    0.929
+## hisp         7.912e-02  4.941e-01   0.160    0.873
+## married      7.290e-03  2.868e-01   0.025    0.980
+## nodegr      -7.488e-02  4.205e-01  -0.178    0.859
+## re74         2.763e-05  7.658e-05   0.361    0.718
+## I(re74^2)   -1.296e-09  2.319e-09  -0.559    0.577
+## re75         2.037e-05  1.073e-04   0.190    0.849
+## I(re75^2)   -1.341e-09  5.282e-09  -0.254    0.800
+## u74          1.831e-01  4.577e-01   0.400    0.689
+## u75         -7.234e-02  3.730e-01  -0.194    0.846
+## 
+## (Dispersion parameter for quasibinomial family taken to be 1.206136)
+## 
+##     Null deviance: 719.09  on 444  degrees of freedom
+## Residual deviance: 717.84  on 430  degrees of freedom
+## AIC: NA
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
+### Estimate ATC
+
+
+```r
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = atc_weights) |> summary()
@@ -256,11 +372,11 @@ psa::treatment_effect(treatment = lalonde$treat,
 ## 1391.02
 ```
 
-#### Average Treatment Effect Among the Evenly Matched (ATM)
+## Average Treatment Effect Among the Evenly Matched (ATM)
 
 \begin{equation}
 \begin{aligned}
-w_{ATM} = \frac{min{\pi_i, 1 - \pi_i}}{Z_i \pi_i (1 - Z_i)(1 - \pi_i)}
+w_{ATM} = \frac{min\{\pi_i, 1 - \pi_i\}}{Z_i \pi_i (1 - Z_i)(1 - \pi_i)}
 \end{aligned}
 (\#eq:eqatmw)
 \end{equation}
@@ -270,6 +386,60 @@ w_{ATM} = \frac{min{\pi_i, 1 - \pi_i}}{Z_i \pi_i (1 - Z_i)(1 - \pi_i)}
 atm_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 
 										 estimand = 'ATM')
+```
+
+### Check Balance with ATM Weights
+
+
+```r
+glm(formula = lalonde.formu,
+	data = lalonde,
+	family = quasibinomial(link = 'logit'),
+	weights = atm_weights
+) |> summary()
+```
+
+```
+## 
+## Call:
+## glm(formula = lalonde.formu, family = quasibinomial(link = "logit"), 
+##     data = lalonde, weights = atm_weights)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.2349  -0.9347  -0.8207   1.1588   1.2256  
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)
+## (Intercept)  1.657e-01  2.129e+00   0.078    0.938
+## age         -2.418e-02  8.893e-02  -0.272    0.786
+## I(age^2)     4.192e-04  1.465e-03   0.286    0.775
+## educ         6.308e-02  4.304e-01   0.147    0.884
+## I(educ^2)   -3.347e-03  2.420e-02  -0.138    0.890
+## black        1.480e-02  3.577e-01   0.041    0.967
+## hisp        -3.495e-02  5.203e-01  -0.067    0.946
+## married     -3.486e-03  2.736e-01  -0.013    0.990
+## nodegr      -4.659e-02  3.825e-01  -0.122    0.903
+## re74        -2.333e-05  7.526e-05  -0.310    0.757
+## I(re74^2)    8.298e-10  2.510e-09   0.331    0.741
+## re75        -7.419e-06  9.758e-05  -0.076    0.939
+## I(re75^2)    7.957e-10  4.775e-09   0.167    0.868
+## u74         -6.630e-02  4.360e-01  -0.152    0.879
+## u75         -3.051e-02  3.436e-01  -0.089    0.929
+## 
+## (Dispersion parameter for quasibinomial family taken to be 0.7850194)
+## 
+##     Null deviance: 467.94  on 444  degrees of freedom
+## Residual deviance: 467.73  on 430  degrees of freedom
+## AIC: NA
+## 
+## Number of Fisher Scoring iterations: 3
+```
+
+### Estimate ATM
+
+
+```r
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = atm_weights) |> summary()
