@@ -1,3 +1,7 @@
 \usepackage{booktabs}
 \usepackage{amssymb,amsthm,amsmath}
 \usepackage[utf8]{inputenc}
+\usepackage{MnSymbol}
+\def\ci{\perp\!\!\!\perp} % from Wikipedia
+\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}} % symbols-a4, p.106
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}} 

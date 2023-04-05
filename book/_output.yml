@@ -8,10 +8,17 @@ bookdown::bs4_book:
     base: https://github.com/jbryer/psa
     subdir: book
     branch: master
+  config:
+    download: ["pdf", "epub"]
+    sharing:
+      github: yes
+      facebook: no
+      twitter: yes
+      all: no
 bookdown::pdf_book:
   includes:
     in_header: preamble.tex
   latex_engine: xelatex
   citation_package: natbib
-  keep_tex: no
+  keep_tex: yes
 bookdown::epub_book: default

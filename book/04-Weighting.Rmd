@@ -1,3 +1,7 @@
+---
+editor_options: 
+  chunk_output_type: console
+---
 # Weighting {#chapter-weighting}
 
 ::: {.rmdtip}
@@ -6,3 +10,144 @@
 1. hold (something) down by placing a heavy object on top of it.  
 2. attach importance or value to.
 :::
+
+For each of the formulas below, $w$ is the weight, $Z_i$ is the treatment assignment, $Z = 1$ is treatment, $Z = 0$ is control, and $\pi_i$ is the propensity score.
+
+## Estimate Propensity Scores
+
+```{r, echo=FALSE, eval=FALSE}
+data("tutoring", package = 'TriMatch')
+tutoring$treat2 <- tutoring$treat != 'Control'
+
+lr_out <- glm(formula = tutoring.formu,
+			 data = tutoring,
+			 family = binomial(link = 'logit'))
+summary(lr_out)
+
+tutoring$lr_ps <- fitted(lr_out)
+tutoring$weights <- psa::calculate_ps_weights(treatment = tutoring$treat2,
+											  ps = tutoring$lr_ps,						  
+											  estimand = 'ATE')
+
+lm(formula = Grade ~ treat2,
+   data = tutoring,
+   weights = tutoring$weights) |> summary()
+
+ggplot(tutoring, aes(x = lr_ps, y = Grade, size = weights)) +
+	geom_point()
+```
+
+```{r}
+data("lalonde", package = 'Matching')
+lr_out <- glm(formula = lalonde.formu,
+			  data = lalonde,
+			  family = binomial(link = 'logit'))
+lalonde$lr_ps <- fitted(lr_out)
+lalonde$lr_weights <- psa::calculate_ps_weights(lalonde$treat,
+												ps = lalonde$lr_ps,
+												estimand = 'ATE')
+```
+
+```{r, eval = FALSE, echo = FALSE}
+# lalonde$treat <- as.logical(lalonde$treat)
+
+loess_treat_out <- loess(formula = log(re78 + 1) ~ lr_ps,				  
+						 data = lalonde[lalonde$treat == 1,],
+						 weights = lalonde[lalonde$treat == 1,]$lr_weights)
+loess_control_out <- loess(formula = log(re78 + 1) ~ lr_ps,
+						   data = lalonde[lalonde$treat == 0,],
+						   weights = lalonde[lalonde$treat == 0,]$lr_weights)
+
+x_vals <- seq(0, 1, by = 0.001)
+loess_treat_df <- data.frame(x = x_vals, y = predict(loess_treat_out, newdata = x_vals))
+loess_control_df <- data.frame(x = x_vals, y = predict(loess_control_out, newdata = x_vals))
+loess_treat_df <- loess_treat_df[complete.cases(loess_treat_df),]
+loess_control_df <- loess_control_df[complete.cases(loess_control_df),]
+
+loess_treat_df$treat <- 1
+loess_control_df$treat <- 0
+loess_df <- rbind(loess_treat_df, loess_control_df)
+
+ggplot(lalonde, aes(x = lr_ps, y = log(re78 + 1), color = as.logical(treat))) +
+	geom_point(aes(size = lr_weights), alpha = 0.3, show.legend = FALSE) +
+	geom_path(data = loess_df, aes(x = x, y = y, color = as.logical(treat))) +
+	# geom_smooth(method = 'loess', se = FALSE, formula = y ~ x, linetype= 2) +
+	scale_color_manual('Treatment', values = palette2) +
+	xlab('Propensity Score')
+
+lm(log(re78+1) ~ treat, data = lalonde, weights = lalonde$lr_weights) |> summary()
+lm(log(re78+1) ~ treat, data = lalonde) |> summary()
+```
+
+## Average Treatment Effect (ATE)
+
+\begin{equation}
+\begin{aligned}
+w_{ATE} = \frac{Z_i}{\pi_i} + \frac{1 - Z_i}{1 - \pi_i}
+\end{aligned}
+(\#eq:eqatew)
+\end{equation}
+
+```{r, eval = TRUE}
+ate_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
+										 ps = lalonde$lr_ps, 						  
+										 estimand = 'ATE')
+lm(formula = re78 ~ treat, 
+   data = lalonde,
+   weights = ate_weights) |> summary()
+```
+
+## Average Treatment Effect Among the Treated (ATT)
+
+\begin{equation}
+\begin{aligned}
+w_{ATT} = \frac{\pi_i Z_i}{\pi_i} + \frac{\pi_i (1 - Z_i)}{1 - \pi_i}
+\end{aligned}
+(\#eq:eqattw)
+\end{equation}
+
+```{r, eval = TRUE}
+att_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
+										 ps = lalonde$lr_ps, 
+										 estimand = 'ATT')
+lm(formula = re78 ~ treat, 
+   data = lalonde,
+   weights = att_weights) |> summary()
+```
+
+## Average Treatment Effect Among the Control (ATC)
+
+\begin{equation}
+\begin{aligned}
+w_{ATC} = \frac{(1 - \pi_i) Z_i}{\pi_i} + \frac{(1 - e_i)(1 - Z_i)}{1 - \pi_i}
+\end{aligned}
+(\#eq:eqatcw)
+\end{equation}
+
+```{r, eval = TRUE}
+atc_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
+										 ps = lalonde$lr_ps, 
+										 estimand = 'ATC')
+lm(formula = re78 ~ treat, 
+   data = lalonde,
+   weights = atc_weights) |> summary()
+```
+
+#### Average Treatment Effect Among the Evenly Matched (ATM)
+
+\begin{equation}
+\begin{aligned}
+w_{ATM} = \frac{min{\pi_i, 1 - \pi_i}}{Z_i \pi_i (1 - Z_i)(1 - \pi_i)}
+\end{aligned}
+(\#eq:eqatmw)
+\end{equation}
+
+```{r, eval = TRUE}
+atm_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
+										 ps = lalonde$lr_ps, 
+										 estimand = 'ATM')
+lm(formula = re78 ~ treat, 
+   data = lalonde,
+   weights = atm_weights) |> summary()
+
+```
