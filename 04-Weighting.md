@@ -11,7 +11,7 @@ editor_options:
 2. attach importance or value to.
 :::
 
-Propensity score weighting is the approach to using propensity scores as weights in other statistical models such as regression or ANOVA. Like stratification (see Chapter \@ref(chapter-stratification)), propensity score weighting has the advantage of using all observations. In section \@ref(introduction-effects) we introduced four different treatment estimators. The histograms used to conceptually explain what observations are included, or not included, in their calculation used propensity score weights. In this chapter will discuss the mathematical details of how those weights are calculated and applied, include the R code to generate the estimates.
+Propensity score weighting is the approach to using propensity scores as weights in other statistical models such as regression or ANOVA. Like stratification (see Chapter \@ref(chapter-stratification)), propensity score weighting has the advantage of all observations. In section \@ref(introduction-effects) we introduced four different treatment estimators. The histograms used to conceptually explain what observations are included, or not included, in their calculation used propensity score weights. In this chapter will discuss the mathematical details of how those weights are calculated and applied, include the R code to generate the estimates.
 
 We will present a formula for each of the treatment effects we wish to estimate. These formulas define the weights. Once we have the weights we can use them in a statistical model or using the following formula to estimate the treatment effect.
 

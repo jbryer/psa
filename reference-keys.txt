@@ -27,6 +27,7 @@ fig:unnamed-chunk-7
 fig:unnamed-chunk-8
 fig:unnamed-chunk-12
 fig:unnamed-chunk-13
+fig:introduction-logistic
 eq:eqcalcte
 fig:weight-balance
 eq:eqatew
@@ -68,9 +69,11 @@ phase-ii-estimate-effects
 phase-iii-sensitivity-analysis-1
 estimate-propensity-scores-classification-tree
 chapter-matching
+one-to-one-matching
+checking-balance
 chapter-weighting
 estimate-propensity-scores
-checking-balance
+checking-balance-1
 average-treatment-effect-ate-1
 check-balance-with-ate-weights
 estimate-ate

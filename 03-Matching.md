@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 # Matching {#chapter-matching}
 
 ::: {.rmdtip}
@@ -8,28 +13,36 @@
 :::
 
 
+As the name suggests, propensity score matching is concerned with matching treatment to control observations...
+
+
 
 ```r
-lalonde.glm <- glm(lalonde.formu, family=binomial, data=lalonde)
-ps <- fitted(lalonde.glm)  # Propensity scores
-Y  <- lalonde$re78  # Dependent variable, real earnings in 1978
-Tr <- lalonde$treat # Treatment indicator
+lr_out <- glm(lalonde.formu, 
+			  data = lalonde,
+			  family = binomial(link = logit))
+lalonde$lr_ps <- fitted(lr_out)  # Propensity scores
 ```
 
 
+<div class="figure" style="text-align: center">
+<img src="03-Matching_files/figure-html/introduction-logistic-1.png" alt="Propensity Scores from Logistic Regression with Sample of Matched Pairs" width="100%" />
+<p class="caption">(\#fig:introduction-logistic)Propensity Scores from Logistic Regression with Sample of Matched Pairs</p>
+</div>
+	
 
+## One-to-One Matching
+
+One-to-one matching with replacement (the `M = 1` option). Estimating the treatment effect on the treated (default is ATT).
 
 
 ```r
-## Matching
-# one-to-one matching with replacement (the "M=1" option).
-# Estimating the treatment effect on the treated (default is ATT).
-rr.att <- Match(Y = Y, 
-				Tr = Tr, 
-				X = ps,
+rr_att <- Match(Y = lalonde$re78, 
+				Tr = lalonde$treat, 
+				X = lalonde$lr_ps,
 				M = 1,
 				estimand='ATT')
-summary(rr.att) # The default estimate is ATT here
+summary(rr_att) # The default estimate is ATT here
 ```
 
 ```
@@ -45,23 +58,18 @@ summary(rr.att) # The default estimate is ATT here
 ## Matched number of observations  (unweighted).  346
 ```
 
-```r
-ls(rr.att)
-```
+### Checking Balance
 
-```
-##  [1] "caliper"           "ecaliper"          "est"              
-##  [4] "est.noadj"         "estimand"          "exact"            
-##  [7] "index.control"     "index.dropped"     "index.treated"    
-## [10] "MatchLoopC"        "mdata"             "ndrops"           
-## [13] "ndrops.matches"    "nobs"              "orig.nobs"        
-## [16] "orig.treated.nobs" "orig.wnobs"        "se"               
-## [19] "se.cond"           "se.standard"       "version"          
-## [22] "weights"           "wnobs"
-```
+
+
+
 
 ```r
-rr.ate <- Match(Y=Y, Tr=Tr, X=ps, M=1, estimand='ATE')
+rr.ate <- Match(Y = lalonde$re78, 
+				Tr = lalonde$treat, 
+				X = lalonde$lr_ps,
+				M = 1,
+				estimand = 'ATE')
 summary(rr.ate)
 ```
 
@@ -97,9 +105,9 @@ ls(rr.ate)
 
 
 ```r
-rr2 <- Match(Y = Y,
-			 Tr = Tr,
-			 X = ps,
+rr2 <- Match(Y = lalonde$re78, 		
+			 Tr = lalonde$treat, 
+			 X = lalonde$lr_ps,
 			 M = 1, 
 			 ties = TRUE, 
 			 replace = TRUE,
@@ -148,7 +156,7 @@ ls(rr2)
 
 ```r
 ## Using the Matchit package
-matchit.out <- matchit(lalonde.formu, data=lalonde)
+matchit.out <- matchit(lalonde.formu, data = lalonde)
 summary(matchit.out)
 ```
 
@@ -235,16 +243,22 @@ summary(matchit.out)
 
 ```r
 # Same as above but calculate average treatment effect
-rr.ate <- Match(Y=Y, Tr=Tr, X=ps, M=1, ties=FALSE, replace=FALSE, estimand='ATE')
+rr.ate <- Match(Y = lalonde$re78, 
+				Tr = lalonde$treat, 
+				X = lalonde$lr_ps,
+				M = 1,
+				ties = FALSE, 
+				replace = FALSE, 
+				estimand='ATE')
 summary(rr.ate) # Here the estimate is ATE
 ```
 
 ```
 ## 
-## Estimate...  2130.3 
-## SE.........  496.24 
-## T-stat.....  4.2929 
-## p.val......  1.7638e-05 
+## Estimate...  2125.5 
+## SE.........  493.96 
+## T-stat.....  4.3029 
+## p.val......  1.6859e-05 
 ## 
 ## Original number of observations..............  445 
 ## Original number of treated obs...............  185 
@@ -254,15 +268,18 @@ summary(rr.ate) # Here the estimate is ATE
 
 ```r
 ## Genetic Matching
-rr.gen <- GenMatch(Tr=Tr, X=ps, 
-				   BalanceMatrix=lalonde[,all.vars(lalonde.formu)[-1]],
-				   estimand='ATE', M=1, pop.size=16)
+rr.gen <- GenMatch(Tr = lalonde$treat, 
+				   X = lalonde$lr_ps, 
+				   BalanceMatrix = lalonde[,all.vars(lalonde.formu)[-1]],
+				   estimand = 'ATE', 
+				   M = 1, 
+				   pop.size = 16)
 ```
 
 ```
 ## 
 ## 
-## Wed Apr  5 16:38:56 2023
+## Mon Apr 10 16:17:13 2023
 ## Domains:
 ##  0.000000e+00   <=  X1   <=    1.000000e+03 
 ## 
@@ -289,163 +306,122 @@ rr.gen <- GenMatch(Tr=Tr, X=ps,
 ## 
 ## Maximization Problem.
 ## GENERATION: 0 (initializing the population)
-## Lexical Fit..... 8.444065e-02  1.707692e-01  2.857138e-01  2.857138e-01  3.843318e-01  3.843318e-01  4.092561e-01  7.181139e-01  7.181139e-01  7.681208e-01  8.041696e-01  8.137610e-01  8.137610e-01  9.055825e-01  9.055825e-01  9.657997e-01  9.663530e-01  9.812627e-01  1.000000e+00  1.000000e+00  
+## Lexical Fit..... 9.235231e-02  1.757822e-01  2.857138e-01  2.857138e-01  3.950411e-01  3.950411e-01  4.483849e-01  7.409596e-01  7.643859e-01  7.643859e-01  7.647535e-01  7.691713e-01  7.691713e-01  8.592751e-01  8.592751e-01  9.160976e-01  9.160976e-01  9.681165e-01  9.786492e-01  9.823810e-01  
 ## #unique......... 16, #Total UniqueCount: 16
 ## var 1:
-## best............ 1.907452e+02
-## mean............ 5.339215e+02
-## variance........ 8.319784e+04
+## best............ 3.324648e+01
+## mean............ 4.638550e+02
+## variance........ 8.779735e+04
 ## 
 ## GENERATION: 1
-## Lexical Fit..... 8.575134e-02  1.531161e-01  2.857138e-01  2.857138e-01  3.677009e-01  3.677009e-01  4.416445e-01  7.181139e-01  7.181139e-01  7.681208e-01  8.082869e-01  8.137610e-01  8.137610e-01  9.055825e-01  9.055825e-01  9.627480e-01  9.820684e-01  9.820684e-01  1.000000e+00  1.000000e+00  
-## #unique......... 9, #Total UniqueCount: 25
+## Lexical Fit..... 1.067431e-01  2.553994e-01  2.553994e-01  3.549996e-01  3.913630e-01  3.913630e-01  4.747623e-01  5.084810e-01  6.420853e-01  6.420853e-01  6.665787e-01  7.967582e-01  8.111685e-01  8.111685e-01  8.592751e-01  8.592751e-01  9.160976e-01  9.160976e-01  9.264048e-01  9.941933e-01  
+## #unique......... 10, #Total UniqueCount: 26
 ## var 1:
-## best............ 8.641506e+01
-## mean............ 4.514891e+02
-## variance........ 1.023311e+05
+## best............ 4.206134e+00
+## mean............ 2.117860e+02
+## variance........ 4.296951e+04
 ## 
 ## GENERATION: 2
-## Lexical Fit..... 9.235231e-02  1.757822e-01  2.857138e-01  2.857138e-01  3.950411e-01  3.950411e-01  4.483849e-01  7.409596e-01  7.643859e-01  7.643859e-01  7.647535e-01  7.691713e-01  7.691713e-01  8.592751e-01  8.592751e-01  9.160976e-01  9.160976e-01  9.681165e-01  9.786492e-01  9.823810e-01  
-## #unique......... 9, #Total UniqueCount: 34
+## Lexical Fit..... 1.134648e-01  2.173453e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.939824e-01  5.024479e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.112194e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.794830e-01  9.805886e-01  
+## #unique......... 8, #Total UniqueCount: 34
 ## var 1:
-## best............ 4.542846e+01
-## mean............ 1.514238e+02
-## variance........ 1.704280e+04
+## best............ 2.699388e+00
+## mean............ 7.152003e+01
+## variance........ 2.503090e+04
 ## 
 ## GENERATION: 3
-## Lexical Fit..... 9.235231e-02  1.757822e-01  2.857138e-01  2.857138e-01  3.950411e-01  3.950411e-01  4.483849e-01  7.409596e-01  7.643859e-01  7.643859e-01  7.647535e-01  7.691713e-01  7.691713e-01  8.592751e-01  8.592751e-01  9.160976e-01  9.160976e-01  9.681165e-01  9.786492e-01  9.823810e-01  
-## #unique......... 8, #Total UniqueCount: 42
+## Lexical Fit..... 1.134648e-01  2.188211e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.959769e-01  5.104434e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.126852e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.797994e-01  9.805886e-01  
+## #unique......... 9, #Total UniqueCount: 43
 ## var 1:
-## best............ 4.542846e+01
-## mean............ 1.162030e+02
-## variance........ 4.102611e+04
+## best............ 2.608864e+00
+## mean............ 2.299597e+01
+## variance........ 2.361439e+03
 ## 
 ## GENERATION: 4
-## Lexical Fit..... 9.235231e-02  1.757822e-01  2.857138e-01  2.857138e-01  3.950411e-01  3.950411e-01  4.483849e-01  7.409596e-01  7.643859e-01  7.643859e-01  7.647535e-01  7.691713e-01  7.691713e-01  8.592751e-01  8.592751e-01  9.160976e-01  9.160976e-01  9.681165e-01  9.786492e-01  9.823810e-01  
-## #unique......... 8, #Total UniqueCount: 50
+## Lexical Fit..... 1.134648e-01  2.188211e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.959769e-01  5.104434e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.126852e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.797994e-01  9.805886e-01  
+## #unique......... 8, #Total UniqueCount: 51
 ## var 1:
-## best............ 4.542846e+01
-## mean............ 1.653093e+02
-## variance........ 5.055175e+04
+## best............ 2.608864e+00
+## mean............ 9.058378e+01
+## variance........ 4.078986e+04
 ## 
 ## GENERATION: 5
-## Lexical Fit..... 1.018834e-01  2.553994e-01  2.553994e-01  2.783402e-01  4.170791e-01  4.170791e-01  4.644513e-01  4.865353e-01  6.420853e-01  6.420853e-01  6.665787e-01  7.887453e-01  8.111685e-01  8.111685e-01  8.592751e-01  8.592751e-01  9.160976e-01  9.160976e-01  9.183486e-01  9.743110e-01  
-## #unique......... 9, #Total UniqueCount: 59
+## Lexical Fit..... 1.134648e-01  2.188211e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.959769e-01  5.104434e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.126852e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.797994e-01  9.805886e-01  
+## #unique......... 6, #Total UniqueCount: 57
 ## var 1:
-## best............ 6.185244e+00
-## mean............ 8.255247e+01
-## variance........ 1.603073e+04
+## best............ 2.608864e+00
+## mean............ 1.344191e+02
+## variance........ 7.663447e+04
 ## 
 ## GENERATION: 6
-## Lexical Fit..... 1.067431e-01  2.553994e-01  2.553994e-01  3.549996e-01  3.913630e-01  3.913630e-01  4.747623e-01  5.084810e-01  6.420853e-01  6.420853e-01  6.665787e-01  7.967582e-01  8.111685e-01  8.111685e-01  8.592751e-01  8.592751e-01  9.160976e-01  9.160976e-01  9.264048e-01  9.941933e-01  
-## #unique......... 9, #Total UniqueCount: 68
+## Lexical Fit..... 1.134648e-01  2.188211e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.959769e-01  5.104434e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.126852e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.797994e-01  9.805886e-01  
+## #unique......... 6, #Total UniqueCount: 63
 ## var 1:
-## best............ 4.049911e+00
-## mean............ 1.611220e+02
-## variance........ 8.678102e+04
+## best............ 2.608864e+00
+## mean............ 4.415709e+01
+## variance........ 1.768958e+04
 ## 
 ## GENERATION: 7
-## Lexical Fit..... 1.134648e-01  2.173453e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.939824e-01  5.024479e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.112194e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.794830e-01  9.805886e-01  
-## #unique......... 10, #Total UniqueCount: 78
+## Lexical Fit..... 1.134648e-01  2.188211e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.959769e-01  5.104434e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.126852e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.797994e-01  9.805886e-01  
+## #unique......... 6, #Total UniqueCount: 69
 ## var 1:
-## best............ 2.813949e+00
-## mean............ 1.343474e+02
-## variance........ 5.834938e+04
+## best............ 2.608864e+00
+## mean............ 4.706867e+01
+## variance........ 7.517895e+03
 ## 
 ## GENERATION: 8
-## Lexical Fit..... 1.134648e-01  2.173453e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.939824e-01  5.024479e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.112194e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.794830e-01  9.805886e-01  
-## #unique......... 9, #Total UniqueCount: 87
+## Lexical Fit..... 1.134648e-01  2.188211e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.959769e-01  5.104434e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.126852e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.797994e-01  9.805886e-01  
+## #unique......... 7, #Total UniqueCount: 76
 ## var 1:
-## best............ 2.813949e+00
-## mean............ 6.813214e+01
-## variance........ 3.306337e+04
-## 
-## GENERATION: 9
-## Lexical Fit..... 1.137080e-01  2.166077e-01  2.857138e-01  2.857138e-01  3.498724e-01  3.498724e-01  4.929831e-01  5.053473e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.104826e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.792910e-01  9.793230e-01  
-## #unique......... 8, #Total UniqueCount: 95
-## var 1:
-## best............ 2.952273e+00
-## mean............ 5.478136e+01
-## variance........ 9.538908e+03
-## 
-## GENERATION: 10
-## Lexical Fit..... 1.137080e-01  2.166077e-01  2.857138e-01  2.857138e-01  3.498724e-01  3.498724e-01  4.929831e-01  5.053473e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.104826e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.792910e-01  9.793230e-01  
-## #unique......... 8, #Total UniqueCount: 103
-## var 1:
-## best............ 2.952273e+00
-## mean............ 8.777160e+01
-## variance........ 2.274155e+04
-## 
-## GENERATION: 11
-## Lexical Fit..... 1.137080e-01  2.166077e-01  2.857138e-01  2.857138e-01  3.498724e-01  3.498724e-01  4.929831e-01  5.053473e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.104826e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.792910e-01  9.793230e-01  
-## #unique......... 9, #Total UniqueCount: 112
-## var 1:
-## best............ 2.952273e+00
-## mean............ 3.691080e+01
-## variance........ 5.119532e+03
-## 
-## GENERATION: 12
-## Lexical Fit..... 1.137080e-01  2.166077e-01  2.857138e-01  2.857138e-01  3.498724e-01  3.498724e-01  4.929831e-01  5.053473e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.104826e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.792910e-01  9.793230e-01  
-## #unique......... 6, #Total UniqueCount: 118
-## var 1:
-## best............ 2.952273e+00
-## mean............ 2.748877e+01
-## variance........ 2.783548e+03
-## 
-## GENERATION: 13
-## Lexical Fit..... 1.137080e-01  2.166077e-01  2.857138e-01  2.857138e-01  3.498724e-01  3.498724e-01  4.929831e-01  5.053473e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.104826e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.792910e-01  9.793230e-01  
-## #unique......... 7, #Total UniqueCount: 125
-## var 1:
-## best............ 2.952273e+00
-## mean............ 1.177114e+02
-## variance........ 5.677878e+04
-## 
-## GENERATION: 14
-## Lexical Fit..... 1.137080e-01  2.166077e-01  2.857138e-01  2.857138e-01  3.498724e-01  3.498724e-01  4.929831e-01  5.053473e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.104826e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.792910e-01  9.793230e-01  
-## #unique......... 9, #Total UniqueCount: 134
-## var 1:
-## best............ 2.952273e+00
-## mean............ 7.010256e+01
-## variance........ 2.756398e+04
+## best............ 2.608864e+00
+## mean............ 7.701794e+01
+## variance........ 4.010500e+04
 ## 
 ## 'wait.generations' limit reached.
 ## No significant improvement in 4 generations.
 ## 
 ## Solution Lexical Fitness Value:
-## 1.137080e-01  2.166077e-01  2.857138e-01  2.857138e-01  3.498724e-01  3.498724e-01  4.929831e-01  5.053473e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.104826e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.792910e-01  9.793230e-01  
+## 1.134648e-01  2.188211e-01  2.857138e-01  2.857138e-01  3.432276e-01  3.432276e-01  4.959769e-01  5.104434e-01  6.832321e-01  6.832321e-01  7.316137e-01  7.643859e-01  7.643859e-01  8.126852e-01  9.055825e-01  9.055825e-01  9.160976e-01  9.160976e-01  9.797994e-01  9.805886e-01  
 ## 
 ## Parameters at the Solution:
 ## 
-##  X[ 1] :	2.952273e+00
+##  X[ 1] :	2.608864e+00
 ## 
-## Solution Found Generation 9
-## Number of Generations Run 14
+## Solution Found Generation 3
+## Number of Generations Run 8
 ## 
-## Wed Apr  5 16:38:57 2023
+## Mon Apr 10 16:17:14 2023
 ## Total run time : 0 hours 0 minutes and 1 seconds
 ```
 
 ```r
-rr.gen.mout <- Match(Y=Y, Tr=Tr, X=ps, estimand='ATE', Weight.matrix=rr.gen)
+rr.gen.mout <- Match(Y = lalonde$re78, 
+					 Tr = lalonde$treat, 
+					 X = lalonde$lr_ps,
+					 estimand = 'ATE',
+					 Weight.matrix = rr.gen)
 summary(rr.gen.mout)
 ```
 
 ```
 ## 
-## Estimate...  2159 
-## AI SE......  814.91 
-## T-stat.....  2.6494 
-## p.val......  0.0080631 
+## Estimate...  2153.5 
+## AI SE......  815.34 
+## T-stat.....  2.6412 
+## p.val......  0.0082608 
 ## 
 ## Original number of observations..............  445 
 ## Original number of treated obs...............  185 
 ## Matched number of observations...............  445 
-## Matched number of observations  (unweighted).  650
+## Matched number of observations  (unweighted).  653
 ```
 
 ```r
 ## Partial exact matching
-rr2 <- Matchby(Y=Y, Tr=Tr, X=ps, by=factor(lalonde$nodegr))
+rr2 <- Matchby(Y = lalonde$re78, 
+			   Tr = lalonde$treat, 
+			   X = lalonde$lr_ps, 
+			   by = factor(lalonde$nodegr))
 ```
 
 ```
@@ -459,10 +435,10 @@ summary(rr2)
 
 ```
 ## 
-## Estimate...  2333.2 
-## SE.........  682.81 
-## T-stat.....  3.417 
-## p.val......  0.00063307 
+## Estimate...  2332.5 
+## SE.........  688.25 
+## T-stat.....  3.3891 
+## p.val......  0.0007012 
 ## 
 ## Original number of observations..............  445 
 ## Original number of treated obs...............  185 
@@ -472,7 +448,10 @@ summary(rr2)
 
 ```r
 ## Partial exact matching on two covariates
-rr3 <- Matchby(Y=Y, Tr=Tr, X=ps, by=lalonde[,c('nodegr','married')])
+rr3 <- Matchby(Y = lalonde$re78, 
+			   Tr = lalonde$treat, 
+			   X = lalonde$lr_ps, 
+			   by = lalonde[,c('nodegr','married')])
 ```
 
 ```
@@ -488,10 +467,10 @@ summary(rr3)
 
 ```
 ## 
-## Estimate...  1961.7 
-## SE.........  701.93 
-## T-stat.....  2.7947 
-## p.val......  0.0051952 
+## Estimate...  2017.6 
+## SE.........  713.91 
+## T-stat.....  2.8262 
+## p.val......  0.0047104 
 ## 
 ## Original number of observations..............  445 
 ## Original number of treated obs...............  185 
