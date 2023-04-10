@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 # Matching {#chapter-matching}
 
 ::: {.rmdtip}
@@ -8,45 +13,73 @@
 :::
 
 
-```{r}
-lalonde.glm <- glm(lalonde.formu, family=binomial, data=lalonde)
-ps <- fitted(lalonde.glm)  # Propensity scores
-Y  <- lalonde$re78  # Dependent variable, real earnings in 1978
-Tr <- lalonde$treat # Treatment indicator
+As the name suggests, propensity score matching is concerned with matching treatment to control observations...
 
+
+```{r}
+lr_out <- glm(lalonde.formu, 
+			  data = lalonde,
+			  family = binomial(link = logit))
+lalonde$lr_ps <- fitted(lr_out)  # Propensity scores
 ```
 
 
-```{r introduction-logistic, eval = FALSE, echo=FALSE, fig.height=4, fig.cap='Propensity Scores from Logistic Regression with Sample of Matched Pairs'}
-lalonde.lr <- glm(lalonde.formu, family=binomial, data=lalonde)
-lalonde$ps <- fitted(lalonde.lr)
-lalonde.match <- Match(Y=lalonde$re78, Tr=lalonde$treat, X=lalonde$ps, M=1);
-lalonde.match.df <- data.frame(treated.ps=lalonde[lalonde.match$index.treated,]$ps,
-						       control.ps=lalonde[lalonde.match$index.control,]$ps,
-							   treated.y=1, control.y=0)
-lalonde.match.df <- lalonde.match.df[order(lalonde.match.df$control.ps),]
-rows <- (1:nrow(lalonde.match.df) - 1) %% floor(nrow(lalonde.match.df) / 5) == 0
-ggplot(lalonde, aes(x=ps, y=treat)) + geom_point(alpha=0.5) +
-	stat_smooth(method="glm", method.args=list(family="binomial"), se=FALSE) +
-	xlim(c(0,1)) + xlab('Propensity Score') + ylab('Treatment') +
-	geom_segment(data=lalonde.match.df[rows,], 
-				 aes(x=treated.ps, xend=control.ps, y=treated.y, yend=control.y),
-				 color='purple')
+```{r introduction-logistic, eval=TRUE, echo=FALSE, fig.height=4, fig.cap='Propensity Scores from Logistic Regression with Sample of Matched Pairs'}
+lalonde_match <- Match(Y = lalonde$re78, 
+					   Tr = lalonde$treat, 
+					   X = lalonde$lr_ps, 
+					   M = 1,
+					   caliper = 0.1,
+					   replace = TRUE,
+					   estimand = 'ATE')
+lalonde_match_df <- data.frame(treated.ps = lalonde[lalonde_match$index.treated,]$lr_ps,
+						       control.ps = lalonde[lalonde_match$index.control,]$lr_ps,
+							   treated.y = 1,
+							   control.y = 0)
+lalonde_match_df <- lalonde_match_df[order(lalonde_match_df$control.ps),]
+rows <- (1:nrow(lalonde_match_df) - 1) %% floor(nrow(lalonde_match_df) / 5) == 0
+ggplot(lalonde, aes(x = lr_ps, y = treat)) + 
+	geom_point(alpha = 0.5) +
+	stat_smooth(method = "glm", formula = y ~ x, method.args = list(family="binomial"), se = FALSE) +
+	xlim(c(0,1)) + 
+	xlab('Propensity Score') + ylab('Treatment') +
+	geom_segment(data = lalonde_match_df, 
+				 aes(x = treated.ps, xend = control.ps, y = treated.y, yend = control.y),
+				 color = 'purple', alpha = 0.1)
 ```
+	
+
+## One-to-One Matching
+
+One-to-one matching with replacement (the `M = 1` option). Estimating the treatment effect on the treated (default is ATT).
 
 ```{r}
-## Matching
-# one-to-one matching with replacement (the "M=1" option).
-# Estimating the treatment effect on the treated (default is ATT).
-rr.att <- Match(Y = Y, 
-				Tr = Tr, 
-				X = ps,
+rr_att <- Match(Y = lalonde$re78, 
+				Tr = lalonde$treat, 
+				X = lalonde$lr_ps,
 				M = 1,
 				estimand='ATT')
-summary(rr.att) # The default estimate is ATT here
-ls(rr.att)
+summary(rr_att) # The default estimate is ATT here
+```
 
-rr.ate <- Match(Y=Y, Tr=Tr, X=ps, M=1, estimand='ATE')
+### Checking Balance
+
+```{r, echo=FALSE}
+rr_att_mb  <- MatchBalance(formul = lalonde.formu,
+						   data = lalonde, 
+						   match.out = rr_att,
+						   nboots = 500, 
+						   print.level = 0)
+
+```
+
+
+```{r}
+rr.ate <- Match(Y = lalonde$re78, 
+				Tr = lalonde$treat, 
+				X = lalonde$lr_ps,
+				M = 1,
+				estimand = 'ATE')
 summary(rr.ate)
 ls(rr.ate)
 ```
@@ -54,9 +87,9 @@ ls(rr.ate)
 
 
 ```{r}
-rr2 <- Match(Y = Y,
-			 Tr = Tr,
-			 X = ps,
+rr2 <- Match(Y = lalonde$re78, 		
+			 Tr = lalonde$treat, 
+			 X = lalonde$lr_ps,
 			 M = 1, 
 			 ties = TRUE, 
 			 replace = TRUE,
@@ -70,26 +103,45 @@ ls(rr2)
 
 ```{r}
 ## Using the Matchit package
-matchit.out <- matchit(lalonde.formu, data=lalonde)
+matchit.out <- matchit(lalonde.formu, data = lalonde)
 summary(matchit.out)
 
 # Same as above but calculate average treatment effect
-rr.ate <- Match(Y=Y, Tr=Tr, X=ps, M=1, ties=FALSE, replace=FALSE, estimand='ATE')
+rr.ate <- Match(Y = lalonde$re78, 
+				Tr = lalonde$treat, 
+				X = lalonde$lr_ps,
+				M = 1,
+				ties = FALSE, 
+				replace = FALSE, 
+				estimand='ATE')
 summary(rr.ate) # Here the estimate is ATE
 
 ## Genetic Matching
-rr.gen <- GenMatch(Tr=Tr, X=ps, 
-				   BalanceMatrix=lalonde[,all.vars(lalonde.formu)[-1]],
-				   estimand='ATE', M=1, pop.size=16)
-rr.gen.mout <- Match(Y=Y, Tr=Tr, X=ps, estimand='ATE', Weight.matrix=rr.gen)
+rr.gen <- GenMatch(Tr = lalonde$treat, 
+				   X = lalonde$lr_ps, 
+				   BalanceMatrix = lalonde[,all.vars(lalonde.formu)[-1]],
+				   estimand = 'ATE', 
+				   M = 1, 
+				   pop.size = 16)
+rr.gen.mout <- Match(Y = lalonde$re78, 
+					 Tr = lalonde$treat, 
+					 X = lalonde$lr_ps,
+					 estimand = 'ATE',
+					 Weight.matrix = rr.gen)
 summary(rr.gen.mout)
 
 ## Partial exact matching
-rr2 <- Matchby(Y=Y, Tr=Tr, X=ps, by=factor(lalonde$nodegr))
+rr2 <- Matchby(Y = lalonde$re78, 
+			   Tr = lalonde$treat, 
+			   X = lalonde$lr_ps, 
+			   by = factor(lalonde$nodegr))
 summary(rr2)
 
 ## Partial exact matching on two covariates
-rr3 <- Matchby(Y=Y, Tr=Tr, X=ps, by=lalonde[,c('nodegr','married')])
+rr3 <- Matchby(Y = lalonde$re78, 
+			   Tr = lalonde$treat, 
+			   X = lalonde$lr_ps, 
+			   by = lalonde[,c('nodegr','married')])
 summary(rr3)
 ```
 
