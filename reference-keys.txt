@@ -13,8 +13,13 @@ eq:eq7
 fig:sim-scatter
 fig:sim-ggpairs
 fig:sim-dist
+fig:intro-multiple-balance-plots
 fig:intro-balance-plots
 fig:sim-loess
+fig:intro-stratification
+fig:unnamed-chunk-11
+fig:intro-matching
+fig:intro-weighting
 eq:eqate
 fig:ate-hist
 eq:eqatt
@@ -28,6 +33,7 @@ fig:unnamed-chunk-8
 fig:unnamed-chunk-12
 fig:unnamed-chunk-13
 fig:introduction-logistic
+fig:unnamed-chunk-3
 eq:eqcalcte
 fig:weight-balance
 eq:eqatew
@@ -49,6 +55,10 @@ phases-of-propensity-score-analysis
 phase-i-estimate-propensity-scores
 evaluate-balance
 introduction-effects
+stratificaiton
+matching
+weighting
+treatment-effects
 average-treatment-effect-ate
 average-treatment-effect-among-the-treated-att
 average-treatment-effect-among-the-control-atc

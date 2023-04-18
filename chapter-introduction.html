@@ -240,7 +240,7 @@ ATE \; = \; E(Y_1 - Y_0 \; | \; X) \; = \; E(Y_1 \; | \; X) - E(Y_0 \; | \; X)
 Figure 1.6: Scatterplot of simulated datatset
 </p>
 </div>
-<p>Figure <a href="chapter-introduction.html#fig:sim-ggpairs">1.7</a> is a pairs plot <span class="citation">(Schloerke et al. 2021)</span> showing the relationship between the covariates (i.e. <code>x1</code> and <code>x2</code>) and the outcome grouped by treatment. There is a statistically significant correlation between each of the covariates and the outcome suggesting there is selection bias that would bias any causal estimate. Indeed a simple null hypothesis test resulted in a difference of 4.55 (<span class="math inline">\(t_{959} = -32.75\)</span>, <em>p</em> &lt; 0.01), however we setup the simulation to have a mean difference of 2!</p>
+<p>Figure <a href="chapter-introduction.html#fig:sim-ggpairs">1.7</a> is a pairs plot <span class="citation">(Schloerke et al. 2021)</span> showing the relationship between the covariates (i.e. <code>x1</code> and <code>x2</code>) and the outcome grouped by treatment. There is a statistically significant correlation between each of the covariates and the outcome suggesting there is selection bias that would bias any causal estimate. Indeed a simple null hypothesis test resulted in a difference of 1.94 (<span class="math inline">\(t_{805} = -29\)</span>, <em>p</em> &lt; 0.01), however we setup the simulation to have a mean difference of 2!</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:sim-ggpairs"></span>
 <img src="01-Introduction_files/figure-html/sim-ggpairs-1.png" alt="Pairs plot showing the relationships between covariates, treatment, and outcome" width="100%"><p class="caption">
@@ -253,10 +253,10 @@ Figure 1.7: Pairs plot showing the relationships between covariates, treatment, 
 ##  Welch Two Sample t-test
 ## 
 ## data:  outcome by treatment
-## t = -32.748, df = 959.11, p-value &lt; 2.2e-16
+## t = -28.998, df = 805.32, p-value &lt; 2.2e-16
 ## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
 ## 95 percent confidence interval:
-##  -4.821017 -4.275883
+##  -2.072823 -1.809991
 ## sample estimates:</code></pre>
 <p>Our goal is to adjust for this selection bias using propensity scores. In this example we used logistic regression to estimate the propensity scores. Figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a> is a histogram showing the distribution of propensity scores for the treatment group in greee above and control group in orange below. Note how the distributions are skewed; treatment group is negatively skewed and the control group is positively skewed. This should hopefully make intuitive sense. As the probability of being in the treatment increases, we should see the number of treatment observations increase while the number of control observations decrease.</p>
 <div class="figure" style="text-align: center">
@@ -269,14 +269,20 @@ Figure 1.8: Distribution of propensity scores
 <h4>
 <span class="header-section-number">1.3.1.1</span> Evaluate Balance<a class="anchor" aria-label="anchor" href="#evaluate-balance"><i class="fas fa-link"></i></a>
 </h4>
-<p>Once propensity scores are estimated it is important to verify that balance between the observed covariates is achieved. There are a number of ways of doing this. For matching methods where treatment and control units are paired, dependent sample tests can be usedd (e.g. <em>t</em>-tests for continuous variables and <span class="math inline">\(\chi^2\)</span> tests for categorical variables). However, significance testing is generally is problematic. Given the number of covariates, and hence null hypothesis tests conducted, the likelihood of committing type I and type II errors is very high. Moreover, many observational studies that we wish to use PSA with have very large sample sizes which, all else being equal, will shrink the standard error estimate often resulting in small <em>p</em>-values. Instead utilizing standardized effect sizes and graphical representations will provide better evidence as to whether balance has been achieved. The <code>PSAgraphics</code> package <span class="citation">(Helmreich and Pruzek 2023)</span> provides a number of functions to assist. Figure <a href="chapter-introduction.html#fig:intro-balance-plots">1.9</a> provides two assessment plots. The left plot is a multiple covariate balance assessment plot. The <em>x</em>-axis is the standardized effect size and the <em>y</em>-axis is each covariate. The red line is the effect before propensity score adjustment and the blue is the effect after propensity score adjustment. Unfortunately there is not a conventional adjusted effect size threshold of achieving sufficient balance in the literature. <span class="citation">Cohen (1988)</span> is frequently cited for having indicated that an effect size between 0.2 and 0.3 is small. In general, I recommend trying to achieve adjdusted effect sizes less than 0.1.</p>
+Once propensity scores are estimated it is important to verify that balance between the observed covariates is achieved. There are a number of ways of doing this. For matching methods where treatment and control units are paired, dependent sample tests can be usedd (e.g. <em>t</em>-tests for continuous variables and <span class="math inline">\(\chi^2\)</span> tests for categorical variables). However, significance testing is generally is problematic. Given the number of covariates, and hence null hypothesis tests conducted, the likelihood of committing type I and type II errors is very high. Moreover, many observational studies that we wish to use PSA with have very large sample sizes which, all else being equal, will shrink the standard error estimate often resulting in small <em>p</em>-values. Instead utilizing standardized effect sizes and graphical representations will provide better evidence as to whether balance has been achieved. The <code>PSAgraphics</code> package <span class="citation">(Helmreich and Pruzek 2023)</span> provides a number of functions to assist. Figure <a href="chapter-introduction.html#fig:intro-multiple-balance-plots">1.9</a> is a balance plot the summarizes all covariates together. The <em>x</em>-axis is the standardized effect size and the <em>y</em>-axis is each covariate. The red line is the effect before propensity score adjustment and the blue is the effect after propensity score adjustment. Unfortunately there is not a conventional adjusted effect size threshold whihc indicates that sufficient balance has been achieved in the literature. <span class="citation">Cohen (1988)</span> is frequently cited for having indicated that an effect size between 0.2 and 0.3 is small. In general, I recommend trying to achieve adjdusted effect sizes less than 0.1.
 <div class="figure" style="text-align: center">
-<span style="display:block;" id="fig:intro-balance-plots"></span>
-<img src="01-Introduction_files/figure-html/intro-balance-plots-1.png" alt="Multiple (left) and continuous (right) covariate balance assessment plots" width="50%"><img src="01-Introduction_files/figure-html/intro-balance-plots-2.png" alt="Multiple (left) and continuous (right) covariate balance assessment plots" width="50%"><p class="caption">
-Figure 1.9: Multiple (left) and continuous (right) covariate balance assessment plots
+<span style="display:block;" id="fig:intro-multiple-balance-plots"></span>
+<img src="01-Introduction_files/figure-html/intro-multiple-balance-plots-1.png" alt="Multiple covariate balance assessment plot" width="100%"><p class="caption">
+Figure 1.9: Multiple covariate balance assessment plot
 </p>
 </div>
-<p>The plot on the right in figure <a href="chapter-introduction.html#fig:intro-balance-plots">1.9</a> is balance assessment plot for a continuous variable. The exact procedures for stratification will be discussed in chapter <a href="chapter-stratification.html#chapter-stratification">2</a> but in short, we divided the propensity scores into five strata using quintiles so that each stratum has the same number of observations. The yellow bars are the control group and the orange bars are the treatment group. We are looking for the center and spread to be roughly equivalent within each stratum. From this example we can see that stratum 5 has higher values than stratum 1. A counterpart to this plot for categorical data using box plots will be provided in chapter <a href="chapter-stratification.html#chapter-stratification">2</a>.</p>
+<p>The plot on the left in figure <a href="chapter-introduction.html#fig:intro-balance-plots">1.10</a> is balance assessment plot for a continuous variable. The exact procedures for stratification will be discussed in chapter <a href="chapter-stratification.html#chapter-stratification">2</a> but in short, we divided the propensity scores into five strata using quintiles so that each stratum has the same number of observations. The yellow bars are the control group and the orange bars are the treatment group. We are looking for the center and spread to be roughly equivalent within each stratum. From this example we can see that stratum 5 has higher values than stratum 1. The plot on the right is a plot for categorical data using bar plots.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:intro-balance-plots"></span>
+<img src="01-Introduction_files/figure-html/intro-balance-plots-1.png" alt="Continuous (left) and categorical (right) covariate balance assessment plots" width="50%"><img src="01-Introduction_files/figure-html/intro-balance-plots-2.png" alt="Continuous (left) and categorical (right) covariate balance assessment plots" width="50%"><p class="caption">
+Figure 1.10: Continuous (left) and categorical (right) covariate balance assessment plots
+</p>
+</div>
 <p>We will see there are many choices for estimating propensity scores in the remainder of this book. In practice you will find that phase I of PSA will occupy most of your time. The robustness of your causal estimates will rely on achieving good balance in your observed covariates.</p>
 <div class="rmdtip">
 <p><strong>Which propensity score method should you use?</strong><br><em>Whichever one gives the best balance!</em></p>
@@ -288,17 +294,67 @@ Figure 1.9: Multiple (left) and continuous (right) covariate balance assessment 
 <span class="header-section-number">1.3.2</span> Phase II: Estimate Causal Effects<a class="anchor" aria-label="anchor" href="#introduction-effects"><i class="fas fa-link"></i></a>
 </h3>
 <p>Now that sufficient balance has been achieved in the observed covariates, it is time to estimate the causal effect. For randomized control trials we typically conduct a null hypothesis test of the differences between the means of the treatment and control groups (as defined in equation <a href="chapter-introduction.html#eq:eq7">(1.7)</a> above). For PSA this is often done, but it is important to recognize that not all observations are counted equal in the causal estimation. And moreover, average treatment effect is not the only causal estimate measure we can calculate. This section defines four different causal estimates. They are presented in the context of propensity score weighting (see <a href="chapter-weighting.html#chapter-weighting">4</a>) but conceptually apply to stratification and matching.</p>
-<p>To begin, it is often helpful to plot the propensity scores against the outcome. Figure <a href="chapter-introduction.html#fig:sim-loess">1.10</a> is a scatter plot with propensity scores (<em>x</em>-axis) and outcome (<em>y</em>-axis), grouped/colored by treatment, along with a Loess regression line <span class="citation">(Cleveland 1979)</span>. There are a number of features to observe here. First, we see that the propensity score increases the outcome increases. This is a direct representation of selection bias. Second, the Loess regression lines with approximate 95% confidence intervals (in grey) do not overlap across the entire range of propensity scores. Additionally the distance between the two Loess regression lines is rougly equal. This is an indication that the treatment effect is homogeneous (i.e. the same for all units). We will see in later chapters that this is often not the case. This will become an important feature of PSA in detecting heterogeneous, or uneven, treatments based upon different “profiles.”</p>
+<p>To begin, it is often helpful to plot the propensity scores against the outcome. Figure <a href="chapter-introduction.html#fig:sim-loess">1.11</a> is a scatter plot with propensity scores (<em>x</em>-axis) and outcome (<em>y</em>-axis), grouped/colored by treatment, along with a Loess regression line <span class="citation">(Cleveland 1979)</span>. There are a number of features to observe here. First, we see that the propensity score increases the outcome increases. This is a direct representation of selection bias. Second, the Loess regression lines with approximate 95% confidence intervals (in grey) do not overlap across the entire range of propensity scores. Additionally the distance between the two Loess regression lines is rougly equal. This is an indication that the treatment effect is homogeneous (i.e. the same for all units). We will see in later chapters that this is often not the case. This will become an important feature of PSA in detecting heterogeneous, or uneven, treatments based upon different “profiles.”</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:sim-loess"></span>
 <img src="01-Introduction_files/figure-html/sim-loess-1.png" alt="Scatter plot of propensity scores against outcome with Loess regression lines" width="100%"><p class="caption">
-Figure 1.10: Scatter plot of propensity scores against outcome with Loess regression lines
+Figure 1.11: Scatter plot of propensity scores against outcome with Loess regression lines
 </p>
 </div>
-<div id="average-treatment-effect-ate" class="section level4" number="1.3.2.1">
+<p>In the following sections we will provide a high level overview of the three major approaches for conducting PSA: stratification, matching, and weighting.</p>
+<div id="stratificaiton" class="section level4" number="1.3.2.1">
 <h4>
-<span class="header-section-number">1.3.2.1</span> Average Treatment Effect (ATE)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-ate"><i class="fas fa-link"></i></a>
+<span class="header-section-number">1.3.2.1</span> Stratificaiton<a class="anchor" aria-label="anchor" href="#stratificaiton"><i class="fas fa-link"></i></a>
 </h4>
+<p>Treatment and comparison units are divided into strata (or subclasses) so that treated and comparison units are similar within each strata. Cochran (1968) observed that creating five subclassifications (stratum) removes at least 90% of the bias in the estimated treatment effect.</p>
+<p>Independent sample tests (e.g. <em>t</em>-tests) are conducted within each stratum and pooled to provide an overall estimate.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:intro-stratification"></span>
+<img src="01-Introduction_files/figure-html/intro-stratification-1.png" alt="Density distribution of propensity scores by treatment" width="100%"><p class="caption">
+Figure 1.12: Density distribution of propensity scores by treatment
+</p>
+</div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:unnamed-chunk-11"></span>
+<img src="01-Introduction_files/figure-html/unnamed-chunk-11-1.png" alt="Scatter plot of propensity scores versus outcome" width="100%"><p class="caption">
+Figure 1.13: Scatter plot of propensity scores versus outcome
+</p>
+</div>
+</div>
+<div id="matching" class="section level4" number="1.3.2.2">
+<h4>
+<span class="header-section-number">1.3.2.2</span> Matching<a class="anchor" aria-label="anchor" href="#matching"><i class="fas fa-link"></i></a>
+</h4>
+<p>Each treatment unit is paired with a comparison unit based upon the pre-treatment covariates.</p>
+<p>Dependent sample tests (e.g. <em>t</em>-tests) are conducted using match pairs to provide a treatment.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:intro-matching"></span>
+<img src="01-Introduction_files/figure-html/intro-matching-1.png" alt="Scatterplot of propensity score versus outcome with matched pairs connected" width="100%"><p class="caption">
+Figure 1.14: Scatterplot of propensity score versus outcome with matched pairs connected
+</p>
+</div>
+</div>
+<div id="weighting" class="section level4" number="1.3.2.3">
+<h4>
+<span class="header-section-number">1.3.2.3</span> Weighting<a class="anchor" aria-label="anchor" href="#weighting"><i class="fas fa-link"></i></a>
+</h4>
+<p>Each observation is weighted by the inverse of the probability of being in that group.</p>
+<p>Propensity score weights can be used as regression weights, the specific weights depend on the desired estimand and will be provided in later slides.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:intro-weighting"></span>
+<img src="01-Introduction_files/figure-html/intro-weighting-1.png" alt="Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights" width="100%"><p class="caption">
+Figure 1.15: Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights
+</p>
+</div>
+</div>
+<div id="treatment-effects" class="section level4" number="1.3.2.4">
+<h4>
+<span class="header-section-number">1.3.2.4</span> Treatment Effects<a class="anchor" aria-label="anchor" href="#treatment-effects"><i class="fas fa-link"></i></a>
+</h4>
+<div id="average-treatment-effect-ate" class="section level5" number="1.3.2.4.1">
+<h5>
+<span class="header-section-number">1.3.2.4.1</span> Average Treatment Effect (ATE)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-ate"><i class="fas fa-link"></i></a>
+</h5>
 <p>The average treatment effect (ATE) is the most understood estimate given that it has a direct analog to RCTs. We could estimate ATE from an RCT using this approach by simply assuming everyone has a propensity score of 0.5 since they all have a 50% of being in the treatment. That is, we assume that every treatment unit could be interchangeable with a control unit. For PSA though, each unit has a different propensity score. The goal is to compare units with similar propensity scores. And as we saw above in figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a> the distributions for treatment and control are not the same. Figure @ref{fig:ate-hist} depicts how the ATE works in practice, in particular how different units are weighted more or less towards the ATE estimate as we move across the propensity score range. The darker color represents the propensity score distribution as estimated above, but the light bars represent the distribution used in the ATE calculation. For treatment units with lower propensity scores (for which there are fewer of) a weighted more to ATE calculation. As we move right across the propensity score range control units with large propensity scores will be wieghed more in that range.</p>
 <p><span class="math display" id="eq:eqate">\[\begin{equation}
 \begin{aligned}
@@ -309,15 +365,15 @@ ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X)
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:ate-hist"></span>
 <img src="01-Introduction_files/figure-html/ate-hist-1.png" alt="Histogram of average treatement effect" width="100%"><p class="caption">
-Figure 1.11: Histogram of average treatement effect
+Figure 1.16: Histogram of average treatement effect
 </p>
 </div>
 </div>
-<div id="average-treatment-effect-among-the-treated-att" class="section level4" number="1.3.2.2">
-<h4>
-<span class="header-section-number">1.3.2.2</span> Average Treatment Effect Among the Treated (ATT)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-treated-att"><i class="fas fa-link"></i></a>
-</h4>
-<p>The average treatment effect among the treated (ATT) uses the treated units as the primary focus. From figure <a href="chapter-introduction.html#fig:att-hist">1.12</a> we see that the entire treatment group ise used and there is no weighting up or down. However, for the control group we weight down (the grey bars) their values on the lower end of the propensity score range to match the distribution of the treatment group. Conversely, control group observations are weighted up on the right side of the propensity score range, again, to closely match the distribution of the treatment group. In the context of matching where we wish to pair treatment and control units, the goal is to use all treatment observations, therefore it is possible to not use some control observations with smaller propensity scores whereas some control observations with larger propensity scores may be reused in order to find a match for every treatment observation.</p>
+<div id="average-treatment-effect-among-the-treated-att" class="section level5" number="1.3.2.4.2">
+<h5>
+<span class="header-section-number">1.3.2.4.2</span> Average Treatment Effect Among the Treated (ATT)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-treated-att"><i class="fas fa-link"></i></a>
+</h5>
+<p>The average treatment effect among the treated (ATT) uses the treated units as the primary focus. From figure <a href="chapter-introduction.html#fig:att-hist">1.17</a> we see that the entire treatment group ise used and there is no weighting up or down. However, for the control group we weight down (the grey bars) their values on the lower end of the propensity score range to match the distribution of the treatment group. Conversely, control group observations are weighted up on the right side of the propensity score range, again, to closely match the distribution of the treatment group. In the context of matching where we wish to pair treatment and control units, the goal is to use all treatment observations, therefore it is possible to not use some control observations with smaller propensity scores whereas some control observations with larger propensity scores may be reused in order to find a match for every treatment observation.</p>
 <p>Mathematically, ATT is defined in equation <a href="chapter-introduction.html#eq:eqatt">(1.9)</a>. The important difference between this at ATE is that we are calculating the expected value given <span class="math inline">\(X = 1\)</span>, which indicates placement in the treatment.</p>
 <p><span class="math display" id="eq:eqatt">\[\begin{equation}
 \begin{aligned}
@@ -328,14 +384,14 @@ ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1)
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:att-hist"></span>
 <img src="01-Introduction_files/figure-html/att-hist-1.png" alt="Histogram of average treatement among the treated" width="100%"><p class="caption">
-Figure 1.12: Histogram of average treatement among the treated
+Figure 1.17: Histogram of average treatement among the treated
 </p>
 </div>
 </div>
-<div id="average-treatment-effect-among-the-control-atc" class="section level4" number="1.3.2.3">
-<h4>
-<span class="header-section-number">1.3.2.3</span> Average Treatment Effect Among the Control (ATC)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-control-atc"><i class="fas fa-link"></i></a>
-</h4>
+<div id="average-treatment-effect-among-the-control-atc" class="section level5" number="1.3.2.4.3">
+<h5>
+<span class="header-section-number">1.3.2.4.3</span> Average Treatment Effect Among the Control (ATC)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-control-atc"><i class="fas fa-link"></i></a>
+</h5>
 <p>The average treatment effect among the control (ATC) is exactly the opposte as ATT. Here, we wish to use every control observation which means some treatment observations with larger propensity scores will not be used (in the case of matching) or weighted down (in the case of weighting or stratification) as represented by the grey. Conversely, treatment observations with smaller propensity scores may be match with multiple control observations (in the case of matching) or weighted up (in the case of weighting or stratification).</p>
 <p>Mathematically, ATC is defined in equation <a href="chapter-introduction.html#eq:eqatc">(1.10)</a>. The important difference between this at ATE is that we are calculating the expected value given <span class="math inline">\(X = 1\)</span>, which indicates placement in the control</p>
 <p><span class="math display" id="eq:eqatc">\[\begin{equation}
@@ -347,15 +403,15 @@ ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0)
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:atc-hist"></span>
 <img src="01-Introduction_files/figure-html/atc-hist-1.png" alt="Histogram of average treatement among the control" width="100%"><p class="caption">
-Figure 1.13: Histogram of average treatement among the control
+Figure 1.18: Histogram of average treatement among the control
 </p>
 </div>
 </div>
-<div id="average-treatment-effect-among-the-evenly-matched-atm" class="section level4" number="1.3.2.4">
-<h4>
-<span class="header-section-number">1.3.2.4</span> Average Treatment Effect Among the Evenly Matched (ATM)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-evenly-matched-atm"><i class="fas fa-link"></i></a>
-</h4>
-<p>The average treatment effect among the evenly matched (ATM) is a relatively new estimate developed specifically for propensity score weighting but is closely related to what is estimated when conducting one-to-one matching. Unlike ATT and ATC where not all observations are weighted equally, for the calculation of ATM all observations included in the estimation have equal weight. As depicted in figure <a href="chapter-introduction.html#fig:acm-hist">1.14</a> there are control observations with small propensity scores that are not used and treatment observations with large propensity scores that are not used (represented by the grey bars). This closely mimics what occurs in one-to-one matching. In one-to-one matching any observation can be used only once and can only be matched to one observation of the other group. Hence, it tends to work out that only observations near the mean of the propensity score range are included. See <span class="citation">Li and Greene (2013)</span>, <span class="citation">McGowan (2018)</span>, and <span class="citation">Samuels (2017)</span> for more details.</p>
+<div id="average-treatment-effect-among-the-evenly-matched-atm" class="section level5" number="1.3.2.4.4">
+<h5>
+<span class="header-section-number">1.3.2.4.4</span> Average Treatment Effect Among the Evenly Matched (ATM)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-evenly-matched-atm"><i class="fas fa-link"></i></a>
+</h5>
+<p>The average treatment effect among the evenly matched (ATM) is a relatively new estimate developed specifically for propensity score weighting but is closely related to what is estimated when conducting one-to-one matching. Unlike ATT and ATC where not all observations are weighted equally, for the calculation of ATM all observations included in the estimation have equal weight. As depicted in figure <a href="chapter-introduction.html#fig:acm-hist">1.19</a> there are control observations with small propensity scores that are not used and treatment observations with large propensity scores that are not used (represented by the grey bars). This closely mimics what occurs in one-to-one matching. In one-to-one matching any observation can be used only once and can only be matched to one observation of the other group. Hence, it tends to work out that only observations near the mean of the propensity score range are included. See <span class="citation">Li and Greene (2013)</span>, <span class="citation">McGowan (2018)</span>, and <span class="citation">Samuels (2017)</span> for more details.</p>
 <p><span class="math display" id="eq:eqatm">\[\begin{equation}
 \begin{aligned}
 ATM_d = E(Y_1 - Y_0 | M_d = 1)
@@ -365,8 +421,9 @@ ATM_d = E(Y_1 - Y_0 | M_d = 1)
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:acm-hist"></span>
 <img src="01-Introduction_files/figure-html/acm-hist-1.png" alt="Histogram of average treatment effect among the evenly matched" width="100%"><p class="caption">
-Figure 1.14: Histogram of average treatment effect among the evenly matched
+Figure 1.19: Histogram of average treatment effect among the evenly matched
 </p>
+</div>
 </div>
 </div>
 </div>
@@ -382,7 +439,7 @@ Figure 1.14: Histogram of average treatment effect among the evenly matched
 <h2>
 <span class="header-section-number">1.4</span> R Packages<a class="anchor" aria-label="anchor" href="#r-packages"><i class="fas fa-link"></i></a>
 </h2>
-<p>R is a statistical software language designed to be extended vis-à-vis packages. As of April 10, 2023, there are currently 19,317 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of R</p>
+<p>R is a statistical software language designed to be extended vis-à-vis packages. As of April 18, 2023, there are currently 19,369 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of R</p>
 <ul>
 <li>
 <a href="http://gking.harvard.edu/gking/matchit"><code>MatchIt</code></a> <span class="citation">(Ho et al. 2023)</span> Nonparametric Preprocessing for Parametric Causal Inference</li>
@@ -794,7 +851,7 @@ Figure 1.14: Histogram of average treatment effect among the evenly matched
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-10.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-18.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

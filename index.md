@@ -1,7 +1,7 @@
 --- 
 title: "Applied Propensity Score Analysis with R"
 author: "Jason Bryer, Ph.D."
-date: "2023-04-10"
+date: "2023-04-18"
 site: bookdown::bookdown_site
 documentclass: book
 url: https://psa.bryer.org
@@ -14,7 +14,7 @@ bibliography: [book.bib, packages.bib]
 
 # Preface {-}
 
-Last updated: April 10, 2023
+Last updated: April 18, 2023
 
 <a href="https://psa.bryer.org" target="_blank"><img src="figures/cover.png" width="40%" style="float:right; padding:10px" style="display: block; margin: auto 0 auto auto;" /></a>
 
@@ -55,7 +55,7 @@ devtools::session_info()
 ##  collate  C.UTF-8
 ##  ctype    C.UTF-8
 ##  tz       UTC
-##  date     2023-04-10
+##  date     2023-04-18
 ##  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────
@@ -107,7 +107,7 @@ devtools::session_info()
 ##  P magrittr        2.0.3    2022-03-30 [?] RSPM (R 4.2.0)
 ##  P MASS          * 7.3-58.2 2023-01-23 [3] CRAN (R 4.2.3)
 ##    Matching      * 4.10-8   2022-11-03 [1] CRAN (R 4.2.3)
-##    MatchIt       * 4.5.2    2023-03-22 [1] CRAN (R 4.2.3)
+##    MatchIt       * 4.5.3    2023-04-13 [1] CRAN (R 4.2.3)
 ##  P Matrix          1.5-3    2022-11-11 [3] CRAN (R 4.2.3)
 ##    matrixStats     0.63.0   2022-11-18 [1] CRAN (R 4.2.3)
 ##  P memoise         2.0.1    2021-11-26 [?] RSPM (R 4.2.0)
@@ -157,7 +157,7 @@ devtools::session_info()
 ##  P stringr         1.5.0    2022-12-02 [?] RSPM (R 4.2.0)
 ##    strucchange     1.5-3    2022-06-15 [1] CRAN (R 4.2.3)
 ##  P survival        3.5-3    2023-02-12 [3] CRAN (R 4.2.3)
-##    TH.data         1.1-1    2022-04-26 [1] CRAN (R 4.2.3)
+##    TH.data         1.1-2    2023-04-17 [1] CRAN (R 4.2.3)
 ##  P tibble          3.2.1    2023-03-20 [?] RSPM (R 4.2.0)
 ##  P tidyselect      1.2.0    2022-10-10 [?] RSPM (R 4.2.0)
 ##    TriMatch      * 0.9.9    2017-12-06 [1] CRAN (R 4.2.3)
@@ -170,7 +170,7 @@ devtools::session_info()
 ##  P xml2            1.3.3    2021-11-30 [?] RSPM (R 4.2.0)
 ##  P xtable        * 1.8-4    2019-04-21 [?] RSPM (R 4.2.0)
 ##  P yaml            2.3.7    2023-01-23 [?] RSPM (R 4.2.0)
-##    zoo             1.8-11   2022-09-17 [1] CRAN (R 4.2.3)
+##    zoo             1.8-12   2023-04-13 [1] CRAN (R 4.2.3)
 ## 
 ##  [1] /home/runner/.cache/R/renv/library/psa-1b3136f9/R-4.2/x86_64-pc-linux-gnu
 ##  [2] /home/runner/.cache/R/renv/sandbox/R-4.2/x86_64-pc-linux-gnu/e11edd0e
