@@ -1,8 +1,8 @@
 ---
-output: html_document
 editor_options: 
   chunk_output_type: console
 ---
+
 # Matching {#chapter-matching}
 
 ::: {.rmdtip}
@@ -40,7 +40,7 @@ lalonde_match_df <- lalonde_match_df[order(lalonde_match_df$control.ps),]
 rows <- (1:nrow(lalonde_match_df) - 1) %% floor(nrow(lalonde_match_df) / 5) == 0
 ggplot(lalonde, aes(x = lr_ps, y = treat)) + 
 	geom_point(alpha = 0.5) +
-	stat_smooth(method = "glm", formula = y ~ x, method.args = list(family="binomial"), se = FALSE) +
+	geom_smooth(method = glm, formula = y ~ x, method.args = list(family=binomial(link='logit')), se = FALSE) +
 	xlim(c(0,1)) + 
 	xlab('Propensity Score') + ylab('Treatment') +
 	geom_segment(data = lalonde_match_df, 
@@ -64,13 +64,31 @@ summary(rr_att) # The default estimate is ATT here
 
 ### Checking Balance
 
-```{r, echo=FALSE}
-rr_att_mb  <- MatchBalance(formul = lalonde.formu,
-						   data = lalonde, 
-						   match.out = rr_att,
-						   nboots = 500, 
-						   print.level = 0)
+```{r, fig.cap='Covariate Balance Plot for Matching'}
+rr_att_mb <- psa::MatchBalance(
+	df = lalonde,
+	formu = lalonde.formu,
+	formu.Y = update.formula(lalonde.formu, re78 ~ .),
+	index.treated = rr_att$index.treated,
+	index.control = rr_att$index.control,
+	tolerance = 0.25,
+	M = 1,
+	estimand = 'ATT')
+plot(rr_att_mb)
+# ls(rr_att_mb)
+summary(rr_att_mb)
 
+```
+
+
+```{r, echo=FALSE}
+rr_att_mb2  <- Matching::MatchBalance(
+	formul = lalonde.formu,
+	data = lalonde, 
+	match.out = rr_att,
+	nboots = 500, 
+	print.level = 0)
+rr_att_mb2 |> print()
 ```
 
 

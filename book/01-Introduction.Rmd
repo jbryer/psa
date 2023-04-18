@@ -228,13 +228,16 @@ set.seed(2112)
 n <- 1000
 treatment_effect <- 2
 X <- mvtnorm::rmvnorm(n,
-					  mean = c(0.5, 1),
-					  sigma = matrix(c(2, 1, 1, 1), ncol = 2) )
-dat <- tibble::tibble(
+					  mean = c(0.5, 1, 0),
+					  sigma = matrix(c(2, 1, 1,
+					  				   1, 1, 1,
+					  				   1, 1, 1), ncol = 3) )
+dat <- tibble(
 	x1 = X[, 1],
 	x2 = X[, 2],
-	treatment = as.numeric(-0.5 + 0.25 * x1 + 0.75 * x2 + rnorm(n, 0, 1) > 0),
-	outcome = treatment_effect * treatment + x1 + x2 + rnorm(n, 0, 1)
+	x3 = X[, 3] > 0,
+	treatment = as.numeric(- 0.5 + 0.25 * x1 + 0.75 * x2 + 0.05 * x3 + rnorm(n, 0, 1) > 0),
+	outcome = treatment_effect * treatment + rnorm(n, 0, 1)
 )
 
 t_result <- t.test(outcome ~ treatment, data = dat)
@@ -243,7 +246,7 @@ t_result <- t.test(outcome ~ treatment, data = dat)
 Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous (treatment or control). Very often logistic regression is used, but with the advances in predictive models we have an ever increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis we will use a simulated dataset with two pre-treatment covariates, `x1` and `x2`, a treatment indicator, and an outcome variable with a treatment effect of `r treatment_effect`. Figure \@ref(fig:sim-scatter) is a scatter plot of the simulated data.^[This simulated dataset is adapted from a [blog post](https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html) by [Lucy D’Agostino McGowan](https://www.lucymcgowan.com)]
 
 ```{r sim-scatter, echo=FALSE, fig.cap = 'Scatterplot of simulated datatset', fig.height=5}
-ggplot(dat, aes(x = x1, y = x2, color = factor(treatment))) + 
+ggplot(dat, aes(x = x1, y = x2, shape = x3, color = factor(treatment))) + 
 	geom_point() + 
 	scale_color_manual('Treatment', values = palette2) +
 	theme(legend.position = 'bottom')
@@ -254,9 +257,10 @@ Figure \@ref(fig:sim-ggpairs) is a pairs plot [@R-GGally] showing the relationsh
 
 ```{r sim-ggpairs, echo=FALSE, cache=TRUE, fig.cap = 'Pairs plot showing the relationships between covariates, treatment, and outcome'}
 p <- GGally::ggpairs(
-	dat[,1:4],
-	columns = c(1,2,4),
+	dat[,c('x1','x2','outcome','treatment')],
+	columns = c(1,2,3),
 	mapping = ggplot2::aes(color = treatment == 1),
+	upper = list(continuous = 'cor'),
 	lower = list(continuous = GGally::wrap("points", alpha = 0.3), 
 				 combo = GGally::wrap("dot_no_facet", alpha = 0.4)),
 	diag = list(continuous = "densityDiag", discrete = "barDiag", na = "naDiag", alpha = 0.4),
@@ -278,7 +282,7 @@ t.test(outcome ~ treatment, data = dat)
 Our goal is to adjust for this selection bias using propensity scores. In this example we used logistic regression to estimate the propensity scores. Figure \@ref(fig:sim-dist) is a histogram showing the distribution of propensity scores for the treatment group in greee above and control group in orange below. Note how the distributions are skewed; treatment group is negatively skewed and the control group is positively skewed. This should hopefully make intuitive sense. As the probability of being in the treatment increases, we should see the number of treatment observations increase while the number of control observations decrease. 
 
 ```{r, echo=FALSE, results='hide'}
-lr.out <- glm(treatment ~ x1 + x2, data = dat, family = binomial(link='logit'))
+lr.out <- glm(treatment ~ x1 + x2 + x3, data = dat, family = binomial(link='logit'))
 dat$ps <- fitted(lr.out) # Get the propensity scores
 # summary(lr.out)
 ```
@@ -286,9 +290,9 @@ dat$ps <- fitted(lr.out) # Get the propensity scores
 ```{r sim-dist, echo=FALSE, fig.height=4, fig.cap='Distribution of propensity scores'}
 dat2 <- dat |> tidyr::spread(treatment, ps, sep = '_p')
 ggplot(dat) +
-	geom_histogram(data = dat[dat$treatment == 1,], aes(x = ps, y = ..count..),
+	geom_histogram(data = dat[dat$treatment == 1,], aes(x = ps, y = after_stat(count)),
 				   bins = 50, fill = palette2[2]) +
-	geom_histogram(data = dat[dat$treatment == 0,], aes(x = ps, y = -..count..),
+	geom_histogram(data = dat[dat$treatment == 0,], aes(x = ps, y = -after_stat(count)),
 				   bins = 50, fill = palette2[1]) +
 	geom_hline(yintercept = 0, lwd = 0.5) +
 	scale_y_continuous(label = abs) 
@@ -298,21 +302,30 @@ ggplot(dat) +
 
 #### Evaluate Balance
 
-Once propensity scores are estimated it is important to verify that balance between the observed covariates is achieved. There are a number of ways of doing this. For matching methods where treatment and control units are paired, dependent sample tests can be usedd (e.g. *t*-tests for continuous variables and $\chi^2$ tests for categorical variables). However, significance testing is generally is problematic. Given the number of covariates, and hence null hypothesis tests conducted, the likelihood of committing type I and type II errors is very high. Moreover, many observational studies that we wish to use PSA with have very large sample sizes which, all else being equal, will shrink the standard error estimate often resulting in small *p*-values. Instead utilizing standardized effect sizes and graphical representations will provide better evidence as to whether balance has been achieved. The `PSAgraphics` package [@R-PSAgraphics] provides a number of functions to assist. Figure \@ref(fig:intro-balance-plots) provides two assessment plots. The left plot is a multiple covariate balance assessment plot. The *x*-axis is the standardized effect size and the *y*-axis is each covariate. The red line is the effect before propensity score adjustment and the blue is the effect after propensity score adjustment. Unfortunately there is not a conventional adjusted effect size threshold of achieving sufficient balance in the literature. @Cohen1988 is frequently cited for having indicated that an effect size between 0.2 and 0.3 is small. In general, I recommend trying to achieve adjdusted effect sizes less than 0.1.
-
-```{r intro-balance-plots, echo=FALSE, fig.cap = 'Multiple (left) and continuous (right) covariate balance assessment plots', fig.show='hold', out.width='50%'}
-PSAgraphics::cv.bal.psa(covariates = dat[,c('x1','x2')],
+Once propensity scores are estimated it is important to verify that balance between the observed covariates is achieved. There are a number of ways of doing this. For matching methods where treatment and control units are paired, dependent sample tests can be usedd (e.g. *t*-tests for continuous variables and $\chi^2$ tests for categorical variables). However, significance testing is generally is problematic. Given the number of covariates, and hence null hypothesis tests conducted, the likelihood of committing type I and type II errors is very high. Moreover, many observational studies that we wish to use PSA with have very large sample sizes which, all else being equal, will shrink the standard error estimate often resulting in small *p*-values. Instead utilizing standardized effect sizes and graphical representations will provide better evidence as to whether balance has been achieved. The `PSAgraphics` package [@R-PSAgraphics] provides a number of functions to assist. Figure \@ref(fig:intro-multiple-balance-plots) is a balance plot the summarizes all covariates together. The *x*-axis is the standardized effect size and the *y*-axis is each covariate. The red line is the effect before propensity score adjustment and the blue is the effect after propensity score adjustment. Unfortunately there is not a conventional adjusted effect size threshold whihc indicates that sufficient balance has been achieved in the literature. @Cohen1988 is frequently cited for having indicated that an effect size between 0.2 and 0.3 is small. In general, I recommend trying to achieve adjdusted effect sizes less than 0.1. 
+```{r intro-multiple-balance-plots, echo=FALSE, results='hide', fig.cap = 'Multiple covariate balance assessment plot'}
+PSAgraphics::cv.bal.psa(covariates = dat[,c('x1','x2','x3')],
 						treatment = dat$treatment,
 						propensity = dat$ps, 
 						strata = 5)
-strata5 <- as.numeric(cut(dat$ps, quantile(dat$ps, seq(0, 1, 1/5)),
-						  include.lowest = TRUE, labels = FALSE))
-PSAgraphics::box.psa(dat$x1,
-					 treatment = dat$treatment,
-					 strata = strata5)
 ```
 
-The plot on the right in figure \@ref(fig:intro-balance-plots) is balance assessment plot for a continuous variable. The exact procedures for stratification will be discussed in chapter \@ref(chapter-stratification) but in short, we divided the propensity scores into five strata using quintiles so that each stratum has the same number of observations. The yellow bars are the control group and the orange bars are the treatment group. We are looking for the center and spread to be roughly equivalent within each stratum. From this example we can see that stratum 5 has higher values than stratum 1. A counterpart to this plot for categorical data using box plots will be provided in chapter \@ref(chapter-stratification).
+The plot on the left in figure \@ref(fig:intro-balance-plots) is balance assessment plot for a continuous variable. The exact procedures for stratification will be discussed in chapter \@ref(chapter-stratification) but in short, we divided the propensity scores into five strata using quintiles so that each stratum has the same number of observations. The yellow bars are the control group and the orange bars are the treatment group. We are looking for the center and spread to be roughly equivalent within each stratum. From this example we can see that stratum 5 has higher values than stratum 1. The plot on the right is a plot for categorical data using bar plots.
+
+```{r intro-balance-plots, echo=FALSE, results = 'hide', fig.cap = 'Continuous (left) and categorical (right) covariate balance assessment plots', fig.show='hold', out.width='50%'}
+breaks5 <- psa::get_strata_breaks(dat$ps, n_strata = 5)
+dat$strata5 <- cut(x = dat$ps, 
+				   breaks = breaks5$breaks, 
+				   include.lowest = TRUE, 
+				   labels = breaks5$labels$strata)
+PSAgraphics::box.psa(dat$x1,
+					 treatment = dat$treatment,
+					 strata = dat$strata5)
+PSAgraphics::cat.psa(dat$x3,
+					 treatment = dat$treatment,
+					 strata = dat$strata5)
+```
+
 
 We will see there are many choices for estimating propensity scores in the remainder of this book. In practice you will find that phase I of PSA will occupy most of your time. The robustness of your causal estimates will rely on achieving good balance in your observed covariates.
 
@@ -346,8 +359,91 @@ dat <- dat |> mutate(
 )
 ```
 
+In the following sections we will provide a high level overview of the three major approaches for conducting PSA: stratification, matching, and weighting.
 
-#### Average Treatment Effect (ATE)
+
+#### Stratificaiton
+
+Treatment and comparison units are divided into strata (or subclasses) so that treated and comparison units are similar within each strata. Cochran (1968) observed that creating five subclassifications (stratum) removes at least 90% of the bias in the estimated treatment effect.
+
+Independent sample tests (e.g. *t*-tests) are conducted within each stratum and pooled to provide an overall estimate.
+
+```{r intro-stratification, echo=FALSE, fig.cap='Density distribution of propensity scores by treatment'}
+ggplot(dat, aes(x = ps, color = as.logical(treatment))) + 
+	geom_density(aes(fill = as.logical(treatment)), alpha = 0.2) +
+	geom_vline(xintercept = breaks5$breaks, alpha = 0.5) +
+	geom_text(data = breaks5$labels, 
+			  aes(x = xmid, y = 0, label = strata),
+			  color = 'black', vjust = 0.8, size = 6) +
+	scale_fill_manual('Treatment', values = palette2) +
+	scale_color_manual('Treatment', values = palette2) +
+	xlab('Propensity Score') + ylab('Density') +
+	xlim(c(0, 1))
+```
+
+```{r, echo=FALSE, fig.cap='Scatter plot of propensity scores versus outcome'}
+ggplot() +
+	geom_vline(xintercept = breaks5$breaks) +
+	geom_point(data = dat, aes(x = ps, y = outcome, color = as.logical(treatment)), alpha = 0.5) +
+	geom_text(data = breaks5$labels, aes(x = xmid, y = 0, label = strata), color = 'black', vjust = 0.7, size = 8) +
+	scale_color_manual('Treatment', values = palette2) +
+	xlab('Propensity Score')
+```
+
+
+#### Matching
+
+Each treatment unit is paired with a comparison unit based upon the pre-treatment covariates.
+
+Dependent sample tests (e.g. *t*-tests) are conducted using match pairs to provide a treatment.
+
+```{r intro-matching, echo=FALSE, fig.cap='Scatterplot of propensity score versus outcome with matched pairs connected'}
+match_out <- Matching::Match(Y = dat$outcome,
+							 Tr = dat$treatment,
+							 X = dat$ps,
+							 caliper = 0.1,
+							 estimand = 'ATE')
+dat_match <- data.frame(treat_ps = dat[match_out$index.treated,]$ps,
+						treat_outcome = dat[match_out$index.treated,]$outcome,
+						control_ps = dat[match_out$index.control,]$ps,
+						control_outcome = dat[match_out$index.control,]$outcome)
+ggplot() +
+	geom_point(data = dat, aes(x = ps, y = outcome, color = as.logical(treatment)), alpha = 0.5) +
+	geom_segment(data = dat_match[sample(nrow(dat_match), 100),],
+				 aes(x = treat_ps, xend = control_ps,
+				 	y = treat_outcome, yend = control_outcome),
+				 alpha = 0.5) +
+	scale_color_manual('Treatment', values = palette2) +
+	xlab('Propensity Score')
+```
+
+
+#### Weighting
+
+Each observation is weighted by the inverse of the probability of being in that group.
+
+Propensity score weights can be used as regression weights, the specific weights depend on the desired estimand and will be provided in later slides.
+
+
+```{r intro-weighting, echo=FALSE, fig.cap='Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights'}
+dat <- dat |> mutate(
+	ate_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATE'),
+	att_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATT'),
+	atc_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATC'),
+	atm_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATM')
+)
+ggplot(dat, aes(x = ps, y = outcome, color = as.logical(treatment))) +
+	geom_point(aes(size = ate_weight)) +
+	geom_smooth(method = 'lm', se = FALSE, formula = y ~ x, aes(weight = ate_weight)) +
+	scale_size('PS Weight', range = c(1, 10)) +
+	scale_color_manual('Treatment', values = palette2) 
+```
+
+
+
+#### Treatment Effects
+
+##### Average Treatment Effect (ATE)
 
 The average treatment effect (ATE) is the most understood estimate given that it has a direct analog to RCTs. We could estimate ATE from an RCT using this approach by simply assuming everyone has a propensity score of 0.5 since they all have a 50% of being in the treatment. That is, we assume that every treatment unit could be interchangeable with a control unit. For PSA though, each unit has a different propensity score. The goal is to compare units with similar propensity scores. And as we saw above in figure \@ref(fig:sim-dist) the distributions for treatment and control are not the same. Figure \@ref{fig:ate-hist} depicts how the ATE works in practice, in particular how different units are weighted more or less towards the ATE estimate as we move across the propensity score range. The darker color represents the propensity score distribution as estimated above, but the light bars represent the distribution used in the ATE calculation. For treatment units with lower propensity scores (for which there are fewer of) a weighted more to ATE calculation. As we move right across the propensity score range control units with large propensity scores will be wieghed more in that range. 
 
@@ -361,23 +457,23 @@ ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X)
 ```{r ate-hist, echo = FALSE, fig.height=4, fig.cap = 'Histogram of average treatement effect'}
 ggplot() +
 	geom_histogram(data = dat[dat$treatment == 1,],
-				   aes(x = ps, y = ..count..),
+				   aes(x = ps, y = after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 1,],
-				   aes(x = ps, weight = ate_weight, y = ..count..),
+				   aes(x = ps, weight = ate_weight, y = after_stat(count)),
 				   bins = 50, 
 				   fill = palette2[2], alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
-				   aes(x = ps, y = -..count..),
+				   aes(x = ps, y = -after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
-				   aes(x = ps, weight = ate_weight, y = -..count..),
+				   aes(x = ps, weight = ate_weight, y = -after_stat(count)),
 				   bins = 50, 
 				   fill = palette2[1], alpha = 0.5) +
 	ggtitle('Average Treatment Effect (ATE)')
 ```
 
-#### Average Treatment Effect Among the Treated (ATT)
+##### Average Treatment Effect Among the Treated (ATT)
 
 The average treatment effect among the treated (ATT) uses the treated units as the primary focus. From figure \@ref(fig:att-hist) we see that the entire treatment group ise used and there is no weighting up or down. However, for the control group we weight down (the grey bars) their values on the lower end of the propensity score range to match the distribution of the treatment group. Conversely, control group observations are weighted up on the right side of the propensity score range, again, to closely match the distribution of the treatment group. In the context of matching where we wish to pair treatment and control units, the goal is to use all treatment observations, therefore it is possible to not use some control observations with smaller propensity scores whereas some control observations with larger propensity scores may be reused in order to find a match for every treatment observation.
 
@@ -393,23 +489,23 @@ ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1)
 ```{r att-hist, echo=FALSE, fig.height=4, fig.cap = 'Histogram of average treatement among the treated'}
 ggplot() +
 	geom_histogram(data = dat[dat$treatment == 1,],
-				   aes(x = ps, y = ..count..),
+				   aes(x = ps, y = after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 1,],
-				   aes(x = ps, weight = att_weight, y = ..count..),
+				   aes(x = ps, weight = att_weight, y = after_stat(count)),
 				   bins = 50, 
 				   fill = palette2[2], alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
-				   aes(x = ps, y = -..count..),
+				   aes(x = ps, y = -after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
-				   aes(x = ps, weight = att_weight, y = -..count..),
+				   aes(x = ps, weight = att_weight, y = -after_stat(count)),
 				   bins = 50, 
 				   fill = palette2[1], alpha = 0.5) +
 	ggtitle('Average Treatment Effect Among the Treated (ATT)')
 ```
 
-#### Average Treatment Effect Among the Control (ATC)
+##### Average Treatment Effect Among the Control (ATC)
 
 The average treatment effect among the control (ATC) is exactly the opposte as ATT. Here, we wish to use every control observation which means some treatment observations with larger propensity scores will not be used (in the case of matching) or weighted down (in the case of weighting or stratification) as represented by the grey. Conversely, treatment observations with smaller propensity scores may be match with multiple control observations (in the case of matching) or weighted up (in the case of weighting or stratification).
 
@@ -425,23 +521,23 @@ ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0)
 ```{r atc-hist, echo=FALSE, fig.height=4, fig.cap = 'Histogram of average treatement among the control'}
 ggplot() +
 	geom_histogram(data = dat[dat$treatment == 1,],
-				   aes(x = ps, y = ..count..),
+				   aes(x = ps, y = after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 1,],
-				   aes(x = ps, weight = atc_weight, y = ..count..),
+				   aes(x = ps, weight = atc_weight, y = after_stat(count)),
 				   bins = 50, 
 				   fill = palette2[2], alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
-				   aes(x = ps, y = -..count..),
+				   aes(x = ps, y = -after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
-				   aes(x = ps, weight = atc_weight, y = -..count..),
+				   aes(x = ps, weight = atc_weight, y = -after_stat(count)),
 				   bins = 50, 
 				   fill = palette2[1], alpha = 0.5) +
 	ggtitle('Average Treatment Effect Among the Control (ATC)')
 ```
 
-#### Average Treatment Effect Among the Evenly Matched (ATM)
+##### Average Treatment Effect Among the Evenly Matched (ATM)
 
 The average treatment effect among the evenly matched (ATM) is a relatively new estimate developed specifically for propensity score weighting but is closely related to what is estimated when conducting one-to-one matching. Unlike ATT and ATC where not all observations are weighted equally, for the calculation of ATM all observations included in the estimation have equal weight. As depicted in figure \@ref(fig:acm-hist) there are control observations with small propensity scores that are not used and treatment observations with large propensity scores that are not used (represented by the grey bars). This closely mimics what occurs in one-to-one matching. In one-to-one matching any observation can be used only once and can only be matched to one observation of the other group. Hence, it tends to work out that only observations near the mean of the propensity score range are included. See @LiGreene2013, @McGowan2018, and @Samuels2017 for more details.
 
@@ -455,17 +551,17 @@ ATM_d = E(Y_1 - Y_0 | M_d = 1)
 ```{r acm-hist, echo=FALSE, fig.height=4, fig.cap = 'Histogram of average treatment effect among the evenly matched'}
 ggplot() +
 	geom_histogram(data = dat[dat$treatment == 1,],
-				   aes(x = ps, y = ..count..),
+				   aes(x = ps, y = after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 1,],
-				   aes(x = ps, weight = atm_weight, y = ..count..),
+				   aes(x = ps, weight = atm_weight, y = after_stat(count)),
 				   bins = 50, 
 				   fill = palette2[2], alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
-				   aes(x = ps, y = -..count..),
+				   aes(x = ps, y = -after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
-				   aes(x = ps, weight = atm_weight, y = -..count..),
+				   aes(x = ps, weight = atm_weight, y = -after_stat(count)),
 				   bins = 50, 
 				   fill = palette2[1], alpha = 0.5) +
 	ggtitle('Average Treatment Effect Among the Evenly Matched (ACM)')
