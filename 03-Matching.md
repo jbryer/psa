@@ -2367,7 +2367,7 @@ rr.gen <- GenMatch(Tr = lalonde$treat,
 ```
 ## 
 ## 
-## Tue Apr 18 22:42:16 2023
+## Wed Apr 19 02:27:51 2023
 ## Domains:
 ##  0.000000e+00   <=  X1   <=    1.000000e+03 
 ## 
@@ -2478,7 +2478,7 @@ rr.gen <- GenMatch(Tr = lalonde$treat,
 ## Solution Found Generation 3
 ## Number of Generations Run 8
 ## 
-## Tue Apr 18 22:42:17 2023
+## Wed Apr 19 02:27:52 2023
 ## Total run time : 0 hours 0 minutes and 1 seconds
 ```
 

@@ -17,8 +17,10 @@ fig:intro-multiple-balance-plots
 fig:intro-balance-plots
 fig:sim-loess
 fig:intro-stratification
-fig:unnamed-chunk-11
+fig:intro-stratification-scatter
+fig:intro-circ-psa
 fig:intro-matching
+fig:intro-matching-granovads
 fig:intro-weighting
 eq:eqate
 fig:ate-hist
@@ -53,12 +55,12 @@ rubins-causal-model
 propensity-scores
 phases-of-propensity-score-analysis
 phase-i-estimate-propensity-scores
-evaluate-balance
+intro-balance
 introduction-effects
 stratificaiton
 matching
 weighting
-treatment-effects
+intro-treatment-effects
 average-treatment-effect-ate
 average-treatment-effect-among-the-treated-att
 average-treatment-effect-among-the-control-atc
