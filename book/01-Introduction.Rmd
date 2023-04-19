@@ -91,7 +91,7 @@ cowplot::plot_grid(p1b, p2b, align = 'h')
 
 In this example not only did the RCT not estimate the true effect, it estimated in the wrong direction. However, Figure \@ref(fig:rctc) represents the distribution of effects after conducting 1,000 RCTs from the 30 individuals above. The point here is that the RCT is already compromise to estimating the true counterfactual (i.e. causal effect). It is consider the gold standard because over many trials it will nearly approximate the true counterfactual.
 
-```{r rctc, echo=FALSE, fig.height = 4, fig.cap = 'Distribution of differences across many RCTs'}
+```{r rctc, echo=FALSE, fig.height = 3, fig.cap = 'Distribution of differences across many RCTs'}
 sim.diff <- numeric(1000)
 for(i in seq_along(sim.diff)) {
 	treats <- sample(c(T,F), n, replace = TRUE)
@@ -213,7 +213,10 @@ Simply put, what Rosenbaum and Rubin (1983) proved was that observations similar
 
 Propensity score analysis is typically conducted in three phases, namely:
 
-1. Model for selection bias (i.e. estimate propensity scores).
+1. Model for selection bias 
+	A. Estimate propensity scores
+	B. Check balance
+	C. Repeat A and B until sufficient balance is achieved
 2. Estimate causal effects.
 3. Check for sensitivity to unobserved confounders.
 
@@ -243,7 +246,7 @@ dat <- tibble(
 t_result <- t.test(outcome ~ treatment, data = dat)
 ```
 
-Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous (treatment or control). Very often logistic regression is used, but with the advances in predictive models we have an ever increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis we will use a simulated dataset with two pre-treatment covariates, `x1` and `x2`, a treatment indicator, and an outcome variable with a treatment effect of `r treatment_effect`. Figure \@ref(fig:sim-scatter) is a scatter plot of the simulated data.^[This simulated dataset is adapted from a [blog post](https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html) by [Lucy D’Agostino McGowan](https://www.lucymcgowan.com)]
+Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous (treatment or control). Very often logistic regression is used, but with the advances in predictive models we have an ever increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis we will use a simulated dataset with three pre-treatment covariates, `x1` and `x2` which are continuous and `x3` which is categorical, a treatment indicator, and an outcome variable with a treatment effect of `r treatment_effect`. Figure \@ref(fig:sim-scatter) is a scatter plot of the simulated data.^[This simulated dataset is adapted from a [blog post](https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html) by [Lucy D’Agostino McGowan](https://www.lucymcgowan.com)]
 
 ```{r sim-scatter, echo=FALSE, fig.cap = 'Scatterplot of simulated datatset', fig.height=5}
 ggplot(dat, aes(x = x1, y = x2, shape = x3, color = factor(treatment))) + 
@@ -300,7 +303,7 @@ ggplot(dat) +
 
 
 
-#### Evaluate Balance
+#### Evaluate Balance {#intro-balance}
 
 Once propensity scores are estimated it is important to verify that balance between the observed covariates is achieved. There are a number of ways of doing this. For matching methods where treatment and control units are paired, dependent sample tests can be usedd (e.g. *t*-tests for continuous variables and $\chi^2$ tests for categorical variables). However, significance testing is generally is problematic. Given the number of covariates, and hence null hypothesis tests conducted, the likelihood of committing type I and type II errors is very high. Moreover, many observational studies that we wish to use PSA with have very large sample sizes which, all else being equal, will shrink the standard error estimate often resulting in small *p*-values. Instead utilizing standardized effect sizes and graphical representations will provide better evidence as to whether balance has been achieved. The `PSAgraphics` package [@R-PSAgraphics] provides a number of functions to assist. Figure \@ref(fig:intro-multiple-balance-plots) is a balance plot the summarizes all covariates together. The *x*-axis is the standardized effect size and the *y*-axis is each covariate. The red line is the effect before propensity score adjustment and the blue is the effect after propensity score adjustment. Unfortunately there is not a conventional adjusted effect size threshold whihc indicates that sufficient balance has been achieved in the literature. @Cohen1988 is frequently cited for having indicated that an effect size between 0.2 and 0.3 is small. In general, I recommend trying to achieve adjdusted effect sizes less than 0.1. 
 ```{r intro-multiple-balance-plots, echo=FALSE, results='hide', fig.cap = 'Multiple covariate balance assessment plot'}
@@ -310,7 +313,7 @@ PSAgraphics::cv.bal.psa(covariates = dat[,c('x1','x2','x3')],
 						strata = 5)
 ```
 
-The plot on the left in figure \@ref(fig:intro-balance-plots) is balance assessment plot for a continuous variable. The exact procedures for stratification will be discussed in chapter \@ref(chapter-stratification) but in short, we divided the propensity scores into five strata using quintiles so that each stratum has the same number of observations. The yellow bars are the control group and the orange bars are the treatment group. We are looking for the center and spread to be roughly equivalent within each stratum. From this example we can see that stratum 5 has higher values than stratum 1. The plot on the right is a plot for categorical data using bar plots.
+The plot on the left in figure \@ref(fig:intro-balance-plots) is balance assessment plot for a continuous variable. The exact procedures for stratification will be discussed in chapter \@ref(chapter-stratification) but in short, we divided the propensity scores into five strata using quintiles so that each stratum has the same number of observations. The yellow bars are the control group and the orange bars are the treatment group. We are looking for the center and spread to be roughly equivalent within each stratum. From this example we can see that stratum 5 has higher values than stratum 1. The plot on the right is a plot for categorical data using a bar plot.
 
 ```{r intro-balance-plots, echo=FALSE, results = 'hide', fig.cap = 'Continuous (left) and categorical (right) covariate balance assessment plots', fig.show='hold', out.width='50%'}
 breaks5 <- psa::get_strata_breaks(dat$ps, n_strata = 5)
@@ -336,14 +339,14 @@ We will see there are many choices for estimating propensity scores in the remai
 
 ### Phase II: Estimate Causal Effects {#introduction-effects}
 
-Now that sufficient balance has been achieved in the observed covariates, it is time to estimate the causal effect. For randomized control trials we typically conduct a null hypothesis test of the differences between the means of the treatment and control groups (as defined in equation \@ref(eq:eq7) above). For PSA this is often done, but it is important to recognize that not all observations are counted equal in the causal estimation. And moreover, average treatment effect is not the only causal estimate measure we can calculate. This section defines four different causal estimates. They are presented in the context of propensity score weighting (see \@ref(chapter-weighting)) but conceptually apply to stratification and matching.
+Now that sufficient balance has been achieved in the observed covariates, it is time to estimate the causal effect. This section will provide an overview of the three most used approaches to conducting propensity score analysis: stratification, matching, and weighting. These will be covered in more details in chapters \@ref(chapter-stratification), \@ref(chapter-matching), and \@ref(chapter-weighting), respectively.
 
-To begin, it is often helpful to plot the propensity scores against the outcome. Figure \@ref(fig:sim-loess) is a scatter plot with propensity scores (*x*-axis) and outcome (*y*-axis), grouped/colored by treatment, along with a Loess regression line [@Cleveland1979]. There are a number of features to observe here. First, we see that the propensity score increases the outcome increases. This is a direct representation of selection bias. Second, the Loess regression lines with approximate 95% confidence intervals (in grey) do not overlap across the entire range of propensity scores. Additionally the distance between the two Loess regression lines is rougly equal. This is an indication that the treatment effect is homogeneous (i.e. the same for all units). We will see in later chapters that this is often not the case. This will become an important feature of PSA in detecting heterogeneous, or uneven, treatments based upon different "profiles."
+Before using one of the three approaches to conducting PSA, it is often helpful to plot the propensity scores against the outcome. Figure \@ref(fig:sim-loess) is a scatter plot with propensity scores (*x*-axis) and outcome (*y*-axis), grouped/colored by treatment, along with a Loess regression line [@Cleveland1979]. There are a number of features to observe here. First, we see that the propensity score increases the outcome increases. This is a direct representation of selection bias. Second, the Loess regression lines with approximate 95% confidence intervals (in grey) do not overlap across the entire range of propensity scores. Additionally the distance between the two Loess regression lines is rougly equal. This is an indication that the treatment effect is homogeneous (i.e. the same for all units). We will see in later chapters that this is often not the case. This will become an important feature of PSA in detecting heterogeneous, or uneven, treatments based upon different "profiles."
 
 
 ```{r sim-loess, echo = FALSE, fig.height = 5, fig.cap='Scatter plot of propensity scores against outcome with Loess regression lines'}
 ggplot(dat, aes(x = ps, y = outcome, color = factor(treatment))) + 
-	geom_point() +
+	geom_point(alpha = 0.5) +
 	geom_smooth(method = 'loess', formula = y ~ x, alpha = 0.5) +
 	xlab('Propensity Score') +
 	scale_color_manual('Treatment', values = palette2) +
@@ -359,49 +362,62 @@ dat <- dat |> mutate(
 )
 ```
 
-In the following sections we will provide a high level overview of the three major approaches for conducting PSA: stratification, matching, and weighting.
-
-
 #### Stratificaiton
 
-Treatment and comparison units are divided into strata (or subclasses) so that treated and comparison units are similar within each strata. Cochran (1968) observed that creating five subclassifications (stratum) removes at least 90% of the bias in the estimated treatment effect.
+Stratification involves dividing observations into strata (or subclasses) based upon the propensity scores so that treated and comparison units are similar within each strata. Cochran (1968) observed that creating five subclassifications (stratum) removes at least 90% of the bias in the estimated treatment effect. With larger sample sizes it may be appropriate to use up to 10 strata, however more typically does not provide much additional benefit. Figure \@ref(fig:intro-stratification) provides density distribution of propensity scores for the treatment and control observations. For this example, strata are defined using quintiles so that each stratum has the same number of observations. The vertical lines separate the strata. We can see that for stratum A there are many more control observations than treatment observations. Conversely, stratum E has many more treatment observations than control observations. As we will see in section \@ref(intro-treatment-effects) this will have implications for how treatment effects are calculated. However, what is important, and what we verified in section \@ref(intro-balance), observations within each stratum are very similar across all observed covariates.
 
-Independent sample tests (e.g. *t*-tests) are conducted within each stratum and pooled to provide an overall estimate.
-
-```{r intro-stratification, echo=FALSE, fig.cap='Density distribution of propensity scores by treatment'}
+```{r intro-stratification, fig.height = 3, echo=FALSE, fig.cap='Density distribution of propensity scores by treatment'}
 ggplot(dat, aes(x = ps, color = as.logical(treatment))) + 
 	geom_density(aes(fill = as.logical(treatment)), alpha = 0.2) +
 	geom_vline(xintercept = breaks5$breaks, alpha = 0.5) +
 	geom_text(data = breaks5$labels, 
 			  aes(x = xmid, y = 0, label = strata),
-			  color = 'black', vjust = 0.8, size = 6) +
+			  color = 'black', vjust = 0.8, size = 5) +
 	scale_fill_manual('Treatment', values = palette2) +
 	scale_color_manual('Treatment', values = palette2) +
 	xlab('Propensity Score') + ylab('Density') +
 	xlim(c(0, 1))
 ```
 
-```{r, echo=FALSE, fig.cap='Scatter plot of propensity scores versus outcome'}
+Figure \@ref(fig:intro-stratification-scatter) plots the propensity score against the outcome. The horizontal lines correspond to the mean for each group within each stratum. To calculate an overall effect size, independent sample tests (e.g. *t*-tests) are conducted within each stratum and pooled to provide an overall estimate.
+
+```{r intro-stratification-scatter, echo=FALSE, fig.height = 3, fig.cap='Scatter plot of propensity scores versus outcome'}
+strata5_out <- psych::describeBy(dat$outcome,
+								 group = list(dat$treatment, dat$strata5),
+								 mat = TRUE, skew = FALSE)
+names(strata5_out)[2:3] <- c('treatment', 'strata')
+strata5_out$treatment <- strata5_out$treatment == 1
+strata5_out <- merge(strata5_out, breaks5$labels, by = 'strata', all = TRUE)
 ggplot() +
 	geom_vline(xintercept = breaks5$breaks) +
+	geom_segment(data = strata5_out, aes(x = xmin, xend = xmax, y = mean, yend = mean, color = treatment), size = 1) +
 	geom_point(data = dat, aes(x = ps, y = outcome, color = as.logical(treatment)), alpha = 0.5) +
-	geom_text(data = breaks5$labels, aes(x = xmid, y = 0, label = strata), color = 'black', vjust = 0.7, size = 8) +
+	geom_text(data = breaks5$labels, aes(x = xmid, y = -2.5, label = strata), color = 'black', vjust = 0.7, size = 5) +
 	scale_color_manual('Treatment', values = palette2) +
 	xlab('Propensity Score')
 ```
 
+Figure \@ref(fig:intro-circ-psa) provides an alternative way of depicting the results [@R-PSAgraphics]. This plots the average treatment (*x*-axis) versus control (*y*-axis) for each strata. The means are projected to a line perpendicular to the unit line (i.e. the line $y = x$) such that the tick marks represent the distribution of differences. The green bar corresponds to the 95% confidence interval. The size of the circles a proportional to the sample size within each stratum. In this example they are all the same but can be different when using other methods for estimation propensity scores such as classification trees (discussed in chapter \@ref(chapter-stratification) and appendix \@ref(appendix-psmodels)). Since $y = x$ points that fall on that line indicate a difference of zero (i.e. $y - x = 0$). By extension, if the confidence interval represented by the green line spans the unit line then one would fail to reject the null hypothesis. In this example however, there is a statistically significant treatment effect.
+
+```{r intro-circ-psa, echo=FALSE, results='hide', fig.cap='Propensity score assessment plot for five strata'}
+PSAgraphics::circ.psa(dat$outcome, 
+					  dat$treatment, 
+					  dat$strata5,
+					  revc = TRUE,
+					  xlab = 'Treatment',
+					  ylab = 'Control')
+```
 
 #### Matching
 
-Each treatment unit is paired with a comparison unit based upon the pre-treatment covariates.
+For matching methods we wish to pair treatment observations with control observations. As will be discussed in chapter \@ref(chapter-matching) there are numerous algorithms for finding matches. For this example a simple one-to-one match was found using the nearest neighbor based upon the propensity score. Additionally, a caliper of 0.1 was used meaning that an observation would not be matched if the distance to another observation was more than 0.1 standard deviations away. The lines in the figure correspond to the observations that were matched. Since observations are matched, dependent sample tests (e.g. *t*-tests) are used to estimate the treatment effects.
 
-Dependent sample tests (e.g. *t*-tests) are conducted using match pairs to provide a treatment.
-
-```{r intro-matching, echo=FALSE, fig.cap='Scatterplot of propensity score versus outcome with matched pairs connected'}
+```{r intro-matching, fig.height = 4, echo=FALSE, fig.cap='Scatterplot of propensity score versus outcome with matched pairs connected'}
 match_out <- Matching::Match(Y = dat$outcome,
 							 Tr = dat$treatment,
 							 X = dat$ps,
 							 caliper = 0.1,
+							 replace = FALSE,
 							 estimand = 'ATE')
 dat_match <- data.frame(treat_ps = dat[match_out$index.treated,]$ps,
 						treat_outcome = dat[match_out$index.treated,]$outcome,
@@ -409,23 +425,31 @@ dat_match <- data.frame(treat_ps = dat[match_out$index.treated,]$ps,
 						control_outcome = dat[match_out$index.control,]$outcome)
 ggplot() +
 	geom_point(data = dat, aes(x = ps, y = outcome, color = as.logical(treatment)), alpha = 0.5) +
-	geom_segment(data = dat_match[sample(nrow(dat_match), 100),],
-				 aes(x = treat_ps, xend = control_ps,
-				 	y = treat_outcome, yend = control_outcome),
+	geom_segment(data = dat_match[sample(nrow(dat_match), 200),],
+				 aes(x = treat_ps,
+				 	 xend = control_ps,
+				 	 y = treat_outcome,
+				 	 yend = control_outcome,
+				 	 color = treat_outcome > control_outcome),
 				 alpha = 0.5) +
 	scale_color_manual('Treatment', values = palette2) +
 	xlab('Propensity Score')
 ```
 
+Similar to Figure \@ref(fig:intro-circ-psa) for stratification, Figure \@ref(fig:intro-matching-granovads) is a dependent sample assessment plot [@R-granovaGG] where each point represents a matched pair. The treatment observations are plotted on the *x*-axis and control observations on the *y*-axis. The points on the line perpendicular to the unit line represent the distribution of difference scores. The confidence interval is in purple and clearly does not span the unit line indicating a statistically significant treatment effect.
+
+```{r intro-matching-granovads, echo=FALSE, results='hide', fig.cap='Dependent sample assessment plot'}
+granovagg.ds(dat_match[,c('control_outcome', 'treat_outcome')],
+			 main = '', xlab = 'Treatment', ylab = 'Control')
+```
+
 
 #### Weighting
 
-Each observation is weighted by the inverse of the probability of being in that group.
-
-Propensity score weights can be used as regression weights, the specific weights depend on the desired estimand and will be provided in later slides.
+Propensity score weighting is useful when you wish to use the propensity scores within other regression models. Specifically, each observation is weighted by the inverse of the probability of being in that group. Figure \@ref(fig:intro-weighting) plots the propensity scores against the outcome, however here the size of the point is proportional to the propensity score weight. In this example the weights are calculated to estimate the average treatment effect. Details on the different treatment effects are discussed in section \@ref(intro-treatment-effects). The lines are the result of estimating the ordinary least squares regression for the treatment and control groups weighted by the propensity scores. 
 
 
-```{r intro-weighting, echo=FALSE, fig.cap='Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights'}
+```{r intro-weighting, echo=FALSE, fig.height = 4, fig.cap='Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights'}
 dat <- dat |> mutate(
 	ate_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATE'),
 	att_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATT'),
@@ -433,15 +457,17 @@ dat <- dat |> mutate(
 	atm_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATM')
 )
 ggplot(dat, aes(x = ps, y = outcome, color = as.logical(treatment))) +
-	geom_point(aes(size = ate_weight)) +
+	geom_point(aes(size = ate_weight), alpha = 0.5) +
 	geom_smooth(method = 'lm', se = FALSE, formula = y ~ x, aes(weight = ate_weight)) +
-	scale_size('PS Weight', range = c(1, 10)) +
+	scale_size('PS Weight', range = c(1, 8)) +
 	scale_color_manual('Treatment', values = palette2) 
 ```
 
 
 
-#### Treatment Effects
+#### Treatment Effects {#intro-treatment-effects}
+
+For randomized control trials we typically conduct a null hypothesis test of the differences between the means of the treatment and control groups (as defined in equation \@ref(eq:eq7) above). For PSA this is often done, but it is important to recognize that not all observations are counted equal in the causal estimation. And moreover, average treatment effect is not the only causal estimate measure we can calculate. This section defines four different causal estimates. They are presented in the context of propensity score weighting (see \@ref(chapter-weighting)) but conceptually apply to stratification and matching.
 
 ##### Average Treatment Effect (ATE)
 

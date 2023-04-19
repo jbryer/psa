@@ -1,6 +1,6 @@
 ---
-title: "Propensity Score Analysis with R"
-subtitle: ""
+title: "Estimating Causal Effects with Observational Data"
+subtitle: "Propensity Score Analysis with R"
 author: "Jason Bryer, Ph.D."
 # date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
@@ -413,10 +413,17 @@ ggplot(dat, aes(x = ps, color = as.logical(treatment))) +
 Independent sample tests (e.g. *t*-tests) are conducted within each stratum and pooled to provide an overall estimate.
 
 ```{r, echo=FALSE}
+strata5_out <- psych::describeBy(dat$outcome,
+								 group = list(dat$treatment, dat$strata5),
+								 mat = TRUE, skew = FALSE)
+names(strata5_out)[2:3] <- c('treatment', 'strata')
+strata5_out$treatment <- strata5_out$treatment == 1
+strata5_out <- merge(strata5_out, breaks5$labels, by = 'strata', all = TRUE)
 ggplot() +
 	geom_vline(xintercept = breaks5$breaks) +
+	geom_segment(data = strata5_out, aes(x = xmin, xend = xmax, y = mean, yend = mean, color = treatment), size = 2) +
 	geom_point(data = dat, aes(x = ps, y = outcome, color = as.logical(treatment)), alpha = 0.5) +
-	geom_text(data = breaks5$labels, aes(x = xmid, y = 0, label = strata), color = 'black', vjust = 0.7, size = 8) +
+	geom_text(data = breaks5$labels, aes(x = xmid, y = -2.5, label = strata), color = 'black', vjust = 0.7, size = 5) +
 	scale_color_manual('Treatment', values = palette2) +
 	xlab('Propensity Score') +
 	ggtitle('Scatter plot of propensity scores versus outcome',
