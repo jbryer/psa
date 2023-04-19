@@ -95,7 +95,7 @@
 <span class="header-section-number">C</span> Methods for Estimating Propensity Scores<a class="anchor" aria-label="anchor" href="#appendix-psmodels"><i class="fas fa-link"></i></a>
 </h1>
 <p>This appendix provide R code for multiple statistical models for estimating propensity scores. The examples use the <code>lalonde</code> dataset with the following formula:</p>
-<div class="sourceCode" id="cb210"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb209"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lalonde.formu</span> <span class="op">&lt;-</span> <span class="va">treat</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">educ</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">educ</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">black</span> <span class="op">+</span></span>
 <span>    <span class="va">hisp</span> <span class="op">+</span> <span class="va">married</span> <span class="op">+</span> <span class="va">nodegr</span> <span class="op">+</span> <span class="va">re74</span>  <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">re74</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">re75</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">re75</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="va">u74</span> <span class="op">+</span> <span class="va">u75</span></span></code></pre></div>
@@ -103,7 +103,7 @@
 <h2>
 <span class="header-section-number">C.1</span> Logistic Regression<a class="anchor" aria-label="anchor" href="#logistic-regression"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb211"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb210"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lr_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">lalonde.formu</span>,</span>
 <span>              data <span class="op">=</span> <span class="va">lalonde</span>,</span>
 <span>              family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="va">logit</span><span class="op">)</span><span class="op">)</span></span>
@@ -113,7 +113,7 @@
 <h2>
 <span class="header-section-number">C.2</span> Conditional Inference Trees with <code>party</code> package<a class="anchor" aria-label="anchor" href="#conditional-inference-trees-with-party-package"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb212"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb211"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://party.R-forge.R-project.org">party</a></span><span class="op">)</span></span>
 <span><span class="va">ctree_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/party/man/ctree.html">ctree</a></span><span class="op">(</span><span class="va">lalonde.formu</span>,</span>
 <span>                   data <span class="op">=</span> <span class="va">lalonde</span><span class="op">)</span></span>
@@ -123,7 +123,7 @@
 <h2>
 <span class="header-section-number">C.3</span> Recusrive Partitioning with <code>rpart</code><a class="anchor" aria-label="anchor" href="#recusrive-partitioning-with-rpart"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb213"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb212"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bethatkinson/rpart">rpart</a></span><span class="op">)</span></span>
 <span><span class="va">rpart_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/rpart/man/rpart.html">rpart</a></span><span class="op">(</span><span class="va">lalonde.formu</span>,</span>
 <span>                   data <span class="op">=</span> <span class="va">lalonde</span>,</span>
@@ -137,7 +137,7 @@
 <h2>
 <span class="header-section-number">C.4</span> Bayesian Logistic Regression<a class="anchor" aria-label="anchor" href="#bayesian-logistic-regression"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb214"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb213"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://mc-stan.org/rstanarm/">rstanarm</a></span><span class="op">)</span></span>
 <span><span class="va">stan_out</span> <span class="op">&lt;-</span> <span class="fu">stan_glm</span><span class="op">(</span><span class="va">lalonde.formu</span>,</span>
 <span>                     data <span class="op">=</span> <span class="va">lalonde</span><span class="op">)</span></span>
@@ -147,7 +147,7 @@
 <h2>
 <span class="header-section-number">C.5</span> Probit BART for dichotomous outcomes with Normal latents<a class="anchor" aria-label="anchor" href="#probit-bart-for-dichotomous-outcomes-with-normal-latents"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb215"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb214"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">BART</span><span class="op">)</span></span>
 <span><span class="va">bart_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BART/man/pbart.html">pbart</a></span><span class="op">(</span>x.train <span class="op">=</span> <span class="va">lalonde</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/allnames.html">all.vars</a></span><span class="op">(</span><span class="va">lalonde.formu</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
 <span>                  y.train <span class="op">=</span> <span class="va">lalonde</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/allnames.html">all.vars</a></span><span class="op">(</span><span class="va">lalonde.formu</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
@@ -157,7 +157,7 @@
 <h2>
 <span class="header-section-number">C.6</span> Random Forests<a class="anchor" aria-label="anchor" href="#random-forests"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb216"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb215"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://www.stat.berkeley.edu/~breiman/RandomForests/">randomForest</a></span><span class="op">)</span></span>
 <span><span class="va">rf_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/randomForest/man/randomForest.html">randomForest</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/update.formula.html">update.formula</a></span><span class="op">(</span><span class="va">lalonde.formu</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span><span class="op">)</span>,</span>
 <span>                       data <span class="op">=</span> <span class="va">lalonde</span><span class="op">)</span></span>
