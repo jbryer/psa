@@ -336,7 +336,7 @@ set.seed(2112)
 
 ```{r simulationSetup, cache=TRUE}
 n <- 500
-treatment_effect <- 2
+treatment_effect <- 1.5
 X <- mvtnorm::rmvnorm(n,
 					  mean = c(0.5, 1, 0),
 					  sigma = matrix(c(2, 1, 1,

@@ -213,11 +213,14 @@ Simply put, what Rosenbaum and Rubin (1983) proved was that observations similar
 
 Propensity score analysis is typically conducted in three phases, namely:
 
-1. Model for selection bias 
-	A. Estimate propensity scores
-	B. Check balance
-	C. Repeat A and B until sufficient balance is achieved
+1. Model for selection bias
+
+	A. Estimate propensity scores  
+	B. Check balance  
+	C. Repeat A and B until sufficient balance is optimized
+
 2. Estimate causal effects.
+
 3. Check for sensitivity to unobserved confounders.
 
 The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification (chapter \@ref(chapter-stratification)), matching (chapter \@ref(chapter-matching)), and weighting (chapter \@ref(chapter-weighting)).
@@ -229,7 +232,7 @@ Phase one of propensity score analysis is a cyclical process where propensity sc
 ```{r simulationSetup, cache=TRUE, echo=FALSE}
 set.seed(2112) 
 n <- 1000
-treatment_effect <- 2
+treatment_effect <- 1.5
 X <- mvtnorm::rmvnorm(n,
 					  mean = c(0.5, 1, 0),
 					  sigma = matrix(c(2, 1, 1,
@@ -255,7 +258,9 @@ ggplot(dat, aes(x = x1, y = x2, shape = x3, color = factor(treatment))) +
 	theme(legend.position = 'bottom')
 ```
 
-Figure \@ref(fig:sim-ggpairs) is a pairs plot [@R-GGally] showing the relationship between the covariates (i.e. `x1` and `x2`) and the outcome grouped by treatment. There is a statistically significant correlation between each of the covariates and the outcome suggesting there is selection bias that would bias any causal estimate. Indeed a simple null hypothesis test resulted in a difference of `r t_result$estimate |> diff() |> round(digits = 2) |> unname()` ($t_{`r round(t_result$parameter) |> unname()`} = `r round(t_result$statistic, digits = 2) |> unname()`$, *p* < 0.01), however we setup the simulation to have a mean difference of 2!
+Figure \@ref(fig:sim-ggpairs) is a pairs plot [@R-GGally] showing the relationship between the covariates (i.e. `x1` and `x2`) and the outcome grouped by treatment. There is a statistically significant correlation between each of the covariates and the outcome suggesting there is selection bias that would bias any causal estimate. 
+
+<!-- Indeed a simple null hypothesis test resulted in a difference of `r t_result$estimate |> diff() |> round(digits = 2) |> unname()` ($t_{`r round(t_result$parameter) |> unname()`} = `r round(t_result$statistic, digits = 2) |> unname()`$, *p* < 0.01), however we setup the simulation to have a mean difference of 2! -->
 
 
 ```{r sim-ggpairs, echo=FALSE, cache=TRUE, fig.cap = 'Pairs plot showing the relationships between covariates, treatment, and outcome'}
@@ -278,7 +283,7 @@ for(i in 1:p$nrow) {
 p
 ```
 
-```{r, echo=TRUE}
+```{r, eval=FALSE, echo=TRUE}
 t.test(outcome ~ treatment, data = dat)
 ```
 
@@ -302,7 +307,6 @@ ggplot(dat) +
 ```
 
 
-
 #### Evaluate Balance {#intro-balance}
 
 Once propensity scores are estimated it is important to verify that balance between the observed covariates is achieved. There are a number of ways of doing this. For matching methods where treatment and control units are paired, dependent sample tests can be usedd (e.g. *t*-tests for continuous variables and $\chi^2$ tests for categorical variables). However, significance testing is generally is problematic. Given the number of covariates, and hence null hypothesis tests conducted, the likelihood of committing type I and type II errors is very high. Moreover, many observational studies that we wish to use PSA with have very large sample sizes which, all else being equal, will shrink the standard error estimate often resulting in small *p*-values. Instead utilizing standardized effect sizes and graphical representations will provide better evidence as to whether balance has been achieved. The `PSAgraphics` package [@R-PSAgraphics] provides a number of functions to assist. Figure \@ref(fig:intro-multiple-balance-plots) is a balance plot the summarizes all covariates together. The *x*-axis is the standardized effect size and the *y*-axis is each covariate. The red line is the effect before propensity score adjustment and the blue is the effect after propensity score adjustment. Unfortunately there is not a conventional adjusted effect size threshold whihc indicates that sufficient balance has been achieved in the literature. @Cohen1988 is frequently cited for having indicated that an effect size between 0.2 and 0.3 is small. In general, I recommend trying to achieve adjdusted effect sizes less than 0.1. 
@@ -313,7 +317,9 @@ PSAgraphics::cv.bal.psa(covariates = dat[,c('x1','x2','x3')],
 						strata = 5)
 ```
 
-The plot on the left in figure \@ref(fig:intro-balance-plots) is balance assessment plot for a continuous variable. The exact procedures for stratification will be discussed in chapter \@ref(chapter-stratification) but in short, we divided the propensity scores into five strata using quintiles so that each stratum has the same number of observations. The yellow bars are the control group and the orange bars are the treatment group. We are looking for the center and spread to be roughly equivalent within each stratum. From this example we can see that stratum 5 has higher values than stratum 1. The plot on the right is a plot for categorical data using a bar plot.
+The plot on the left in figure \@ref(fig:intro-balance-plots) is balance assessment plot for a continuous variable. The exact procedures for stratification will be discussed in chapter \@ref(chapter-stratification), but in short, we divide the propensity scores into five strata using quintiles so that each stratum has the same number of observations. The yellow bars are the control group and the orange bars are the treatment group. We are looking for the center and spread to be roughly equivalent within each stratum. From this example we can see that stratum 5 has higher values than stratum 1. The plot on the right is a plot for categorical data using a bar plot.
+
+The plot on the right is a balance assessment plot for a qualitative variable. Here, stacked bars for treatment and control by strata show the distribution of the categories. Like the continous counterpart, we are looking for similar distributions within each stratum.
 
 ```{r intro-balance-plots, echo=FALSE, results = 'hide', fig.cap = 'Continuous (left) and categorical (right) covariate balance assessment plots', fig.show='hold', out.width='50%'}
 breaks5 <- psa::get_strata_breaks(dat$ps, n_strata = 5)
@@ -328,7 +334,6 @@ PSAgraphics::cat.psa(dat$x3,
 					 treatment = dat$treatment,
 					 strata = dat$strata5)
 ```
-
 
 We will see there are many choices for estimating propensity scores in the remainder of this book. In practice you will find that phase I of PSA will occupy most of your time. The robustness of your causal estimates will rely on achieving good balance in your observed covariates.
 
@@ -372,7 +377,7 @@ ggplot(dat, aes(x = ps, color = as.logical(treatment))) +
 	geom_vline(xintercept = breaks5$breaks, alpha = 0.5) +
 	geom_text(data = breaks5$labels, 
 			  aes(x = xmid, y = 0, label = strata),
-			  color = 'black', vjust = 0.8, size = 5) +
+			  color = 'black', vjust = 0, size = 4) +
 	scale_fill_manual('Treatment', values = palette2) +
 	scale_color_manual('Treatment', values = palette2) +
 	xlab('Propensity Score') + ylab('Density') +
@@ -399,7 +404,7 @@ ggplot() +
 
 Figure \@ref(fig:intro-circ-psa) provides an alternative way of depicting the results [@R-PSAgraphics]. This plots the average treatment (*x*-axis) versus control (*y*-axis) for each strata. The means are projected to a line perpendicular to the unit line (i.e. the line $y = x$) such that the tick marks represent the distribution of differences. The green bar corresponds to the 95% confidence interval. The size of the circles a proportional to the sample size within each stratum. In this example they are all the same but can be different when using other methods for estimation propensity scores such as classification trees (discussed in chapter \@ref(chapter-stratification) and appendix \@ref(appendix-psmodels)). Since $y = x$ points that fall on that line indicate a difference of zero (i.e. $y - x = 0$). By extension, if the confidence interval represented by the green line spans the unit line then one would fail to reject the null hypothesis. In this example however, there is a statistically significant treatment effect.
 
-```{r intro-circ-psa, echo=FALSE, results='hide', fig.cap='Propensity score assessment plot for five strata'}
+```{r intro-circ-psa, echo=FALSE, fig.width=16, fig.height=8, results='hide', fig.cap='Propensity score assessment plot for five strata'}
 PSAgraphics::circ.psa(dat$outcome, 
 					  dat$treatment, 
 					  dat$strata5,
