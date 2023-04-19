@@ -48,6 +48,7 @@ a ggplot2 expression.
 Stratification Plot
 }
 \examples{
+if(require(Matching)) {
 data(lalonde, package = 'Matching')
 lr_out <- glm(treat~age + I(age^2) + educ + I(educ^2) + black + 
               hisp + married + nodegr + re74  + I(re74^2) + re75 + I(re75^2) +
@@ -59,4 +60,5 @@ stratification_plot(ps = lalonde$ps,
 					treatment = lalonde$abcix,
 					outcome = log(lalonde$cardbill),
 					n_strata = 5)
+}
 }

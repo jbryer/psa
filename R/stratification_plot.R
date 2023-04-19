@@ -14,6 +14,7 @@
 #' @return a ggplot2 expression.
 #' @export
 #' @examples
+#' if(require(Matching)) {
 #' data(lalonde, package = 'Matching')
 #' lr_out <- glm(treat~age + I(age^2) + educ + I(educ^2) + black + 
 #'               hisp + married + nodegr + re74  + I(re74^2) + re75 + I(re75^2) +
@@ -25,6 +26,7 @@
 #' 					treatment = lalonde$abcix,
 #' 					outcome = log(lalonde$cardbill),
 #' 					n_strata = 5)
+#' }
 stratification_plot <- function(ps, treatment, outcome, 
 								n_strata = 5,
 								colors = c('#fc8d62', '#66c2a5'),
