@@ -394,7 +394,7 @@ strata5_out <- psych::describeBy(dat$outcome,
 names(strata5_out)[2:3] <- c('treatment', 'strata')
 strata5_out$treatment <- strata5_out$treatment == 1
 strata5_out <- merge(strata5_out, breaks5$labels, by = 'strata', all = TRUE)
-stratification_plot(ps = dat$ps,
+psa::stratification_plot(ps = dat$ps,
 					treatment = dat$treatment,
 					outcome = dat$outcome, 
 					n_strata = 5)

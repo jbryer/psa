@@ -16,15 +16,15 @@
 #' @examples
 #' if(require(Matching)) {
 #' data(lalonde, package = 'Matching')
-#' lr_out <- glm(treat~age + I(age^2) + educ + I(educ^2) + black + 
+#' lr_out <- glm(treat ~ age + I(age^2) + educ + I(educ^2) + black + 
 #'               hisp + married + nodegr + re74  + I(re74^2) + re75 + I(re75^2) +
 #'               u74 + u75,
 #' 			  data = lalonde, 
 #' 			  family = binomial(link = 'logit'))
 #' lalonde$ps <- fitted(lr_out)
 #' stratification_plot(ps = lalonde$ps,
-#' 					treatment = lalonde$abcix,
-#' 					outcome = log(lalonde$cardbill),
+#' 					treatment = lalonde$treat,
+#' 					outcome = log(lalonde$re78),
 #' 					n_strata = 5)
 #' }
 stratification_plot <- function(ps, treatment, outcome, 
