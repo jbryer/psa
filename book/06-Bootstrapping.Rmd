@@ -6,7 +6,7 @@ editor_options:
 # Bootstrapping {#chapter-bootstrapping}
 
 ```{r, cache=TRUE}
-require(PSAboot)
+library(PSAboot)
 
 boot.matching.1to3 <- function(Tr, Y, X, X.trans, formu, ...) {
 	return(boot.matching(Tr=Tr, Y=Y, X=X, X.trans=X.trans, formu=formu, M=3, ...))
