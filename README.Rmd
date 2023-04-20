@@ -55,12 +55,21 @@ remotes::install_github('jbryer/psa', build_vignettes = TRUE, dependencies = 'En
 Run the PSA Shiny App:
 
 ```{r, eval = FALSE}
-library(psa)
 psa::psa_shiny()
 ```
 
 ```{r, echo=FALSE}
 knitr::include_graphics('man/figures/psa_shiny_screenshots.gif')
+```
+
+To explore the PSA visualizations in this package through a simulation, run this Shiny application:
+
+```{r, eval = FALSE}
+psa::psa_simulation_shiny()
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics('man/figures/psa_simulation_screenshot.png')
 ```
 
 ## The `MatchBalance` Function
@@ -74,7 +83,7 @@ mb0.lalonde <- psa::MatchBalance(df = lalonde, formu=formu.lalonde)
 plot(mb0.lalonde)
 ```
 
-## The `loess.plot` Function
+## The `loess_plot` Function
 
 ```{r loess_plot, warning = FALSE, fig.width=10, fig.height=4}
 data(lalonde, package = 'Matching')
@@ -85,8 +94,8 @@ lr_out <- glm(treat ~ age + I(age^2) + educ + I(educ^2) + black +
 			  family = binomial(link = 'logit'))
 lalonde$ps <- fitted(lr_out)
 
-psa::loess.plot(x = lalonde$ps,
-				response = log(lalonde$re78 + 1),
+psa::loess_plot(ps = lalonde$ps,
+				outcome = log(lalonde$re78 + 1),
 				treatment = as.logical(lalonde$treat))
 ```
 

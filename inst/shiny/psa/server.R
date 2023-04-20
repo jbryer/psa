@@ -268,7 +268,7 @@ shinyServer(function(input, output, session) {
 			})
 			
 			output$loess <- renderPlot({
-				multilevelPSA::loess.plot(df.ps$ps,
+				multilevelPSA::loess_plot(df.ps$ps,
 						   response = df.ps$Y,
 						   treatment = df.ps$tr.logical)
 			})

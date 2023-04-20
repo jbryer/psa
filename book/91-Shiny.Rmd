@@ -1,10 +1,27 @@
 # Shiny Application {#appendix-shiny}
 
+The `psa` R package includes Shiny applications designed to conduct and explore propensity score analysis.
+
+## Propensity Score Analysis Shiny Application
+
+The main PSA Shiny application allows you to conduct all phases of PSA. The application contains several of the datasets discussed in section \@ref(intro-datasets) but you can also upload your own dataset.
+
 ```{r shiny, eval=FALSE}
-library(psa)
-psa_shiny()
+psa::psa_shiny()
 ```
 
 ```{r shiny-screenshot, echo=FALSE, fig.cap='PSA Shiny Application', out.width='100%'}
 knitr::include_graphics("figures/psashinyapp.png")
+```
+
+## Propensity Score Analysis Simulation Shiny Application
+
+The PSA Simulation Shiny application is designed to explore the figures introduced in chapter \@ref(chapter-introduction) for stratification, matching, and weighting. Using the same data simulation procedure used in that chapter, you can control a number of the parameters including treatment effect to explore how the visualizations change and how you can use them to make decisions about treatment effects.
+
+```{r shiny2, eval=FALSE}
+psa::psa_simulation_shiny()
+```
+
+```{r shiny-screenshot2, echo=FALSE, fig.cap='PSA Simulation Shiny Application', out.width='100%'}
+knitr::include_graphics("figures/psa_simulation_screenshot.png")
 ```

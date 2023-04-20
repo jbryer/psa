@@ -927,7 +927,7 @@ cat.psa(lalonde$nodegr, lalonde$treat, strata5)
 
 ```{r loessplot, fig.width=14, fig.height=7.5, echo=FALSE, results='hide'}
 psadf <- data.frame(ps = lalonde$ps, Y = lalonde$re78, Tr = lalonde$treat)
-loess.plot(psadf[psadf$Y < 30000,]$ps, response=psadf[psadf$Y < 30000,]$Y, 
+loess_plot(psadf[psadf$Y < 30000,]$ps, response=psadf[psadf$Y < 30000,]$Y, 
 		   treatment=as.logical(psadf[psadf$Y < 30000,]$Tr))
 ```
 

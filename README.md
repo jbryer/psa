@@ -75,7 +75,7 @@ plot(mb0.lalonde)
 
 <img src="man/figures/README-MatchBalance-1.png" width="100%" />
 
-## The `loess.plot` Function
+## The `loess_plot` Function
 
 ``` r
 data(lalonde, package = 'Matching')
@@ -86,8 +86,8 @@ lr_out <- glm(treat ~ age + I(age^2) + educ + I(educ^2) + black +
               family = binomial(link = 'logit'))
 lalonde$ps <- fitted(lr_out)
 
-psa::loess.plot(x = lalonde$ps,
-                response = log(lalonde$re78 + 1),
+psa::loess_plot(ps = lalonde$ps,
+                outcome = log(lalonde$re78 + 1),
                 treatment = as.logical(lalonde$treat))
 #> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 ```

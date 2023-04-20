@@ -187,8 +187,8 @@ PSAgraphics::loess.psa(response = log(lalonde$re78 + 1),
 ```
 
 ```{r}
-psa::loess.plot(x = lalonde$lr_ps,
-				response = log(lalonde$re78 + 1),
+psa::loess_plot(ps = lalonde$lr_ps,
+				outcome = log(lalonde$re78 + 1),
 				treatment = lalonde$treat == 1,
 				responseTitle = 'log(re78)',
 				plot.strata = 5,

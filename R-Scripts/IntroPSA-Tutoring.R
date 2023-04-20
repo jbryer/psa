@@ -174,7 +174,7 @@ cv.bal.psa(covars, tutoring$treat2, ps, strata)
 ## Phase II
 
 loess.psa(response=Y, treatment=Tr, propensity=ps) #from PSAgraphics
-loess.plot(ps, response=Y, treatment=as.logical(Tr), 
+loess_plot(ps, response=Y, treatment=as.logical(Tr), 
 		   method='loess', plot.strata=10) #from multilevelPSA
 
 ## For matching methods

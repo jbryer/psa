@@ -189,10 +189,10 @@ cv.bal.psa(covars, lalonde$treat, ps, strata)
 ## Phase II
 
 loess.psa(response=Y, treatment=Tr, propensity=ps) #from PSAgraphics
-loess.plot(ps, response=Y, treatment=as.logical(Tr), 
+loess_plot(ps, response=Y, treatment=as.logical(Tr), 
 		   method='loess', plot.strata=10) #from multilevelPSA
 # log transform the outcome variable
-loess.plot(ps, response=log(Y+1), treatment=as.logical(Tr), 
+loess_plot(ps, response=log(Y+1), treatment=as.logical(Tr), 
 		   plot.strata=10, method='loess') #from multilevelPSA
 
 ## For matching methods
