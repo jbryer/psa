@@ -19,6 +19,7 @@ fig:sim-loess
 fig:intro-stratification
 fig:intro-stratification-scatter
 fig:intro-circ-psa
+fig:intro-matching
 fig:intro-matching-granovads
 fig:intro-weighting
 eq:eqate
@@ -47,6 +48,7 @@ fig:multilevelpsa-treeplot
 fig:multilevelpsa-plot
 fig:multilevelpsa-difference-plot
 fig:shiny-screenshot
+fig:shiny-screenshot2
 chapter-introduction
 counterfactual-model-for-causality
 randomized-control-trials-the-gold-standard
@@ -66,7 +68,7 @@ average-treatment-effect-among-the-control-atc
 average-treatment-effect-among-the-evenly-matched-atm
 phase-iii-sensitivity-analysis
 r-packages
-datasets
+intro-datasets
 lalonde
 lindner
 tutoring
@@ -103,6 +105,8 @@ chapter-missing
 chapter-non-binary
 chapter-multilevelpsa
 appendix-shiny
+propensity-score-analysis-shiny-application
+propensity-score-analysis-simulation-shiny-application
 appendix-psranges
 appendix-psmodels
 logistic-regression

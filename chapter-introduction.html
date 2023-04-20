@@ -328,11 +328,17 @@ Figure 1.14: Propensity score assessment plot for five strata
 <span class="header-section-number">1.3.2.2</span> Matching<a class="anchor" aria-label="anchor" href="#matching"><i class="fas fa-link"></i></a>
 </h4>
 <p>For matching methods we wish to pair treatment observations with control observations. As will be discussed in chapter <a href="chapter-matching.html#chapter-matching">3</a> there are numerous algorithms for finding matches. For this example a simple one-to-one match was found using the nearest neighbor based upon the propensity score. Additionally, a caliper of 0.1 was used meaning that an observation would not be matched if the distance to another observation was more than 0.1 standard deviations away. The lines in the figure correspond to the observations that were matched. Since observations are matched, dependent sample tests (e.g. <em>t</em>-tests) are used to estimate the treatment effects.</p>
-<p>Similar to Figure <a href="chapter-introduction.html#fig:intro-circ-psa">1.14</a> for stratification, Figure <a href="chapter-introduction.html#fig:intro-matching-granovads">1.15</a> is a dependent sample assessment plot <span class="citation">(Danielak et al. 2015)</span> where each point represents a matched pair. The treatment observations are plotted on the <em>x</em>-axis and control observations on the <em>y</em>-axis. The points on the line perpendicular to the unit line represent the distribution of difference scores. The confidence interval is in purple and clearly does not span the unit line indicating a statistically significant treatment effect.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:intro-matching"></span>
+<img src="01-Introduction_files/figure-html/intro-matching-1.png" alt="Scatterplot of propensity score versus outcome with matched pairs connected" width="100%"><p class="caption">
+Figure 1.15: Scatterplot of propensity score versus outcome with matched pairs connected
+</p>
+</div>
+<p>Similar to Figure <a href="chapter-introduction.html#fig:intro-circ-psa">1.14</a> for stratification, Figure <a href="chapter-introduction.html#fig:intro-matching-granovads">1.16</a> is a dependent sample assessment plot <span class="citation">(Danielak et al. 2015)</span> where each point represents a matched pair. The treatment observations are plotted on the <em>x</em>-axis and control observations on the <em>y</em>-axis. The points on the line perpendicular to the unit line represent the distribution of difference scores. The confidence interval is in purple and clearly does not span the unit line indicating a statistically significant treatment effect.</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:intro-matching-granovads"></span>
 <img src="01-Introduction_files/figure-html/intro-matching-granovads-1.png" alt="Dependent sample assessment plot" width="100%"><p class="caption">
-Figure 1.15: Dependent sample assessment plot
+Figure 1.16: Dependent sample assessment plot
 </p>
 </div>
 </div>
@@ -340,11 +346,11 @@ Figure 1.15: Dependent sample assessment plot
 <h4>
 <span class="header-section-number">1.3.2.3</span> Weighting<a class="anchor" aria-label="anchor" href="#weighting"><i class="fas fa-link"></i></a>
 </h4>
-<p>Propensity score weighting is useful when you wish to use the propensity scores within other regression models. Specifically, each observation is weighted by the inverse of the probability of being in that group. Figure <a href="chapter-introduction.html#fig:intro-weighting">1.16</a> plots the propensity scores against the outcome, however here the size of the point is proportional to the propensity score weight. In this example the weights are calculated to estimate the average treatment effect. Details on the different treatment effects are discussed in section <a href="chapter-introduction.html#intro-treatment-effects">1.3.2.4</a>. A Loess regression line (blue) with an approximate 95% confidence interval (grey) is provided along with a line <span class="math inline">\(y - 0\)</span>. Since the Loess regression lines does not overlap zero, we would conclude there is a statistically significant treatment effect across the entire range of propensity scores. In later examples of the book we will find that not all treatment effects are homogeneous meaning the treatment effect is not the same across the entire range of propensity scores. This plot, along with the Loess regression plot (Figure @ref{sim-loess}) are effective tools for determining whether treatment effects may differ depending on different covariate profiles.</p>
+<p>Propensity score weighting is useful when you wish to use the propensity scores within other regression models. Specifically, each observation is weighted by the inverse of the probability of being in that group. Figure <a href="chapter-introduction.html#fig:intro-weighting">1.17</a> plots the propensity scores against the outcome, however here the size of the point is proportional to the propensity score weight. In this example the weights are calculated to estimate the average treatment effect. Details on the different treatment effects are discussed in section <a href="chapter-introduction.html#intro-treatment-effects">1.3.2.4</a>. A Loess regression line (blue) with an approximate 95% confidence interval (grey) is provided along with a line <span class="math inline">\(y - 0\)</span>. Since the Loess regression lines does not overlap zero, we would conclude there is a statistically significant treatment effect across the entire range of propensity scores. In later examples of the book we will find that not all treatment effects are homogeneous meaning the treatment effect is not the same across the entire range of propensity scores. This plot, along with the Loess regression plot (Figure @ref{sim-loess}) are effective tools for determining whether treatment effects may differ depending on different covariate profiles.</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:intro-weighting"></span>
 <img src="01-Introduction_files/figure-html/intro-weighting-1.png" alt="Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights" width="100%"><p class="caption">
-Figure 1.16: Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights
+Figure 1.17: Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights
 </p>
 </div>
 </div>
@@ -357,7 +363,7 @@ Figure 1.16: Scatter plot of propensity scores versus outcome with point sizes c
 <h5>
 <span class="header-section-number">1.3.2.4.1</span> Average Treatment Effect (ATE)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-ate"><i class="fas fa-link"></i></a>
 </h5>
-<p>The average treatment effect (ATE) is the most understood estimate given that it has a direct analog to RCTs. We could estimate ATE from an RCT using this approach by simply assuming everyone has a propensity score of 0.5 since they all have a 50% of being in the treatment. That is, we assume that every treatment unit could be interchangeable with a control unit. For PSA though, each unit has a different propensity score. The goal is to compare units with similar propensity scores. And as we saw above in Figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a> the distributions for treatment and control are not the same. Figure @ref{fig:ate-hist} depicts how the ATE works in practice, in particular how different units are weighted more or less towards the ATE estimate as we move across the propensity score range. The darker color represents the propensity score distribution as estimated above, but the light bars represent the distribution used in the ATE calculation. For treatment units with lower propensity scores (for which there are fewer of) a weighted more to ATE calculation. As we move right across the propensity score range control units with large propensity scores will be weighted more in that range.</p>
+<p>The average treatment effect (ATE) is the most understood estimate given that it has a direct analog to RCTs. We could estimate ATE from an RCT using this approach by simply assuming everyone has a propensity score of 0.5 since they all have a 50% of being in the treatment. That is, we assume that every treatment unit could be interchangeable with a control unit. For PSA though, each unit has a different propensity score. The goal is to compare units with similar propensity scores. And as we saw above in Figure <a href="chapter-introduction.html#fig:sim-dist">1.8</a> the distributions for treatment and control are not the same. Figure <a href="chapter-introduction.html#fig:ate-hist">1.18</a> depicts how the ATE works in practice, in particular how different units are weighted more or less towards the ATE estimate as we move across the propensity score range. The darker color represents the propensity score distribution as estimated above, but the light bars represent the distribution used in the ATE calculation. For treatment units with lower propensity scores (for which there are fewer of) a weighted more to ATE calculation. As we move right across the propensity score range control units with large propensity scores will be weighted more in that range.</p>
 <p><span class="math display" id="eq:eqate">\[\begin{equation}
 \begin{aligned}
 ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X)
@@ -367,7 +373,7 @@ ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X)
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:ate-hist"></span>
 <img src="01-Introduction_files/figure-html/ate-hist-1.png" alt="Histogram of average treatement effect" width="100%"><p class="caption">
-Figure 1.17: Histogram of average treatement effect
+Figure 1.18: Histogram of average treatement effect
 </p>
 </div>
 </div>
@@ -375,7 +381,7 @@ Figure 1.17: Histogram of average treatement effect
 <h5>
 <span class="header-section-number">1.3.2.4.2</span> Average Treatment Effect Among the Treated (ATT)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-treated-att"><i class="fas fa-link"></i></a>
 </h5>
-<p>The average treatment effect among the treated (ATT) uses the treated units as the primary focus. From Figure <a href="chapter-introduction.html#fig:att-hist">1.18</a> we see that the entire treatment group is used and there is no weighting up or down. However, for the control group we weight down (the grey bars) their values on the lower end of the propensity score range to match the distribution of the treatment group. Conversely, control group observations are weighted up on the right side of the propensity score range, again, to closely match the distribution of the treatment group. In the context of matching where we wish to pair treatment and control units, the goal is to use all treatment observations, therefore it is possible to not use some control observations with smaller propensity scores whereas some control observations with larger propensity scores may be reused in order to find a match for every treatment observation.</p>
+<p>The average treatment effect among the treated (ATT) uses the treated units as the primary focus. From Figure <a href="chapter-introduction.html#fig:att-hist">1.19</a> we see that the entire treatment group is used and there is no weighting up or down. However, for the control group we weight down (the grey bars) their values on the lower end of the propensity score range to match the distribution of the treatment group. Conversely, control group observations are weighted up on the right side of the propensity score range, again, to closely match the distribution of the treatment group. In the context of matching where we wish to pair treatment and control units, the goal is to use all treatment observations, therefore it is possible to not use some control observations with smaller propensity scores whereas some control observations with larger propensity scores may be reused in order to find a match for every treatment observation.</p>
 <p>Mathematically, ATT is defined in equation <a href="chapter-introduction.html#eq:eqatt">(1.9)</a>. The important difference between this at ATE is that we are calculating the expected value given <span class="math inline">\(X = 1\)</span>, which indicates placement in the treatment.</p>
 <p><span class="math display" id="eq:eqatt">\[\begin{equation}
 \begin{aligned}
@@ -386,7 +392,7 @@ ATT = E(Y_1 - Y_0 | X = 1) = E(Y_1 | X = 1) - E(Y_0 | X = 1)
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:att-hist"></span>
 <img src="01-Introduction_files/figure-html/att-hist-1.png" alt="Histogram of average treatement among the treated" width="100%"><p class="caption">
-Figure 1.18: Histogram of average treatement among the treated
+Figure 1.19: Histogram of average treatement among the treated
 </p>
 </div>
 </div>
@@ -405,7 +411,7 @@ ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0)
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:atc-hist"></span>
 <img src="01-Introduction_files/figure-html/atc-hist-1.png" alt="Histogram of average treatement among the control" width="100%"><p class="caption">
-Figure 1.19: Histogram of average treatement among the control
+Figure 1.20: Histogram of average treatement among the control
 </p>
 </div>
 </div>
@@ -413,7 +419,7 @@ Figure 1.19: Histogram of average treatement among the control
 <h5>
 <span class="header-section-number">1.3.2.4.4</span> Average Treatment Effect Among the Evenly Matched (ATM)<a class="anchor" aria-label="anchor" href="#average-treatment-effect-among-the-evenly-matched-atm"><i class="fas fa-link"></i></a>
 </h5>
-<p>The average treatment effect among the evenly matched (ATM) is a relatively new estimate developed specifically for propensity score weighting but is closely related to what is estimated when conducting one-to-one matching. Unlike ATT and ATC where not all observations are weighted equally, for the calculation of ATM all observations included in the estimation have equal weight. As depicted in Figure <a href="chapter-introduction.html#fig:acm-hist">1.20</a> there are control observations with small propensity scores that are not used and treatment observations with large propensity scores that are not used (represented by the grey bars). This closely mimics what occurs in one-to-one matching. In one-to-one matching any observation can be used only once and can only be matched to one observation of the other group. Hence, it tends to work out that only observations near the mean of the propensity score range are included. See <span class="citation">Li and Greene (2013)</span>, <span class="citation">McGowan (2018)</span>, and <span class="citation">Samuels (2017)</span> for more details.</p>
+<p>The average treatment effect among the evenly matched (ATM) is a relatively new estimate developed specifically for propensity score weighting but is closely related to what is estimated when conducting one-to-one matching. Unlike ATT and ATC where not all observations are weighted equally, for the calculation of ATM all observations included in the estimation have equal weight. As depicted in Figure <a href="chapter-introduction.html#fig:acm-hist">1.21</a> there are control observations with small propensity scores that are not used and treatment observations with large propensity scores that are not used (represented by the grey bars). This closely mimics what occurs in one-to-one matching. In one-to-one matching any observation can be used only once and can only be matched to one observation of the other group. Hence, it tends to work out that only observations near the mean of the propensity score range are included. See <span class="citation">Li and Greene (2013)</span>, <span class="citation">McGowan (2018)</span>, and <span class="citation">Samuels (2017)</span> for more details.</p>
 <p><span class="math display" id="eq:eqatm">\[\begin{equation}
 \begin{aligned}
 ATM_d = E(Y_1 - Y_0 | M_d = 1)
@@ -423,7 +429,7 @@ ATM_d = E(Y_1 - Y_0 | M_d = 1)
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:acm-hist"></span>
 <img src="01-Introduction_files/figure-html/acm-hist-1.png" alt="Histogram of average treatment effect among the evenly matched" width="100%"><p class="caption">
-Figure 1.20: Histogram of average treatment effect among the evenly matched
+Figure 1.21: Histogram of average treatment effect among the evenly matched
 </p>
 </div>
 </div>
@@ -466,9 +472,9 @@ Figure 1.20: Histogram of average treatment effect among the evenly matched
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'jbryer/psa'</span>, dependencies <span class="op">=</span> <span class="st">'Enhances'</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="datasets" class="section level2" number="1.5">
+<div id="intro-datasets" class="section level2" number="1.5">
 <h2>
-<span class="header-section-number">1.5</span> Datasets<a class="anchor" aria-label="anchor" href="#datasets"><i class="fas fa-link"></i></a>
+<span class="header-section-number">1.5</span> Datasets<a class="anchor" aria-label="anchor" href="#intro-datasets"><i class="fas fa-link"></i></a>
 </h2>
 <p>This section provides a description of the datasets that will be used throughout this book.</p>
 <div id="lalonde" class="section level3" number="1.5.1">
@@ -822,7 +828,7 @@ Figure 1.20: Histogram of average treatment effect among the evenly matched
 </li>
 <li><a class="nav-link" href="#r-packages"><span class="header-section-number">1.4</span> R Packages</a></li>
 <li>
-<a class="nav-link" href="#datasets"><span class="header-section-number">1.5</span> Datasets</a><ul class="nav navbar-nav">
+<a class="nav-link" href="#intro-datasets"><span class="header-section-number">1.5</span> Datasets</a><ul class="nav navbar-nav">
 <li><a class="nav-link" href="#lalonde"><span class="header-section-number">1.5.1</span> National Supported Work Demonstration (lalonde)</a></li>
 <li><a class="nav-link" href="#lindner"><span class="header-section-number">1.5.2</span> Lindner Center (lindner)</a></li>
 <li><a class="nav-link" href="#tutoring"><span class="header-section-number">1.5.3</span> Tutoring (tutoring)</a></li>

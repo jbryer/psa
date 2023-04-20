@@ -271,8 +271,8 @@ Figure 2.4: Covariate balance plots for numeric variables
 ## 9        22       22 5.182703 6.981383  1.7986801
 ## 10       18       27 6.047529 7.820786  1.7732573</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/loess.plot.html">loess.plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span>,</span>
-<span>                response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/loess_plot.html">loess_plot</a></span><span class="op">(</span>ps <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span>,</span>
+<span>                outcome <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,</span>
 <span>                responseTitle <span class="op">=</span> <span class="st">'log(re78)'</span>,</span>
 <span>                plot.strata <span class="op">=</span> <span class="fl">5</span>,</span>
