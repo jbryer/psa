@@ -427,17 +427,6 @@ dat_match <- data.frame(treat_ps = dat[match_out$index.treated,]$ps,
 						treat_outcome = dat[match_out$index.treated,]$outcome,
 						control_ps = dat[match_out$index.control,]$ps,
 						control_outcome = dat[match_out$index.control,]$outcome)
-ggplot() +
-	geom_point(data = dat, aes(x = ps, y = outcome, color = as.logical(treatment)), alpha = 0.5) +
-	geom_segment(data = dat_match[sample(nrow(dat_match), 200),],
-				 aes(x = treat_ps,
-				 	 xend = control_ps,
-				 	 y = treat_outcome,
-				 	 yend = control_outcome,
-				 	 color = treat_outcome > control_outcome),
-				 alpha = 0.5) +
-	scale_color_manual('Treatment', values = palette2) +
-	xlab('Propensity Score')
 ```
 
 Similar to Figure \@ref(fig:intro-circ-psa) for stratification, Figure \@ref(fig:intro-matching-granovads) is a dependent sample assessment plot [@R-granovaGG] where each point represents a matched pair. The treatment observations are plotted on the *x*-axis and control observations on the *y*-axis. The points on the line perpendicular to the unit line represent the distribution of difference scores. The confidence interval is in purple and clearly does not span the unit line indicating a statistically significant treatment effect.
@@ -460,13 +449,10 @@ dat <- dat |> mutate(
 	atc_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATC'),
 	atm_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATM')
 )
-ggplot(dat, aes(x = ps, y = outcome)) +
-	geom_point(aes(size = ate_weight, color = as.logical(treatment)), alpha = 0.5) +
-	geom_hline(yintercept = 0) + 
-	geom_smooth(method = 'loess', se = TRUE, formula = y ~ x, aes(weight = ate_weight)) +
-	# geom_smooth(method = 'lm', se = TRUE, formula = y ~ x, aes(weight = ate_weight)) +
-	scale_size('PS Weight', range = c(1, 8)) +
-	scale_color_manual('Treatment', values = palette2) 
+psa::weighting_plot(ps = dat$ps,
+					treatment = dat$treatment,
+					outcome = dat$outcome, 
+					estimand = 'ATE')
 ```
 
 

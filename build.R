@@ -5,11 +5,10 @@ source('data-raw/psa_citations.R') # Build the psa_citations data file
 
 usethis::use_tidy_description()
 devtools::document()
-devtools::build_readme()
 devtools::install(upgrade = 'never')
 devtools::install(upgrade = 'never', build_vignettes = TRUE)
-devtools::build_readme()
 devtools::build()
+devtools::build_readme()
 
 devtools::check(cran = TRUE)
 

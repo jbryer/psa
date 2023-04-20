@@ -78,25 +78,64 @@ plot(mb0.lalonde)
 ## The `loess.plot` Function
 
 ``` r
-data(pisana, package = 'multilevelPSA')
-data(pisa.psa.cols, package = 'multilevelPSA')
-cnt <- 'USA' # Can change this to USA, MEX, or CAN
-pisa_usa <- pisana[pisana$CNT == cnt,]
-pisa_usa$treat <- as.integer(pisa_usa$PUBPRIV) %% 2
-lr.results <- glm(treat ~ ., data=pisa_usa[,c('treat',pisa.psa.cols)], family='binomial')
-st <- data.frame(ps=fitted(lr.results), 
-                math=apply(pisa_usa[,paste('PV', 1:5, 'MATH', sep='')], 1, mean), 
-                pubpriv=pisa_usa$treat)
-st$treat = as.logical(st$pubpriv)
-psa::loess.plot(x = st$ps, 
-                response = st$math, 
-                treatment = st$treat, 
-                percentPoints.control = 0.4, 
-                percentPoints.treat=0.4)
-#> `geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
+data(lalonde, package = 'Matching')
+lr_out <- glm(treat ~ age + I(age^2) + educ + I(educ^2) + black + 
+              hisp + married + nodegr + re74  + I(re74^2) + re75 + I(re75^2) +
+              u74 + u75,
+              data = lalonde, 
+              family = binomial(link = 'logit'))
+lalonde$ps <- fitted(lr_out)
+
+psa::loess.plot(x = lalonde$ps,
+                response = log(lalonde$re78 + 1),
+                treatment = as.logical(lalonde$treat))
+#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 ```
 
 <img src="man/figures/README-loess_plot-1.png" width="100%" />
+
+## The `weighting_plot` Function
+
+``` r
+psa::weighting_plot(ps = lalonde$ps,
+                    treatment = lalonde$treat,
+                    outcome = (lalonde$re78))
+```
+
+<img src="man/figures/README-weighting_plot-1.png" width="100%" />
+
+## The `stratification_plot` Function
+
+``` r
+psa::stratification_plot(ps = lalonde$ps,
+                         treatment = lalonde$treat,
+                         outcome = lalonde$re78)
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+## The `matching_plot` Function
+
+``` r
+match_out <- Matching::Match(Y = lalonde$re78,
+                             Tr = lalonde$treat,
+                             X = lalonde$ps,
+                             caliper = 0.1,
+                             replace = FALSE,
+                             estimand = 'ATE')
+#> Warning in Matching::Match(Y = lalonde$re78, Tr = lalonde$treat, X =
+#> lalonde$ps, : replace==FALSE, but there are more (weighted) control obs than
+#> treated obs.  Some control obs will not be matched.  You may want to estimate
+#> ATT instead.
+
+psa::matching_plot(ps = lalonde$ps,
+                   treatment = lalonde$treat,
+                   outcome = log(lalonde$re78 + 1),
+                   index_treated = match_out$index.treated,
+                   index_control = match_out$index.control)
+```
+
+<img src="man/figures/README-matching_plot-1.png" width="100%" />
 
 ## The `merge.mids` Function
 
