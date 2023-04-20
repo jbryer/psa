@@ -346,7 +346,7 @@ Figure 1.16: Dependent sample assessment plot
 <h4>
 <span class="header-section-number">1.3.2.3</span> Weighting<a class="anchor" aria-label="anchor" href="#weighting"><i class="fas fa-link"></i></a>
 </h4>
-<p>Propensity score weighting is useful when you wish to use the propensity scores within other regression models. Specifically, each observation is weighted by the inverse of the probability of being in that group. Figure <a href="chapter-introduction.html#fig:intro-weighting">1.17</a> plots the propensity scores against the outcome, however here the size of the point is proportional to the propensity score weight. In this example the weights are calculated to estimate the average treatment effect. Details on the different treatment effects are discussed in section <a href="chapter-introduction.html#intro-treatment-effects">1.3.2.4</a>. The lines are the result of estimating the ordinary least squares regression for the treatment and control groups weighted by the propensity scores.</p>
+<p>Propensity score weighting is useful when you wish to use the propensity scores within other regression models. Specifically, each observation is weighted by the inverse of the probability of being in that group. Figure <a href="chapter-introduction.html#fig:intro-weighting">1.17</a> plots the propensity scores against the outcome, however here the size of the point is proportional to the propensity score weight. In this example the weights are calculated to estimate the average treatment effect. Details on the different treatment effects are discussed in section <a href="chapter-introduction.html#intro-treatment-effects">1.3.2.4</a>. A Loess regression line (blue) with an approximate 95% confidence interval (grey) is provided along with a line <span class="math inline">\(y - 0\)</span>. Since the Loess regression lines does not overlap zero, we would conclude there is a statistically significant treatment effect across the entire range of propensity scores. In later examples of the book we will find that not all treatment effects are homogeneous meaning the treatment effect is not the same across the entire range of propensity scores. This plot, along with the Loess regression plot (Figure @ref{sim-loess}) are effective tools for determining whether treatment effects may differ depending on different covariate profiles.</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:intro-weighting"></span>
 <img src="01-Introduction_files/figure-html/intro-weighting-1.png" alt="Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights" width="100%"><p class="caption">
@@ -859,7 +859,7 @@ Figure 1.21: Histogram of average treatment effect among the evenly matched
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-19.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-20.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
