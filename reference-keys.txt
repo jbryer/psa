@@ -19,7 +19,6 @@ fig:sim-loess
 fig:intro-stratification
 fig:intro-stratification-scatter
 fig:intro-circ-psa
-fig:intro-matching
 fig:intro-matching-granovads
 fig:intro-weighting
 eq:eqate
