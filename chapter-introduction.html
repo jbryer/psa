@@ -297,9 +297,9 @@ Figure 1.10: Continuous (left) and categorical (right) covariate balance assessm
 Figure 1.11: Scatter plot of propensity scores against outcome with Loess regression lines
 </p>
 </div>
-<div id="stratificaiton" class="section level4" number="1.3.2.1">
+<div id="stratification" class="section level4" number="1.3.2.1">
 <h4>
-<span class="header-section-number">1.3.2.1</span> Stratificaiton<a class="anchor" aria-label="anchor" href="#stratificaiton"><i class="fas fa-link"></i></a>
+<span class="header-section-number">1.3.2.1</span> Stratification<a class="anchor" aria-label="anchor" href="#stratification"><i class="fas fa-link"></i></a>
 </h4>
 <p>Stratification involves dividing observations into strata (or subclasses) based upon the propensity scores so that treated and comparison units are similar within each strata. Cochran (1968) observed that creating five subclassifications (stratum) removes at least 90% of the bias in the estimated treatment effect. With larger sample sizes it may be appropriate to use up to 10 strata, however more typically does not provide much additional benefit. Figure <a href="chapter-introduction.html#fig:intro-stratification">1.12</a> provides density distribution of propensity scores for the treatment and control observations. For this example, strata are defined using quintiles so that each stratum has the same number of observations. The vertical lines separate the strata. We can see that for stratum A there are many more control observations than treatment observations. Conversely, stratum E has many more treatment observations than control observations. As we will see in section <a href="chapter-introduction.html#intro-treatment-effects">1.3.2.4</a> this will have implications for how treatment effects are calculated. However, what is important, and what we verified in section <a href="chapter-introduction.html#intro-balance">1.3.1.1</a>, observations within each stratum are very similar across all observed covariates.</p>
 <div class="figure" style="text-align: center">

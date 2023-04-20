@@ -57,7 +57,7 @@ phases-of-propensity-score-analysis
 phase-i-estimate-propensity-scores
 intro-balance
 introduction-effects
-stratificaiton
+stratification
 matching
 weighting
 intro-treatment-effects
