@@ -98,9 +98,9 @@ estimate-atc
 average-treatment-effect-among-the-evenly-matched-atm-1
 check-balance-with-atm-weights
 estimate-atm
-chapter-missing
 chapter-sensitivity
 chapter-bootstrapping
+chapter-missing
 chapter-non-binary
 chapter-multilevelpsa
 appendix-shiny

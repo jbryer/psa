@@ -7,7 +7,7 @@ editor_options:
 
 
 ```r
-require(PSAboot)
+library(PSAboot)
 
 boot.matching.1to3 <- function(Tr, Y, X, X.trans, formu, ...) {
 	return(boot.matching(Tr=Tr, Y=Y, X=X, X.trans=X.trans, formu=formu, M=3, ...))
@@ -80,8 +80,8 @@ summary(boot_out)
 ##    Complete estimate = 2004
 ##    Complete CI = [701, 3307]
 ##    Bootstrap pooled estimate = 1653
-##    Bootstrap weighted pooled estimate = 1634
-##    Bootstrap pooled CI = [180, 3125]
+##    Bootstrap weighted pooled estimate = 1635
+##    Bootstrap pooled CI = [181, 3126]
 ##    68% of bootstrap samples have confidence intervals that do not span zero.
 ##       68% positive.
 ##       0% negative.
@@ -93,7 +93,7 @@ plot(boot_out)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="07-Bootstrapping_files/figure-html/psaboot-plot-1.png" alt="Mean difference across all bootstrap samples by method" width="100%" />
+<img src="06-Bootstrapping_files/figure-html/psaboot-plot-1.png" alt="Mean difference across all bootstrap samples by method" width="100%" />
 <p class="caption">(\#fig:psaboot-plot)Mean difference across all bootstrap samples by method</p>
 </div>
 
@@ -102,7 +102,7 @@ plot(boot_out)
 boxplot(boot_out)
 ```
 
-<img src="07-Bootstrapping_files/figure-html/psaboot-boxplot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="06-Bootstrapping_files/figure-html/psaboot-boxplot-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 
@@ -110,7 +110,7 @@ boxplot(boot_out)
 matrixplot(boot_out)
 ```
 
-<img src="07-Bootstrapping_files/figure-html/psaboot-matrixplot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="06-Bootstrapping_files/figure-html/psaboot-matrixplot-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 ```r
@@ -153,14 +153,14 @@ boot_balance
 plot(boot_balance)
 ```
 
-<img src="07-Bootstrapping_files/figure-html/psaboot-balance-plot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="06-Bootstrapping_files/figure-html/psaboot-balance-plot-1.png" width="100%" style="display: block; margin: auto;" />
 
 
 ```r
 boxplot(boot_balance) + geom_hline(yintercept=.1, color='red')
 ```
 
-<img src="07-Bootstrapping_files/figure-html/psaboot-balance-boxplot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="06-Bootstrapping_files/figure-html/psaboot-balance-boxplot-1.png" width="100%" style="display: block; margin: auto;" />
 
 Details are available within the returned object
 

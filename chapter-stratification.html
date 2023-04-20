@@ -73,9 +73,9 @@
 <li><a class="active" href="chapter-stratification.html"><span class="header-section-number">2</span> Stratification</a></li>
 <li><a class="" href="chapter-matching.html"><span class="header-section-number">3</span> Matching</a></li>
 <li><a class="" href="chapter-weighting.html"><span class="header-section-number">4</span> Weighting</a></li>
-<li><a class="" href="chapter-missing.html"><span class="header-section-number">5</span> Missing Data</a></li>
-<li><a class="" href="chapter-sensitivity.html"><span class="header-section-number">6</span> Sensitivity Analysis</a></li>
-<li><a class="" href="chapter-bootstrapping.html"><span class="header-section-number">7</span> Bootstrapping</a></li>
+<li><a class="" href="chapter-sensitivity.html"><span class="header-section-number">5</span> Sensitivity Analysis</a></li>
+<li><a class="" href="chapter-bootstrapping.html"><span class="header-section-number">6</span> Bootstrapping</a></li>
+<li><a class="" href="chapter-missing.html"><span class="header-section-number">7</span> Missing Data</a></li>
 <li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
 <li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">9</span> Multilevel PSA</a></li>
 <li class="book-part">Appendix</li>
@@ -105,14 +105,14 @@
 <span class="header-section-number">2.1</span> Phase I: Estimate Propensity Scores (Logistic regression)<a class="anchor" aria-label="anchor" href="#phase-i-estimate-propensity-scores-logistic-regression"><i class="fas fa-link"></i></a>
 </h2>
 <p>To begin let’s estimate propensity scores using logistic regression with the National Supported Work Demonostration (<code>lalonde</code>) dataset <span class="citation">(Lalonde 1986)</span>. Here, we are using the final model specification used by <span class="citation">Dehejia and Wahba (1999)</span>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lalonde</span>, package <span class="op">=</span> <span class="st">'Matching'</span><span class="op">)</span></span>
 <span><span class="va">lalonde_formu</span> <span class="op">&lt;-</span> <span class="va">treat</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">educ</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">educ</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">black</span> <span class="op">+</span></span>
 <span>    <span class="va">hisp</span> <span class="op">+</span> <span class="va">married</span> <span class="op">+</span> <span class="va">nodegr</span> <span class="op">+</span> <span class="va">re74</span>  <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">re74</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">re75</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">re75</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">lr_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">lalonde_formu</span>,</span>
 <span>              data <span class="op">=</span> <span class="va">lalonde</span>,</span>
 <span>              family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">'logit'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">lr_out</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## Call:
@@ -148,10 +148,10 @@
 ## AIC: 607.07
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">lr_out</span><span class="op">)</span></span></code></pre></div>
 <p>Check the distributions of propensity scores to ensure we have good overlap</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">lalonde</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">lr_ps</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/logical.html">as.logical</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">geom_density</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">scale_color_manual</span><span class="op">(</span><span class="st">'Treatment'</span>, values <span class="op">=</span> <span class="va">palette2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -162,7 +162,7 @@
 <span class="header-section-number">2.1.1</span> Stratifying<a class="anchor" aria-label="anchor" href="#stratifying"><i class="fas fa-link"></i></a>
 </h3>
 <p>Stratification using quintiles.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">breaks5</span> <span class="op">&lt;-</span> <span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/get_strata_breaks.html">get_strata_breaks</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span><span class="op">)</span></span>
 <span><span class="va">breaks5</span></span></code></pre></div>
 <pre><code>## $breaks
@@ -176,12 +176,12 @@
 ## 40%      C 0.35943734 0.4079766 0.3837070
 ## 60%      D 0.40797660 0.5111901 0.4595833
 ## 80%      E 0.51119006 0.8304751 0.6708326</code></pre>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span>, </span>
 <span>                          breaks <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">breaks</span>, </span>
 <span>                          include.lowest <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                          labels <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">labels</span><span class="op">$</span><span class="va">strata</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata5</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##    
 ##      A  B  C  D  E
@@ -204,7 +204,7 @@ Figure 2.2: Scatter plot of propensity scores and log of real earnings 1978 by t
 <h3>
 <span class="header-section-number">2.1.2</span> Checking Balance<a class="anchor" aria-label="anchor" href="#stratification-balance"><i class="fas fa-link"></i></a>
 </h3>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">covars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/allnames.html">all.vars</a></span><span class="op">(</span><span class="va">lalonde.formu</span><span class="op">)</span></span>
 <span><span class="va">covars</span> <span class="op">&lt;-</span> <span class="va">lalonde</span><span class="op">[</span>,<span class="va">covars</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/cv.bal.psa.html">cv.bal.psa</a></span><span class="op">(</span>covariates <span class="op">=</span> <span class="va">covars</span>, </span>
@@ -212,14 +212,14 @@ Figure 2.2: Scatter plot of propensity scores and log of real earnings 1978 by t
 <span>                        propensity <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span>,</span>
 <span>                        strata <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="02-Stratification_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/box.psa.html">box.psa</a></span><span class="op">(</span>continuous <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">age</span>, </span>
 <span>                     treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, </span>
 <span>                     strata <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata</span>,</span>
 <span>                     xlab <span class="op">=</span> <span class="st">"Strata"</span>, </span>
 <span>                     balance <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="02-Stratification_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/cat.psa.html">cat.psa</a></span><span class="op">(</span>categorical <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">nodegr</span>, </span>
 <span>                     treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, </span>
 <span>                     strata <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata</span>, </span>
@@ -244,7 +244,7 @@ Figure 2.4: Covariate balance plots for numeric variables
 <h2>
 <span class="header-section-number">2.2</span> Phase II: Estimate Effects<a class="anchor" aria-label="anchor" href="#phase-ii-estimate-effects"><i class="fas fa-link"></i></a>
 </h2>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/loess.psa.html">loess.psa</a></span><span class="op">(</span>response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                       treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>,</span>
 <span>                       propensity <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span><span class="op">)</span></span></code></pre></div>
@@ -270,7 +270,7 @@ Figure 2.4: Covariate balance plots for numeric variables
 ## 8        21       24 5.036908 6.594808  1.5578999
 ## 9        22       22 5.182703 6.981383  1.7986801
 ## 10       18       27 6.047529 7.820786  1.7732573</code></pre>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/loess.plot.html">loess.plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span>,</span>
 <span>                response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,</span>
@@ -284,7 +284,7 @@ Figure 2.4: Covariate balance plots for numeric variables
 <span>                formula <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">x</span>,</span>
 <span>                method <span class="op">=</span> <span class="st">'loess'</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="02-Stratification_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/circ.psa.html">circ.psa</a></span><span class="op">(</span>response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>, </span>
 <span>                      treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>, </span>
 <span>                      strata <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata5</span><span class="op">)</span></span></code></pre></div>
@@ -322,23 +322,23 @@ Figure 2.4: Covariate balance plots for numeric variables
 <h2>
 <span class="header-section-number">2.3</span> Phase III: Sensitivity Analysis<a class="anchor" aria-label="anchor" href="#phase-iii-sensitivity-analysis-1"><i class="fas fa-link"></i></a>
 </h2>
-<p>Now that we have established there is a statistically significant effect of the intervention after adjusting for the selection bias using propensity scores we will want to evaluate the robustness of that effect. Sensitivity analysis is one approach but it is only well defined for matching methods. In chapter <a href="chapter-bootstrapping.html#chapter-bootstrapping">7</a> we will introduce a bootstrapping method that can help test the robustness. But <span class="citation">Rosenbaum (2012)</span> suggest another approach to test the sensitivity is to test the null hypothesis twice. We will do that here using a classification tree approach to estimating propensity scores and strata.</p>
+<p>Now that we have established there is a statistically significant effect of the intervention after adjusting for the selection bias using propensity scores we will want to evaluate the robustness of that effect. Sensitivity analysis is one approach but it is only well defined for matching methods. In chapter <a href="chapter-bootstrapping.html#chapter-bootstrapping">6</a> we will introduce a bootstrapping method that can help test the robustness. But <span class="citation">Rosenbaum (2012)</span> suggest another approach to test the sensitivity is to test the null hypothesis twice. We will do that here using a classification tree approach to estimating propensity scores and strata.</p>
 <div id="estimate-propensity-scores-classification-tree" class="section level3" number="2.3.1">
 <h3>
 <span class="header-section-number">2.3.1</span> Estimate Propensity Scores (classification tree)<a class="anchor" aria-label="anchor" href="#estimate-propensity-scores-classification-tree"><i class="fas fa-link"></i></a>
 </h3>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span>
 <span><span class="va">tree_out</span> <span class="op">&lt;-</span> <span class="fu">tree</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tree/man/tree.html">tree</a></span><span class="op">(</span><span class="va">lalonde_formu</span>,</span>
 <span>                       data <span class="op">=</span> <span class="va">lalonde</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">tree_out</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/graphics/text.html">text</a></span><span class="op">(</span><span class="va">tree_out</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="02-Stratification_files/figure-html/tree_plot-1.png" alt="Classification tree" width="100%"><p class="caption">
 (#fig:tree_plot)Classification tree
 </p>
 </div>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lalonde</span><span class="op">$</span><span class="va">tree_ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">tree_out</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">tree_ps</span>, <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, useNA <span class="op">=</span> <span class="st">'ifany'</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##                    
@@ -349,7 +349,7 @@ Figure 2.4: Covariate balance plots for numeric variables
 ##   0.612903225806452  24  38
 ##   0.659090909090909  15  29
 ##   1                   0   6</code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lalonde</span><span class="op">$</span><span class="va">tree_strata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">tree_out</span>, type <span class="op">=</span> <span class="st">'where'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">tree_strata</span>, <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, useNA <span class="op">=</span> <span class="st">'ifany'</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##     
