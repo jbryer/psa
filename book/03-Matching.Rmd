@@ -16,6 +16,53 @@ editor_options:
 As the name suggests, propensity score matching is concerned with matching treatment to control observations...
 
 
+Matching Methods
+
+### Nearest Neighbor Matching
+
+MatchIt::matchit(method = "nearest")
+
+### Optimal Pair Matching 
+
+MatchIt::matchit(method = "optimal")
+
+### Optimal Full Matching 
+
+MatchIt::matchit(method = "full")
+
+### Generalized Full Matching
+
+MatchIt::matchit(method = "quick")
+
+### Genetic Matching
+
+MatchIt::matchit(method = "genetic")
+
+X <- cbind(age, educ, black, hisp, married, nodegr, re74, re75, u74, u75)
+BalanceMatrix <- cbind(age, I(age^2), educ, I(educ^2), black, hisp,
+    married, nodegr, re74, I(re74^2), re75, I(re75^2), u74, u75,
+    I(re74 * re75), I(age * nodegr), I(educ * re74), I(educ * re75))
+gen1 <- GenMatch(Tr = Tr, X = X, BalanceMatrix = BalanceMatrix,
+    pop.size = 1000)
+
+### Exact Matching
+
+MatchIt::matchit(method = "exact")
+
+### Coarsened Exact Matching
+
+MatchIt::matchit(method = "cem")
+
+### Subclassification
+
+MatchIt::matchit(method = "subclass")
+
+### Cardinality and Profile Matching
+
+MatchIt::matchit(method = "cardinality")
+
+
+
 ```{r}
 lr_out <- glm(lalonde.formu, 
 			  data = lalonde,
@@ -49,7 +96,7 @@ ggplot(lalonde, aes(x = lr_ps, y = treat)) +
 ```
 	
 
-## One-to-One Matching
+## One-to-One Matching ATE
 
 One-to-one matching with replacement (the `M = 1` option). Estimating the treatment effect on the treated (default is ATT).
 
@@ -64,7 +111,7 @@ summary(rr_att) # The default estimate is ATT here
 
 ### Checking Balance
 
-```{r, fig.cap='Covariate Balance Plot for Matching'}
+```{r, fig.cap='Covariate Balance Plot for Matching', fig.width=12, fig.height=8}
 rr_att_mb <- psa::MatchBalance(
 	df = lalonde,
 	formu = lalonde.formu,
@@ -81,16 +128,18 @@ summary(rr_att_mb)
 ```
 
 
-```{r, echo=FALSE}
+```{r, eval=FALSE, echo=FALSE}
+# TODO: Decide whether to include this. Could write a function to present results as a table
 rr_att_mb2  <- Matching::MatchBalance(
 	formul = lalonde.formu,
 	data = lalonde, 
 	match.out = rr_att,
 	nboots = 500, 
 	print.level = 0)
-rr_att_mb2 |> print()
+# rr_att_mb2 |> print() # Output is too long
 ```
 
+## One-to-One matching (ATT)
 
 ```{r}
 rr.ate <- Match(Y = lalonde$re78, 
@@ -99,9 +148,9 @@ rr.ate <- Match(Y = lalonde$re78,
 				M = 1,
 				estimand = 'ATE')
 summary(rr.ate)
-ls(rr.ate)
 ```
 
+## One-to-Many Matching (ATT)
 
 
 ```{r}
@@ -113,15 +162,12 @@ rr2 <- Match(Y = lalonde$re78,
 			 replace = TRUE,
 			 estimand = 'ATT')
 summary(rr2) # The default estimate is ATT here
-length(unique(rr2$index.control))
-ls(rr2)
 ```
 
-
+## The `MatchIt` Package
 
 ```{r}
-## Using the Matchit package
-matchit.out <- matchit(lalonde.formu, data = lalonde)
+matchit.out <- MatchIt::matchit(lalonde.formu, data = lalonde)
 summary(matchit.out)
 
 # Same as above but calculate average treatment effect
@@ -140,7 +186,8 @@ rr.gen <- GenMatch(Tr = lalonde$treat,
 				   BalanceMatrix = lalonde[,all.vars(lalonde.formu)[-1]],
 				   estimand = 'ATE', 
 				   M = 1, 
-				   pop.size = 16)
+				   pop.size = 16,
+				   print.level = 0)
 rr.gen.mout <- Match(Y = lalonde$re78, 
 					 Tr = lalonde$treat, 
 					 X = lalonde$lr_ps,
@@ -152,14 +199,16 @@ summary(rr.gen.mout)
 rr2 <- Matchby(Y = lalonde$re78, 
 			   Tr = lalonde$treat, 
 			   X = lalonde$lr_ps, 
-			   by = factor(lalonde$nodegr))
+			   by = factor(lalonde$nodegr),
+			   print.level = 0)
 summary(rr2)
 
 ## Partial exact matching on two covariates
 rr3 <- Matchby(Y = lalonde$re78, 
 			   Tr = lalonde$treat, 
 			   X = lalonde$lr_ps, 
-			   by = lalonde[,c('nodegr','married')])
+			   by = lalonde[,c('nodegr','married')],
+			   print.level = 0)
 summary(rr3)
 ```
 

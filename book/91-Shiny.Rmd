@@ -1,4 +1,4 @@
-# Shiny Application {#appendix-shiny}
+# Shiny Applications {#appendix-shiny}
 
 The `psa` R package includes Shiny applications designed to conduct and explore propensity score analysis.
 

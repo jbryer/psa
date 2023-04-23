@@ -413,21 +413,9 @@ ggplot(dat, aes(x = ps, color = as.logical(treatment))) +
 Independent sample tests (e.g. *t*-tests) are conducted within each stratum and pooled to provide an overall estimate.
 
 ```{r, echo=FALSE}
-strata5_out <- psych::describeBy(dat$outcome,
-								 group = list(dat$treatment, dat$strata5),
-								 mat = TRUE, skew = FALSE)
-names(strata5_out)[2:3] <- c('treatment', 'strata')
-strata5_out$treatment <- strata5_out$treatment == 1
-strata5_out <- merge(strata5_out, breaks5$labels, by = 'strata', all = TRUE)
-ggplot() +
-	geom_vline(xintercept = breaks5$breaks) +
-	geom_segment(data = strata5_out, aes(x = xmin, xend = xmax, y = mean, yend = mean, color = treatment), size = 2) +
-	geom_point(data = dat, aes(x = ps, y = outcome, color = as.logical(treatment)), alpha = 0.5) +
-	geom_text(data = breaks5$labels, aes(x = xmid, y = -2.5, label = strata), color = 'black', vjust = 0.7, size = 5) +
-	scale_color_manual('Treatment', values = palette2) +
-	xlab('Propensity Score') +
-	ggtitle('Scatter plot of propensity scores versus outcome',
-			subtitle = 'Five strata represented by vertical lines')
+psa::stratification_plot(ps = dat$ps,
+						 treatment = dat$treatment,
+						 outcome = dat$outcome)
 ```
 
 
@@ -446,13 +434,11 @@ dat_match <- data.frame(treat_ps = dat[match_out$index.treated,]$ps,
 						treat_outcome = dat[match_out$index.treated,]$outcome,
 						control_ps = dat[match_out$index.control,]$ps,
 						control_outcome = dat[match_out$index.control,]$outcome)
-ggplot() +
-	geom_point(data = dat, aes(x = ps, y = outcome, color = as.logical(treatment)), alpha = 0.5) +
-	geom_segment(data = dat_match, aes(x = treat_ps, xend = control_ps,
-									   y = treat_outcome, yend = control_outcome),
-				 alpha = 0.5) +
-	scale_color_manual('Treatment', values = palette2) +
-	xlab('Propensity Score')
+psa::matching_plot(ps = dat$ps,
+				   treatment = dat$treatment,
+				   outcome = dat$outcome,
+				   index_treated = match_out$index.treated,
+				   index_control = match_out$index.control)
 ```
 
 ---
@@ -486,14 +472,9 @@ dat <- dat |> mutate(
 	atc_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATC'),
 	atm_weight = psa::calculate_ps_weights(treatment, ps, estimand = 'ATM')
 )
-ggplot(dat, aes(x = ps, y = outcome, color = as.logical(treatment))) +
-	geom_point(aes(size = ate_weight)) +
-	geom_smooth(method = 'lm', se = FALSE, formula = y ~ x, aes(weight = ate_weight)) +
-	scale_size('PS Weight', range = c(1, 10)) +
-	scale_color_manual('Treatment', values = palette2) +
-	ggtitle('Scatter plot of propensity scores versus outcome',
-			subtitle = 'Point sizes correspond to propensity score weights')
-
+psa::weighting_plot(ps = dat$ps,
+					treatment = dat$treatment,
+					outcome = dat$outcome)
 ```
 
 
@@ -927,8 +908,9 @@ cat.psa(lalonde$nodegr, lalonde$treat, strata5)
 
 ```{r loessplot, fig.width=14, fig.height=7.5, echo=FALSE, results='hide'}
 psadf <- data.frame(ps = lalonde$ps, Y = lalonde$re78, Tr = lalonde$treat)
-loess_plot(psadf[psadf$Y < 30000,]$ps, response=psadf[psadf$Y < 30000,]$Y, 
-		   treatment=as.logical(psadf[psadf$Y < 30000,]$Tr))
+loess_plot(ps = psadf[psadf$Y < 30000,]$ps, 
+		   outcome = psadf[psadf$Y < 30000,]$Y, 
+		   treatment = as.logical(psadf[psadf$Y < 30000,]$Tr))
 ```
 
 
@@ -1046,7 +1028,7 @@ $O_a = \frac{  \pi_a }{ 1 - \pi_a }$ and $O_b = \frac{  \pi_b }{ 1 - \pi_b }$
 
 The ratio of these odds, $\Gamma$, measures the bias after matching.
 
-$$\Gamma =\frac { { O }_{ a } }{ { O }_{ b } } =\frac { { { \pi  }_{ a } / ( }{ 1-{ \pi  }_{ a }) } }{ { { \pi  }_{ b } / (1-{ \pi  }_{ b }) } } $$
+$$\Gamma =\frac { { O }_{ a } }{ { O }_{ b } } =\frac { { { \pi  }_{ a } / ( }{ 1-{ \pi  }_{ a }) } }{ { { \pi  }_{ b } / (1-{ \pi  }_{ b }) } }$$
    
 This is the ratio of the odds the treated unit being in the treatment group to the matched control unit being in the treatment group.
 
@@ -1073,7 +1055,8 @@ $$ \frac{1}{\Gamma +1 } \le p_a, p_b \le \frac{\Gamma}{\Gamma +1} $$
 * Calculate the difference in outcomes within each pair.
 * Rank the pairs from smallest absolute difference to largest absolute difference (i.e. the smallest = 1).
 * Take the sum of the ranks where the treated unit had the higher outcome.
-$$ W=\left| \sum _{ 1 }^{ { N }_{ r } }{ sgn({ x }_{ T,i }-{ x }_{ C,i })\cdot { R }_{ i } }  \right|  $$
+
+$$W=\left| \sum _{ 1 }^{ { N }_{ r } }{ sgn({ x }_{ T,i }-{ x }_{ C,i })\cdot { R }_{ i } }  \right|$$
 Where $N$ is the number of ranked pairs; $R_i$ is the rank for pair *r*; $x_{T,i}$ and $x_{C,i}$ are the outcomes for the $i^{th}$ treated and control pair, respectively.
 
 
@@ -1348,6 +1331,7 @@ class: inverse, right, middle, hide-logo
 [`r icons::fontawesome("paper-plane")` jason.bryer@cuny.edu](mailto:jason.bryer@cuny.edu)  
 [`r icons::fontawesome("github")` @jbryer](https://github.com/jbryer)  
 [`r icons::fontawesome('mastodon')` @jbryer@vis.social](https://vis.social/@jbryer)  
+[`r icons::fontawesome("link")` psa.bryer.org](https://psa.bryer.org)  
 [`r icons::fontawesome("link")` github.com/jbryer/psa](https://github.com/jbryer/psa)   
 
 
