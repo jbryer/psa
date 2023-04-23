@@ -79,7 +79,7 @@
 <li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
 <li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">9</span> Multilevel PSA</a></li>
 <li class="book-part">Appendix</li>
-<li><a class="" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Application</a></li>
+<li><a class="" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Applications</a></li>
 <li><a class="" href="appendix-psranges.html"><span class="header-section-number">B</span> Propensity Score Ranges</a></li>
 <li><a class="" href="appendix-psmodels.html"><span class="header-section-number">C</span> Methods for Estimating Propensity Scores</a></li>
 <li><a class="" href="references.html">References</a></li>
@@ -346,7 +346,7 @@ Figure 1.16: Dependent sample assessment plot
 <h4>
 <span class="header-section-number">1.3.2.3</span> Weighting<a class="anchor" aria-label="anchor" href="#weighting"><i class="fas fa-link"></i></a>
 </h4>
-<p>Propensity score weighting is useful when you wish to use the propensity scores within other regression models. Specifically, each observation is weighted by the inverse of the probability of being in that group. Figure <a href="chapter-introduction.html#fig:intro-weighting">1.17</a> plots the propensity scores against the outcome, however here the size of the point is proportional to the propensity score weight. In this example the weights are calculated to estimate the average treatment effect. Details on the different treatment effects are discussed in section <a href="chapter-introduction.html#intro-treatment-effects">1.3.2.4</a>. A Loess regression line (blue) with an approximate 95% confidence interval (grey) is provided along with a line <span class="math inline">\(y - 0\)</span>. Since the Loess regression lines does not overlap zero, we would conclude there is a statistically significant treatment effect across the entire range of propensity scores. In later examples of the book we will find that not all treatment effects are homogeneous meaning the treatment effect is not the same across the entire range of propensity scores. This plot, along with the Loess regression plot (Figure @ref{sim-loess}) are effective tools for determining whether treatment effects may differ depending on different covariate profiles.</p>
+<p>Propensity score weighting is useful when you wish to use the propensity scores within other regression models. Specifically, each observation is weighted by the inverse of the probability of being in that group. Figure <a href="chapter-introduction.html#fig:intro-weighting">1.17</a> plots the propensity scores against the outcome, however here the size of the point is proportional to the propensity score weight. In this example the weights are calculated to estimate the average treatment effect. Details on the different treatment effects are discussed in section <a href="chapter-introduction.html#intro-treatment-effects">1.3.2.4</a>. A Loess regression line (blue) with an approximate 95% confidence interval (grey) is provided along with a line <span class="math inline">\(y - 0\)</span>. Since the Loess regression lines does not overlap zero, we would conclude there is a statistically significant treatment effect across the entire range of propensity scores. In later examples of the book we will find that not all treatment effects are homogeneous meaning the treatment effect is not the same across the entire range of propensity scores. This plot, along with the Loess regression plot (Figure <a href="#sim-loess"><strong>??</strong></a>) are effective tools for determining whether treatment effects may differ depending on different covariate profiles.</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:intro-weighting"></span>
 <img src="01-Introduction_files/figure-html/intro-weighting-1.png" alt="Scatter plot of propensity scores versus outcome with point sizes corresponding to propensity score weights" width="100%"><p class="caption">
@@ -447,7 +447,7 @@ Figure 1.21: Histogram of average treatment effect among the evenly matched
 <h2>
 <span class="header-section-number">1.4</span> R Packages<a class="anchor" aria-label="anchor" href="#r-packages"><i class="fas fa-link"></i></a>
 </h2>
-<p>R is a statistical software language designed to be extended vis-à-vis packages. As of April 20, 2023, there are currently 19,369 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of R</p>
+<p>R is a statistical software language designed to be extended vis-à-vis packages. As of April 23, 2023, there are currently 19,388 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of R</p>
 <ul>
 <li>
 <a href="http://gking.harvard.edu/gking/matchit"><code>MatchIt</code></a> <span class="citation">(Ho et al. 2023)</span> Nonparametric Preprocessing for Parametric Causal Inference</li>
@@ -859,7 +859,7 @@ Figure 1.21: Histogram of average treatment effect among the evenly matched
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-20.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-23.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

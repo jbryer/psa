@@ -98,10 +98,6 @@ glm(formula = lalonde.formu,
 ## glm(formula = lalonde.formu, family = quasibinomial(link = "logit"), 
 ##     data = lalonde, weights = ate_weights)
 ## 
-## Deviance Residuals: 
-##    Min      1Q  Median      3Q     Max  
-## -2.217  -1.498  -1.405   1.720   2.562  
-## 
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(>|t|)
 ## (Intercept) -2.000e-01  1.977e+00  -0.101    0.919
@@ -199,10 +195,6 @@ glm(formula = lalonde.formu,
 ## Call:
 ## glm(formula = lalonde.formu, family = quasibinomial(link = "logit"), 
 ##     data = lalonde, weights = att_weights)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.9694  -0.9382  -0.8097   1.1718   1.2765  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(>|t|)
@@ -303,10 +295,6 @@ glm(formula = lalonde.formu,
 ## glm(formula = lalonde.formu, family = quasibinomial(link = "logit"), 
 ##     data = lalonde, weights = atc_weights)
 ## 
-## Deviance Residuals: 
-##    Min      1Q  Median      3Q     Max  
-## -1.261  -1.182  -1.151   1.229   2.260  
-## 
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(>|t|)
 ## (Intercept) -6.598e-01  2.390e+00  -0.276    0.783
@@ -404,10 +392,6 @@ glm(formula = lalonde.formu,
 ## Call:
 ## glm(formula = lalonde.formu, family = quasibinomial(link = "logit"), 
 ##     data = lalonde, weights = atm_weights)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.2349  -0.9347  -0.8207   1.1588   1.2256  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error t value Pr(>|t|)

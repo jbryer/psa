@@ -4,17 +4,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>A Shiny Application | Applied Propensity Score Analysis with R</title>
+<title>A Shiny Applications | Applied Propensity Score Analysis with R</title>
 <meta name="author" content="Jason Bryer, Ph.D.">
 <meta name="description" content="The psa R package includes Shiny applications designed to conduct and explore propensity score analysis.  A.1 Propensity Score Analysis Shiny Application The main PSA Shiny application allows you...">
 <meta name="generator" content="bookdown 0.33 with bs4_book()">
-<meta property="og:title" content="A Shiny Application | Applied Propensity Score Analysis with R">
+<meta property="og:title" content="A Shiny Applications | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://psa.bryer.org/appendix-shiny.html">
 <meta property="og:image" content="https://psa.bryer.org/images/cover.png">
 <meta property="og:description" content="The psa R package includes Shiny applications designed to conduct and explore propensity score analysis.  A.1 Propensity Score Analysis Shiny Application The main PSA Shiny application allows you...">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="A Shiny Application | Applied Propensity Score Analysis with R">
+<meta name="twitter:title" content="A Shiny Applications | Applied Propensity Score Analysis with R">
 <meta name="twitter:description" content="The psa R package includes Shiny applications designed to conduct and explore propensity score analysis.  A.1 Propensity Score Analysis Shiny Application The main PSA Shiny application allows you...">
 <meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -79,7 +79,7 @@
 <li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
 <li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">9</span> Multilevel PSA</a></li>
 <li class="book-part">Appendix</li>
-<li><a class="active" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Application</a></li>
+<li><a class="active" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Applications</a></li>
 <li><a class="" href="appendix-psranges.html"><span class="header-section-number">B</span> Propensity Score Ranges</a></li>
 <li><a class="" href="appendix-psmodels.html"><span class="header-section-number">C</span> Methods for Estimating Propensity Scores</a></li>
 <li><a class="" href="references.html">References</a></li>
@@ -92,7 +92,7 @@
 </div>
   </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="appendix-shiny" class="section level1" number="10">
 <h1>
-<span class="header-section-number">A</span> Shiny Application<a class="anchor" aria-label="anchor" href="#appendix-shiny"><i class="fas fa-link"></i></a>
+<span class="header-section-number">A</span> Shiny Applications<a class="anchor" aria-label="anchor" href="#appendix-shiny"><i class="fas fa-link"></i></a>
 </h1>
 <p>The <code>psa</code> R package includes Shiny applications designed to conduct and explore propensity score analysis.</p>
 <div id="propensity-score-analysis-shiny-application" class="section level2" number="10.1">
@@ -100,7 +100,7 @@
 <span class="header-section-number">A.1</span> Propensity Score Analysis Shiny Application<a class="anchor" aria-label="anchor" href="#propensity-score-analysis-shiny-application"><i class="fas fa-link"></i></a>
 </h2>
 <p>The main PSA Shiny application allows you to conduct all phases of PSA. The application contains several of the datasets discussed in section <a href="chapter-introduction.html#intro-datasets">1.5</a> but you can also upload your own dataset.</p>
-<div class="sourceCode" id="cb191"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb178"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/psa_shiny.html">psa_shiny</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:shiny-screenshot"></span>
@@ -114,7 +114,7 @@ Figure A.1: PSA Shiny Application
 <span class="header-section-number">A.2</span> Propensity Score Analysis Simulation Shiny Application<a class="anchor" aria-label="anchor" href="#propensity-score-analysis-simulation-shiny-application"><i class="fas fa-link"></i></a>
 </h2>
 <p>The PSA Simulation Shiny application is designed to explore the figures introduced in chapter <a href="chapter-introduction.html#chapter-introduction">1</a> for stratification, matching, and weighting. Using the same data simulation procedure used in that chapter, you can control a number of the parameters including treatment effect to explore how the visualizations change and how you can use them to make decisions about treatment effects.</p>
-<div class="sourceCode" id="cb192"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb179"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/psa_simulation_shiny.html">psa_simulation_shiny</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:shiny-screenshot2"></span>
@@ -131,7 +131,7 @@ Figure A.2: PSA Simulation Shiny Application
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>In this chapter</h2>
       <ul class="nav navbar-nav">
-<li><a class="nav-link" href="#appendix-shiny"><span class="header-section-number">A</span> Shiny Application</a></li>
+<li><a class="nav-link" href="#appendix-shiny"><span class="header-section-number">A</span> Shiny Applications</a></li>
 <li><a class="nav-link" href="#propensity-score-analysis-shiny-application"><span class="header-section-number">A.1</span> Propensity Score Analysis Shiny Application</a></li>
 <li><a class="nav-link" href="#propensity-score-analysis-simulation-shiny-application"><span class="header-section-number">A.2</span> Propensity Score Analysis Simulation Shiny Application</a></li>
 </ul>
@@ -157,7 +157,7 @@ Figure A.2: PSA Simulation Shiny Application
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-20.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-23.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

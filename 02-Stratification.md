@@ -42,10 +42,6 @@ summary(lr_out)
 ## glm(formula = lalonde_formu, family = binomial(link = "logit"), 
 ##     data = lalonde)
 ## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.6632  -0.9699  -0.9043   1.2406   1.7627  
-## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(>|z|)  
 ## (Intercept)  4.008e+00  2.155e+00   1.860   0.0629 .

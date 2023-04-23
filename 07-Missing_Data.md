@@ -24,10 +24,6 @@ summary(lalonde.glm)
 ## glm(formula = treat ~ ., family = binomial, data = cbind(treat = Tr, 
 ##     X))
 ## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -1.4358  -0.9904  -0.9071   1.2825   1.6946  
-## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(>|z|)   
 ## (Intercept)  1.178e+00  1.056e+00   1.115  0.26474   
@@ -181,10 +177,6 @@ summary(lalonde.mar.glm)
 ## glm(formula = treat ~ ., data = cbind(treat = Tr, complete.mar, 
 ##     shadow.matrix.mar))
 ## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -0.7073  -0.3837  -0.3079   0.5404   0.7881  
-## 
 ## Coefficients: (6 not defined because of singularities)
 ##                    Estimate Std. Error t value Pr(>|t|)    
 ## (Intercept)       8.996e-01  2.504e-01   3.592 0.000366 ***
@@ -225,10 +217,6 @@ summary(lalonde.nmar.glm)
 ## Call:
 ## glm(formula = treat ~ ., data = cbind(treat = Tr, complete.nmar, 
 ##     shadow.matrix.nmar))
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -0.7597  -0.3960  -0.2154   0.4926   0.8693  
 ## 
 ## Coefficients: (6 not defined because of singularities)
 ##                    Estimate Std. Error t value Pr(>|t|)    

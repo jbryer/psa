@@ -79,7 +79,7 @@
 <li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
 <li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">9</span> Multilevel PSA</a></li>
 <li class="book-part">Appendix</li>
-<li><a class="" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Application</a></li>
+<li><a class="" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Applications</a></li>
 <li><a class="" href="appendix-psranges.html"><span class="header-section-number">B</span> Propensity Score Ranges</a></li>
 <li><a class="" href="appendix-psmodels.html"><span class="header-section-number">C</span> Methods for Estimating Propensity Scores</a></li>
 <li><a class="" href="references.html">References</a></li>
@@ -94,7 +94,7 @@
 <h1>
 <span class="header-section-number">6</span> Bootstrapping<a class="anchor" aria-label="anchor" href="#chapter-bootstrapping"><i class="fas fa-link"></i></a>
 </h1>
-<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jbryer/PSAboot">PSAboot</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">boot.matching.1to3</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Tr</span>, <span class="va">Y</span>, <span class="va">X</span>, <span class="va">X.trans</span>, <span class="va">formu</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
@@ -112,7 +112,7 @@
 <span>                              <span class="st">'Matching'</span> <span class="op">=</span> <span class="va">boot.matching</span>,</span>
 <span>                              <span class="st">'Matching-1-to-3'</span> <span class="op">=</span> <span class="va">boot.matching.1to3</span>,</span>
 <span>                              <span class="st">'MatchIt'</span> <span class="op">=</span> <span class="va">boot.matchit</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb105"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## Stratification Results:
 ##    Complete estimate = 1658
@@ -168,7 +168,7 @@
 ##    68% of bootstrap samples have confidence intervals that do not span zero.
 ##       68% positive.
 ##       0% negative.</code></pre>
-<div class="sourceCode" id="cb107"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:psaboot-plot"></span>
@@ -176,13 +176,13 @@
 Figure 6.1: Mean difference across all bootstrap samples by method
 </p>
 </div>
-<div class="sourceCode" id="cb108"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="06-Bootstrapping_files/figure-html/psaboot-boxplot-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb109"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb96"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/PSAboot/man/matrixplot.html">matrixplot</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="06-Bootstrapping_files/figure-html/psaboot-matrixplot-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb110"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boot_balance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/PSAboot/man/balance.html">balance</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span>
 <span><span class="va">boot_balance</span></span></code></pre></div>
 <pre><code>## Unadjusted balance: 0.122354110755457</code></pre>
@@ -209,14 +209,14 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 ## 0.05
 
 ## 0.08</code></pre>
-<div class="sourceCode" id="cb113"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb100"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">boot_balance</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="06-Bootstrapping_files/figure-html/psaboot-balance-plot-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb114"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb101"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">boot_balance</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept<span class="op">=</span><span class="fl">.1</span>, color<span class="op">=</span><span class="st">'red'</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="06-Bootstrapping_files/figure-html/psaboot-balance-boxplot-1.png" width="100%" style="display: block; margin: auto;"></div>
 <p>Details are available within the returned object</p>
-<div class="sourceCode" id="cb115"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb102"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boot_balance</span><span class="op">$</span><span class="va">unadjusted</span></span></code></pre></div>
 <pre><code>## 0.11
 
@@ -237,7 +237,7 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 ## 0.09
 
 ## 0.18</code></pre>
-<div class="sourceCode" id="cb117"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boot_balance</span><span class="op">$</span><span class="va">complete</span></span></code></pre></div>
 <pre><code>## 0.04
 
@@ -358,7 +358,7 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 ## 0.02
 
 ## 0.07</code></pre>
-<div class="sourceCode" id="cb119"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb106"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boot_balance</span><span class="op">$</span><span class="va">pooled</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 0.02
 
@@ -461,7 +461,7 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-20.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-23.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
