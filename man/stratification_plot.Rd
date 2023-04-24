@@ -9,7 +9,9 @@ stratification_plot(
   treatment,
   outcome,
   n_strata = 5,
+  level = 0.68,
   colors = c("#fc8d62", "#66c2a5"),
+  se_color = "grey80",
   xlab = "Propensity Score",
   ylab = "Outcome",
   treat_lab = "Treatment",
@@ -27,7 +29,15 @@ stratification_plot(
 
 \item{n_strata}{number of strata to use.}
 
+\item{level}{Level of confidence interval to use. Set to NULL to exclude.
+The default is 0.68 (for 1
+standard error) since the primary purpose is to compare overlap between
+the two lines. See this article for more details:
+https://towardsdatascience.com/why-overlapping-confidence-intervals-mean-nothing-about-statistical-significance-48360559900a}
+
 \item{colors}{vector of colors to use for control and treatment, respectively.}
+
+\item{se_color}{color for the standard error bars.}
 
 \item{xlab}{label for the x-axis.}
 
@@ -58,7 +68,7 @@ lr_out <- glm(treat ~ age + I(age^2) + educ + I(educ^2) + black +
 lalonde$ps <- fitted(lr_out)
 stratification_plot(ps = lalonde$ps,
 					treatment = lalonde$treat,
-					outcome = log(lalonde$re78),
+					outcome = log(lalonde$re78 + 1),
 					n_strata = 5)
 }
 }

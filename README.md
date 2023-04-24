@@ -56,11 +56,19 @@ remotes::install_github('jbryer/psa', build_vignettes = TRUE, dependencies = 'En
 Run the PSA Shiny App:
 
 ``` r
-library(psa)
 psa::psa_shiny()
 ```
 
 <img src="man/figures/psa_shiny_screenshots.gif" width="100%" />
+
+To explore the PSA visualizations in this package through a simulation,
+run this Shiny application:
+
+``` r
+psa::psa_simulation_shiny()
+```
+
+<img src="man/figures/psa_simulation_screenshot.png" width="100%" />
 
 ## The `MatchBalance` Function
 
@@ -89,7 +97,7 @@ lalonde$ps <- fitted(lr_out)
 psa::loess_plot(ps = lalonde$ps,
                 outcome = log(lalonde$re78 + 1),
                 treatment = as.logical(lalonde$treat))
-#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+#> `geom_smooth()` using method = 'loess'
 ```
 
 <img src="man/figures/README-loess_plot-1.png" width="100%" />
@@ -112,7 +120,7 @@ psa::stratification_plot(ps = lalonde$ps,
                          outcome = lalonde$re78)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ## The `matching_plot` Function
 

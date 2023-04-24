@@ -1,7 +1,7 @@
 utils::globalVariables(c('grid.layout','grid.newpage','pushViewport','viewport',
 						 'align.plots','index','covariate','value','percent',
 						 'std.estimate','Covariate','p.value','ci.min','ci.max',
-						 'xmin', 'xmax', 'xmid'))
+						 'xmin', 'xmax', 'xmid', 'se'))
 
 #' Applied Propensity Score Analysis with R
 #' 
