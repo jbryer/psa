@@ -17,6 +17,7 @@ loess_plot(
   points.control.alpha = 0.1,
   plot.strata,
   plot.strata.alpha = 0.2,
+  level = 0.68,
   ...
 )
 }
@@ -43,6 +44,11 @@ loess_plot(
 plot corresponding to quantiles.}
 
 \item{plot.strata.alpha}{the alpha level for the vertical lines.}
+
+\item{level}{Level of confidence interval to use. The default is 0.68 (for 1
+standard error) since the primary purpose is to compare overlap between
+the two lines. See this article for more details:
+https://towardsdatascience.com/why-overlapping-confidence-intervals-mean-nothing-about-statistical-significance-48360559900a}
 
 \item{...}{other parameters passed to \code{\link{geom_smooth}} and
 \code{\link{stat_smooth}}.}

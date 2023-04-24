@@ -23,7 +23,7 @@ class: center, middle, inverse, title-slide
 # Estimating Causal Effects with Observational Data
 ## Propensity Score Analysis with R
 ### Jason Bryer, Ph.D.
-### Last updated: April 20, 2023
+### Last updated: April 24, 2023
 
 
 ---
@@ -60,7 +60,7 @@ class: inverse, middle, center
 ---
 # Counterfactuals
 
-&lt;img src="Causality.png" width="3099" style="display: block; margin: auto;" /&gt;
+&lt;img src="images/Causality.png" width="3099" style="display: block; margin: auto;" /&gt;
 
 ---
 # The Randomized Experiment
@@ -68,11 +68,12 @@ class: inverse, middle, center
 Considered to be the *gold standard* for estimating causal effects.
 
 * Effects can be estimated using simple means between groups, or blocks in randomized block design.
+
 * Randomization presumes unbiasedness and balance between groups.
 
 However, randomization is often not feasible for many reasons, especially in educational contexts.
 
-The strong ignorability assumption states that:
+The **strong ignorability assumption** states that:
 
 `$$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \unicode{x2AEB} \; { T }_{ i }|{ X }_{ i }=x$$`
 
@@ -154,7 +155,7 @@ tab.out &lt;- describeBy(thedata$RCT_Value, group = thedata$RCT_Assignment, mat 
 &lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
-# Rubin Causal Model
+# Rubin's Causal Model
 
 
 * The causal effect of a treatment is the difference in an individual's outcome under the situation they were given the treatment and not (referred to as a counterfactual).
@@ -165,7 +166,7 @@ tab.out &lt;- describeBy(thedata$RCT_Value, group = thedata$RCT_Assignment, mat 
 
 * Rubin frames this problem as a "missing data problem" .font70[(see Rubin, 1974, 1977, 1978, 1980, and Holland, 1986)].
 
-&lt;center&gt;&lt;img src='Causality2.png' width='500' alt="Causality - Missing Values" /&gt;&lt;/center&gt;
+&lt;center&gt;&lt;img src='images/Causality2.png' width='500' alt="Causality - Missing Values" /&gt;&lt;/center&gt;
 
 ---
 # Propensity Score Analysis
@@ -177,7 +178,7 @@ The balancing property under exogeneity:
 
 `$${ T }_{ i } \; \unicode{x2AEB} { X }_{ i } \;| \; \pi ({ X }_{ i })$$`
 
-We can then restate the ignorability assumption with the propensity score: 
+We can then restate the **ignorability assumption** with the propensity score: 
 
 `$$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \unicode{x2AEB} \; { T }_{ i } \; | \; \pi({ X }_{ i })$$`
 
@@ -204,35 +205,54 @@ class: inverse, middle, center
 class: font90
 # Simulated Example
 
+We will simulate a dataset with three covariates, `x1` and `x2` which are continuous and `x3` which is categorical. The assumed treatment effect is 1.5.
 
 
+
+.pull-left[
 
 ```r
 n &lt;- 500
 treatment_effect &lt;- 1.5
-X &lt;- mvtnorm::rmvnorm(n,
-					  mean = c(0.5, 1, 0),
-					  sigma = matrix(c(2, 1, 1,
-					  				   1, 1, 1,
-					  				   1, 1, 1), ncol = 3) )
+X &lt;- mvtnorm::rmvnorm(
+	n,
+	mean = c(0.5, 1, 0),
+	sigma = matrix(c(2, 1, 1,
+					 1, 1, 1,
+					 1, 1, 1), 
+					 ncol = 3) )
 dat &lt;- tibble(
 	x1 = X[, 1],
 	x2 = X[, 2],
 	x3 = X[, 3] &gt; 0,
-	treatment = as.numeric(- 0.5 + 0.25 * x1 + 0.75 * x2 + 0.05 * x3 + rnorm(n, 0, 1) &gt; 0),
-	outcome = treatment_effect * treatment + rnorm(n, 0, 1)
+	treatment = as.numeric(- 0.5 +
+						   	0.25 * x1 + 
+						   	0.75 * x2 + 
+						   	0.05 * x3 + 
+						   	rnorm(n, 0, 1) &gt; 0),
+	outcome = treatment_effect * treatment + 
+		rnorm(n, 0, 1)
 )
-head(dat, n = 3)
+```
+]
+.pull-right[
+
+```r
+head(dat, n = 6)
 ```
 
 ```
-## # A tibble: 3 × 5
-##      x1    x2 x3    treatment outcome
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 1.35  0.744 FALSE         0  1.46  
-## 2 0.149 1.55  TRUE          0 -0.924 
-## 3 2.47  2.39  TRUE          1 -0.0527
+## # A tibble: 6 × 5
+##       x1    x2 x3    treatment outcome
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1  1.35  0.744 FALSE         0  1.46  
+## 2  0.149 1.55  TRUE          0 -0.924 
+## 3  2.47  2.39  TRUE          1 -0.0527
+## 4  2.29  1.66  TRUE          1  1.05  
+## 5  2.93  2.85  TRUE          1  0.721 
+## 6 -0.867 0.125 FALSE         0  0.723
 ```
+]
 
 ---
 # Scatterplot
@@ -243,7 +263,7 @@ ggplot(dat, aes(x = x1, y = x2, shape = x3, color = factor(treatment))) +
 	geom_point() + scale_color_manual('Treatment', values = cols)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -266,7 +286,7 @@ Stratification involves dividing (or stratifying) the observations into subgroup
 
 
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -274,7 +294,7 @@ Stratification involves dividing (or stratifying) the observations into subgroup
 
 Independent sample tests (e.g. *t*-tests) are conducted within each stratum and pooled to provide an overall estimate.
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -282,7 +302,7 @@ Independent sample tests (e.g. *t*-tests) are conducted within each stratum and 
 
 Dependent sample tests (e.g. *t*-tests) are conducted using match pairs to provide a treatment.
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-15-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 # Matching Methods
@@ -308,7 +328,20 @@ There are many choices and approaches to matching, including:
 Propensity score weights can be used as regression weights, the specific weights depend on the desired estimand and will be provided in later slides.
 
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Shiny Application
+
+We can explore how these three plots change as the treatment effects change using the `psa::psa_simulation_shiny()` application.
+
+
+
+```r
+psa::psa_simulation_shiny()
+```
+
+&lt;img src="images/psa_simulation_screenshot.png" width="50%" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -400,7 +433,7 @@ ggplot(dat) +
 	geom_hline(yintercept = 0, lwd = 0.5) +	scale_y_continuous(label = abs) 
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -411,7 +444,7 @@ ggplot(dat) +
 PSAgraphics::cv.bal.psa(dat[,1:3], dat$treatment, dat$ps, strata = 5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 # Check Balance: Single Covariate
@@ -424,7 +457,7 @@ PSAgraphics::box.psa(dat$x1,
 					 dat$strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
 
@@ -434,7 +467,7 @@ PSAgraphics::cat.psa(dat$x3,
 					 dat$strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -470,27 +503,27 @@ dat |&gt; head(n = 4)
 
 `$$ATE = E(Y_1 - Y_0 | X) = E(Y_1|X) - E(Y_0|X)$$`
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 # Average Treatment Effect Among the Treated (ATT)
 
 `$$ATT=E(Y_{1}-Y_{0}|X,C=1)=E(Y_{1}|X,C=1)-E(Y_{0}|X,C=1)$$`
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 # Average Treatment Effect Among the Control (ATC)
 
 `$$ATC = E(Y_1 - Y_0 | X = 0) = E(Y_1 | X = 0) - E(Y_0 | X = 0)$$`
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-27-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-30-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 # Average Treatment Effect Among the Evenly Matched
 
 `$$ATM_d = E(Y_1 - Y_0 | M_d = 1)$$`
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 # Treatment Effects for Weighting
@@ -647,7 +680,7 @@ lm(outcome ~ treatment,
 ]
 ---
 class: inverse, middle, center
-# Example: National Supported Work
+# Example: National Supported Work Demonstration
 
 
 ---
@@ -779,7 +812,7 @@ cv.bal.psa(covars, lalonde$treat, lalonde$ps, strata = 5)
 box.psa(lalonde$age, lalonde$treat, strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-42-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-45-1.png" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
 
@@ -787,7 +820,7 @@ box.psa(lalonde$age, lalonde$treat, strata5)
 box.psa(lalonde$re74, lalonde$treat, strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-43-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-46-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 
@@ -800,7 +833,7 @@ box.psa(lalonde$re74, lalonde$treat, strata5)
 box.psa(lalonde$educ, lalonde$treat, strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-44-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-47-1.png" style="display: block; margin: auto;" /&gt;
 
 ]
 .pull-right[
@@ -809,7 +842,7 @@ box.psa(lalonde$educ, lalonde$treat, strata5)
 box.psa(lalonde$re75, lalonde$treat, strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-45-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-48-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -821,7 +854,7 @@ box.psa(lalonde$re75, lalonde$treat, strata5)
 cat.psa(lalonde$married, lalonde$treat, strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-46-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-49-1.png" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
 
@@ -829,7 +862,7 @@ cat.psa(lalonde$married, lalonde$treat, strata5)
 cat.psa(lalonde$hisp, lalonde$treat, strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-47-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-50-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -841,7 +874,7 @@ cat.psa(lalonde$hisp, lalonde$treat, strata5)
 cat.psa(lalonde$black, lalonde$treat, strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-48-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-51-1.png" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
 
@@ -849,7 +882,7 @@ cat.psa(lalonde$black, lalonde$treat, strata5)
 cat.psa(lalonde$nodegr, lalonde$treat, strata5)
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-49-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-52-1.png" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -1017,7 +1050,7 @@ psa::MatchBalance(df = lalonde, formu = lalonde.formu,
 				  M = 1, estimand = 'ATT', ties = FALSE) |&gt; plot()
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-53-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-56-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1031,7 +1064,7 @@ psa::MatchBalance(df = lalonde, formu = lalonde.formu,
 				  M = 1, estimand = 'ATT', ties = FALSE) |&gt; plot()
 ```
 
-&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-54-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="Intro_PSA_files/figure-html/unnamed-chunk-57-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -1406,7 +1439,7 @@ class: inverse, middle, center
 psa::psa_shiny()
 ```
 
-&lt;img src="shiny_screenshot.png" width="643" style="display: block; margin: auto;" /&gt;
+&lt;img src="images/shiny_screenshot.png" width="643" style="display: block; margin: auto;" /&gt;
 
 ---
 class: inverse, right, middle, hide-logo

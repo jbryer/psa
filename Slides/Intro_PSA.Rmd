@@ -153,7 +153,7 @@ ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) +
 # Counterfactuals
 
 ```{r causalityFig, echo=FALSE}
-knitr::include_graphics('Causality.png')
+knitr::include_graphics('images/Causality.png')
 ```
 
 ---
@@ -162,11 +162,12 @@ knitr::include_graphics('Causality.png')
 Considered to be the *gold standard* for estimating causal effects.
 
 * Effects can be estimated using simple means between groups, or blocks in randomized block design.
+
 * Randomization presumes unbiasedness and balance between groups.
 
 However, randomization is often not feasible for many reasons, especially in educational contexts.
 
-The strong ignorability assumption states that:
+The **strong ignorability assumption** states that:
 
 $$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \unicode{x2AEB} \; { T }_{ i }|{ X }_{ i }=x$$
 
@@ -279,7 +280,7 @@ ggplot(data.frame(x = sim.diff), aes(x = x)) +
 ```
 
 ---
-# Rubin Causal Model
+# Rubin's Causal Model
 
 
 * The causal effect of a treatment is the difference in an individual's outcome under the situation they were given the treatment and not (referred to as a counterfactual).
@@ -290,7 +291,7 @@ $${\delta}_{i} ={ Y }_{ i1 }-{ Y }_{ i0 }$$
 
 * Rubin frames this problem as a "missing data problem" .font70[(see Rubin, 1974, 1977, 1978, 1980, and Holland, 1986)].
 
-<center><img src='Causality2.png' width='500' alt="Causality - Missing Values" /></center>
+<center><img src='images/Causality2.png' width='500' alt="Causality - Missing Values" /></center>
 
 ---
 # Propensity Score Analysis
@@ -302,7 +303,7 @@ The balancing property under exogeneity:
 
 $${ T }_{ i } \; \unicode{x2AEB} { X }_{ i } \;| \; \pi ({ X }_{ i })$$
 
-We can then restate the ignorability assumption with the propensity score: 
+We can then restate the **ignorability assumption** with the propensity score: 
 
 $$({ Y }_{ i }(1),{ Y }_{ i }(0)) \; \unicode{x2AEB} \; { T }_{ i } \; | \; \pi({ X }_{ i })$$
 
@@ -329,28 +330,43 @@ class: inverse, middle, center
 class: font90
 # Simulated Example
 
+We will simulate a dataset with three covariates, `x1` and `x2` which are continuous and `x3` which is categorical. The assumed treatment effect is 1.5.
+
 ```{r, echo=FALSE}
 cols <- c('#fc8d62', '#66c2a5')
 set.seed(2112) 
 ```
 
+.pull-left[
 ```{r simulationSetup, cache=TRUE}
 n <- 500
 treatment_effect <- 1.5
-X <- mvtnorm::rmvnorm(n,
-					  mean = c(0.5, 1, 0),
-					  sigma = matrix(c(2, 1, 1,
-					  				   1, 1, 1,
-					  				   1, 1, 1), ncol = 3) )
+X <- mvtnorm::rmvnorm(
+	n,
+	mean = c(0.5, 1, 0),
+	sigma = matrix(c(2, 1, 1,
+					 1, 1, 1,
+					 1, 1, 1), 
+					 ncol = 3) )
 dat <- tibble(
 	x1 = X[, 1],
 	x2 = X[, 2],
 	x3 = X[, 3] > 0,
-	treatment = as.numeric(- 0.5 + 0.25 * x1 + 0.75 * x2 + 0.05 * x3 + rnorm(n, 0, 1) > 0),
-	outcome = treatment_effect * treatment + rnorm(n, 0, 1)
+	treatment = as.numeric(- 0.5 +
+						   	0.25 * x1 + 
+						   	0.75 * x2 + 
+						   	0.05 * x3 + 
+						   	rnorm(n, 0, 1) > 0),
+	outcome = treatment_effect * treatment + 
+		rnorm(n, 0, 1)
 )
-head(dat, n = 3)
 ```
+]
+.pull-right[
+```{r}
+head(dat, n = 6)
+```
+]
 
 ---
 # Scatterplot
@@ -475,6 +491,20 @@ dat <- dat |> mutate(
 psa::weighting_plot(ps = dat$ps,
 					treatment = dat$treatment,
 					outcome = dat$outcome)
+```
+
+---
+# Shiny Application
+
+We can explore how these three plots change as the treatment effects change using the `psa::psa_simulation_shiny()` application.
+
+
+```{r, eval=FALSE}
+psa::psa_simulation_shiny()
+```
+
+```{r, echo=FALSE, out.width='50%'}
+knitr::include_graphics('images/psa_simulation_screenshot.png')
 ```
 
 
@@ -763,7 +793,7 @@ lm(outcome ~ treatment,
 ]
 ---
 class: inverse, middle, center
-# Example: National Supported Work
+# Example: National Supported Work Demonstration
 
 
 ---
@@ -1318,7 +1348,7 @@ psa::psa_shiny()
 ```
 
 ```{r, echo=FALSE}
-knitr::include_graphics('shiny_screenshot.png', dpi=350)
+knitr::include_graphics('images/shiny_screenshot.png', dpi=350)
 ```
 
 ---

@@ -15,6 +15,10 @@ utils::globalVariables(c('ps','y','x'))
 #' @param plot.strata an integer value greater than 2 indicating the number of vertical lines to 
 #'        plot corresponding to quantiles.
 #' @param plot.strata.alpha the alpha level for the vertical lines.
+#' @param level Level of confidence interval to use. The default is 0.68 (for 1
+#'        standard error) since the primary purpose is to compare overlap between
+#'        the two lines. See this article for more details:
+#'        https://towardsdatascience.com/why-overlapping-confidence-intervals-mean-nothing-about-statistical-significance-48360559900a
 #' @param ... other parameters passed to \code{\link{geom_smooth}} and
 #'        \code{\link{stat_smooth}}.
 #' @return a ggplot2 figure
@@ -45,7 +49,8 @@ loess_plot <- function(ps, outcome, treatment,
 					   points.treat.alpha = .1,
 					   points.control.alpha = .1,
 					   plot.strata,
-					   plot.strata.alpha = .2,
+					   plot.strata.alpha = .2, 
+					   level = 0.68,
 					   ...) {
 	df = data.frame(ps = ps,
 					outcome = outcome,
@@ -67,7 +72,7 @@ loess_plot <- function(ps, outcome, treatment,
 								   aes(x = ps, y = outcome, colour = treatment), 
 								   alpha = points.treat.alpha)
 	}
-	pmain <- pmain + geom_smooth(...) + 
+	pmain <- pmain + geom_smooth(level = level, formula = y ~ x,  ...) + 
 		ylab(outcomeTitle) + 
 		xlab("Propensity Score") + 
 		theme(legend.position='none', legend.justification='left', axis.text.y=element_blank()) + 
