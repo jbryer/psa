@@ -943,9 +943,28 @@ loess_plot(ps = psadf[psadf$Y < 30000,]$ps,
 		   treatment = as.logical(psadf[psadf$Y < 30000,]$Tr))
 ```
 
-
 ---
 # Stratification
+
+.pull-left[
+```{r}
+psa::stratification_plot(ps = psadf$ps,
+						 treatment = psadf$Tr,
+						 outcome = psadf$Y,
+						 n_strata = 5)
+```
+]
+.pull-right[
+```{r}
+psa::stratification_plot(ps = psadf$ps,
+						 treatment = psadf$Tr,
+						 outcome = psadf$Y,
+						 n_strata = 10)
+```
+]
+
+---
+# Stratification (cont.)
 
 .pull-left[
 ```{r circpsa5,fig=TRUE, fig.width=7, fig.height=5, results='hide'}
@@ -1069,9 +1088,9 @@ This is the ratio of the odds the treated unit being in the treatment group to t
 
 Sensitivity analysis tests whether the results hold for various ranges of $\Gamma$. That is, we test how large the differences in $\pi$ (i.e. propensity scores) would have to be to change our basic inference. Let $p_a$ and $p_b$ be the probability of each unit of the matched pair being treated, conditional on exactly one being treated. For example:
 
-* If $\Gamma = 1$, the treatment and control unit within each pair has the same value of treatment assignment ($p_a = 0.5$ and $p_b = 0.5$).
-* If $\frac{1}{2} \le \Gamma \le 2$, no unit can be more than twice as likely as its match to get treated ($0.33 \le p_a$, $p_b \le 0.66$).
-* If $\frac{1}{3} \le \Gamma \le 3$, no unit can be more than three times as likely as its match to get treated ($0.25 \le p_a$, $p_b \le 0.75$)
+* If $\Gamma = 1$, the treatment and control unit within each pair has the same value of treatment assignment ( $p_a = 0.5$ and $p_b = 0.5$).
+* If $\frac{1}{2} \le \Gamma \le 2$, no unit can be more than twice as likely as its match to get treated ( $0.33 \le p_a$, $p_b \le 0.66$).
+* If $\frac{1}{3} \le \Gamma \le 3$, no unit can be more than three times as likely as its match to get treated ( $0.25 \le p_a$, $p_b \le 0.75$)
 
 To get the bounds:
 
@@ -1082,8 +1101,11 @@ $$ \frac{1}{\Gamma +1 } \le p_a, p_b \le \frac{\Gamma}{\Gamma +1} $$
 # Wilcoxon Signed Rank Test
 
 * Drop pairs where the matches have the same outcome.
+
 * Calculate the difference in outcomes within each pair.
+
 * Rank the pairs from smallest absolute difference to largest absolute difference (i.e. the smallest = 1).
+
 * Take the sum of the ranks where the treated unit had the higher outcome.
 
 $$W=\left| \sum _{ 1 }^{ { N }_{ r } }{ sgn({ x }_{ T,i }-{ x }_{ C,i })\cdot { R }_{ i } }  \right|$$
@@ -1097,7 +1119,9 @@ Where $N$ is the number of ranked pairs; $R_i$ is the rank for pair *r*; $x_{T,i
 The process for sensitivity analysis:
 
 * Select a series of values for $\Gamma$. For social science research, values between 1 and 2 is an appropriate start.
+
 * For each $\Gamma$, estimate the *p*-values to see how the *p*-values increase for larger values of $\Gamma$.
+
 * For binary outcomes, use McNemar's test, for all others use Wilcoxon sign rank test and the Hodges-Lehmann point estimate. See Keele (2010) for more information.
 
 
@@ -1109,34 +1133,10 @@ Children of parents who had worked in a factory where lead was used in making ba
 
 ```{r rboundsSetup}
 require(rbounds)
-trt <- c(38, 23, 41, 18, 37, 36, 23, 62, 31, 34, 24, 14, 21, 17, 
- 16, 20, 15, 10, 45, 39, 22, 35, 49, 48, 44, 35, 43, 39,
- 34, 13, 73, 25, 27)
-ctrl <- c(16, 18, 18, 24, 19, 11, 10, 15, 16, 18, 18, 13, 19, 
-  10, 16, 16, 24, 13, 9, 14, 21, 19, 7, 18, 19, 12, 
-  11, 22, 25, 16, 13, 11, 13)
+psens(lalonde$re78[rr$index.treated], 
+	  lalonde$re78[rr$index.control],
+	  Gamma = 2, GammaInc = 0.1)
 ```
-
-
-
-
----
-# Sensitivity Analysis
-
-```{r psens}
-psens(trt, ctrl)
-```
-
-
-
----
-# Sensitivity Analysis
-
-```{r hlsens}
-hlsens(trt, ctrl)
-```
-
-
 
 
 ---
@@ -1144,6 +1144,71 @@ class: inverse, middle, center
 # Bootstrapping Propensity Score Analysis
 
 
+---
+# Boostrapping
+
+* Bootstrapping was first introduced by Efron (1979) in [*Bootstrap Methods: Another Look at the Jackknife*](https://projecteuclid.org/euclid.aos/1176344552).
+
+* Estimates confidence of statistics by resampling *with* replacement.
+
+* The *bootstrap sample* provides an estimate of the sampling distribution.
+
+For PSA, sensitivity analysis is only well defined for matched samples.
+
+Rosenbaum (2012) suggested that one way to test for sensitivity of model selection is to [test the null hypothesis twice](https://www.jstor.org/stable/41720732).
+
+---
+# Bootstrapping Propensity Score Analysis
+
+The `PSAboot` implements bootstrapping for propensity score analysis.
+
+1. A stratified bootstrap sample is drawn to ensure the ratio of treatment-to-control observations is the same (i.e. sampling with replacement is done for the treatment and control observations is done separately). Note that the `control.ratio` and `treat.ratio` parameters allow for under sampling in the case of imbalanced data.
+
+2. For each bootstrap sample balance statistics and treatment effects are estimated using each method (five by default).
+
+3. Overall treatment effect with confidence interval is estimated from the bootstrap samples.
+
+
+---
+# PSA Bootstrapping Example
+
+```{r}
+library(PSAboot)
+psaboot <- PSAboot(Tr = lalonde$treat,
+				   Y = lalonde$re78,
+				   X = lalonde,
+				   formu = lalonde.formu)
+summary(psaboot)
+```
+
+---
+# Checking Balance
+
+```{r}
+psaboot_bal <- balance(psaboot)
+plot(psaboot_bal)
+```
+
+---
+# Plotting all Boostrap Samples
+
+```{r}
+plot(psaboot)
+```
+
+---
+# Boxplot of Boostrapping PSA
+
+```{r}
+boxplot(psaboot)
+```
+
+---
+# Comparing Across PSA Methods
+
+```{r, fig.width=7, fig.height=7}
+matrixplot(psaboot)
+```
 
 ---
 class: inverse, middle, center
@@ -1168,7 +1233,6 @@ tutoring.matched.n <- trimatch(tutoring.tpsa, method=OneToN, M1=5, M2=3)
 * Estimates propensity scores for three separate logistic regression models (one for each pair of groups, that is, treat1-to-control, treat2-to-control, and treat1-to-treat2).
 * Finds matched triplets that minimize the total distance (i.e. sum of the standardized distance between propensity scores within the three models). within a caliper.
 * Provides multiple methods for determining which matched triplets are retained:
-
 * Optimal which attempts to retain all treatment units.
 * Full which retains all matched triplets within the specified caliper (.25 by default as suggested by Rosenbaum).
 * Analog of the one-to-many for matched triplets. Specify how many times each treat1 and treat2 unit can be matched.
@@ -1238,10 +1302,6 @@ multibalance.plot(tutoring.tpsa, grid=TRUE)
 ```{r boxdiff,fig=TRUE,width=10,height=8,echo=FALSE}
 boxdiff.plot(tutoring.matched.n, tutoring$Grade)
 ```
-\begin{center}
-\includegraphics{figures/Slides-boxdiff}
-\end{center}
-
 
 
 ---
@@ -1268,12 +1328,16 @@ The `multilevelPSA` uses stratification methods (e.g. quintiles, classification 
 
 
 ---
-# The Programme of International Student Assessment (PISA)
+# The Programme of International Student Assessment
 
 * International assessment conducted by the Organization for Economic Co-operation and Development (OECD).
+
 * Assesses students towards the end of secondary school (approximately 15-year-old children) in math, reading, and science.
+
 * Collects a robust set of background information from students, parents, teachers, and schools.
+
 * Assess both private and public school students in many countries.
+
 * We will use PISA to estimate the effects of private school attendance on PISA outcomes.
 
 
