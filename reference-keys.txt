@@ -15,7 +15,7 @@ fig:sim-ggpairs
 fig:sim-dist
 fig:intro-multiple-balance-plots
 fig:intro-balance-plots
-fig:sim-loess
+fig:intro-sim-loess
 fig:intro-stratification
 fig:intro-stratification-scatter
 fig:intro-circ-psa
