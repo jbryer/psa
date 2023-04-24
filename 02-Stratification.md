@@ -240,7 +240,6 @@ psa::loess_plot(ps = lalonde$lr_ps,
 				percentPoints.treat = 1,
 				percentPoints.control = 1,
 				se = FALSE, 
-				formula = y ~ x,
 				method = 'loess')
 ```
 
