@@ -30,6 +30,8 @@ remotes::install_github('jbryer/psa',
 						dependencies = 'Enhances')
 ```
 
+## Status
+
 ## Contributing {.unnumbered}
 
 This books is a work in progress and contributions are welcome. Please adhere to the [code of conduct](https://github.com/jbryer/psa/blob/master/CODE_OF_CONDUCT.md). Each page has an edit link which will take you directly to the source file on [Github](https://github.com/jbryer/psa). You can also submit feedback using the [Github Issues](https://github.com/jbryer/psa/issues) tracker.

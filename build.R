@@ -15,6 +15,7 @@ devtools::check(cran = TRUE)
 # Can run this if there is an error about checking the time
 # Sys.setenv('_R_CHECK_SYSTEM_CLOCK_' = 0)
 
+
 ################################################################################
 # For the bookdown site
 # library(bookdown)
@@ -25,6 +26,14 @@ setwd(wd)
 
 library(RefManageR)
 GetBibEntryWithDOI('10.1093/biomet/70.1.41')
+
+
+################################################################################
+# Shiny Applications
+# library(psa)
+psa::psa_simulation_shiny()
+psa::psa_shiny()
+
 
 ################################################################################
 # Basic package functions
