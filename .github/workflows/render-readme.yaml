@@ -2,10 +2,10 @@ name: render readme
 
 # Controls when the action will run
 on:
-	push:
-		path:
-			- README.Rmd
-
+  push:
+    paths:
+      - README.Rmd
+      
 jobs:
 	render:
 	# The type of runner that the job will run on
