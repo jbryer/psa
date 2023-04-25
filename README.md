@@ -160,9 +160,7 @@ imputed.
 
 ## Slides
 
-[Click
-here](http://htmlpreview.github.io/?https://github.com/jbryer/psa/blob/master/Slides/Intro_PSA.html)
-for slides.
+[Click here](Slides/Intro_PSA.pdf) for slides.
 
 ## R Scripts
 

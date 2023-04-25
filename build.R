@@ -29,6 +29,14 @@ GetBibEntryWithDOI('10.1093/biomet/70.1.41')
 
 
 ################################################################################
+# For the Slides
+rmarkdown::render('Slides/Intro_PSA.Rmd')
+renderthis::to_pdf('Slides/Intro_PSA.html',
+				   complex_slides = TRUE,
+				   partial_slides = FALSE)
+
+
+################################################################################
 # Shiny Applications
 # library(psa)
 psa::psa_simulation_shiny()
