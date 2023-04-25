@@ -43,6 +43,18 @@ emphasized.
 
 <img src="man/figures/README-psa_citations_by_year-1.png" width="100%" />
 
+## Slides
+
+[Click here](Slides/Intro_PSA.pdf) for slides.
+
+## CUNY MSDS Talk
+
+This is a recording of a talk I gave at CUNY School of Professional
+Studies on April 24, 2023.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Rq_od5KwqEA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen>
+</iframe>
+
 ## Getting Started
 
 You can install the `psa` package using the `remotes` package. I
@@ -157,10 +169,6 @@ the `shadow.matrix` parameter to `TRUE` the resulting data frame will
 contain additional logical columns with the suffix `_missing` with a
 value of `TRUE` if the variable was originally missing and therefore was
 imputed.
-
-## Slides
-
-[Click here](Slides/Intro_PSA.pdf) for slides.
 
 ## R Scripts
 

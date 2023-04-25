@@ -44,6 +44,17 @@ ggplot(psa_citations, aes(x = Year, y = Citations, color = Search_Term)) +
 	theme_minimal()
 ```
 
+## Slides
+
+[Click here](Slides/Intro_PSA.pdf) for slides.
+
+## CUNY MSDS Talk
+
+This is a recording of a talk I gave at CUNY School of Professional Studies on April 24, 2023.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Rq_od5KwqEA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+
 ## Getting Started
 
 You can install the `psa` package using the `remotes` package. I recommend setting the `dependencies = 'Enhances'` as many this will install all the packages that are used in the examples.
@@ -137,9 +148,6 @@ psa::matching_plot(ps = lalonde$ps,
 
 The `merge.mids` function is a convenience for merging the multiple imputation results from the `mice::mice()` function with the full data frame used for imputation. In the context of PSA imputation is conducted without the including the outcome variable. This function will merge in the outcome, along with any other variables not used in the imputation procedure, with one of the imputed datasets. Additionally, by setting the `shadow.matrix` parameter to `TRUE` the resulting data frame will contain additional logical columns with the suffix `_missing` with a value of `TRUE` if the variable was originally missing and therefore was imputed.
 
-## Slides
-
-[Click here](Slides/Intro_PSA.pdf) for slides.
 
 
 ## R Scripts
