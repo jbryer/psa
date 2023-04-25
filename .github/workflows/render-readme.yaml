@@ -11,19 +11,32 @@ jobs:
     name: Render README
     runs-on: macOS-latest
 
-steps:
-	# Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-	- uses: actions/checkout@v2
-	- uses: r-lib/actions/setup-r@v1
-	- uses: r-lib/actions/setup-pandoc@v1
-	- name: install required packages
-	  run: Rscript -e 'install.packages(c("rmarkdown","gratia","remotes"))'
-	- name: install psa package
-	  run: Rscript -e 'remotes::install_github("jbryer/psa")''
-	- name: render README
-	  run: Rscript -e 'rmarkdown::render("README.Rmd", output_format = "md_document")'
-	- name: commit rendered README
-	  run: |
-	    git add README.md man/figures/README-*
-	    git commit -m "Re-build README.md" || echo "No changes to commit"
-        git push origin master || echo "No changes to commit"
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      
+	steps:
+      - name: Checkout rep
+        uses: actions/checkout@v3
+        
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+          
+      - name: Setup pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+        
+	  - name: install required packages
+	    run: Rscript -e 'install.packages(c("rmarkdown","gratia","remotes"))'
+	    
+	  - name: install psa package
+	    run: Rscript -e 'remotes::install_github("jbryer/psa")'
+	    
+	  - name: render README
+	    run: Rscript -e 'rmarkdown::render("README.Rmd", output_format = "md_document")'
+	    
+	  - name: commit rendered README
+	    run: |
+	      git add README.md man/figures/README-*
+	      git commit -m "Re-build README.md" || echo "No changes to commit"
+	      git push origin master || echo "No changes to commit"
