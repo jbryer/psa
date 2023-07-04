@@ -1,8 +1,8 @@
 Type: Package
 Package: psa
 Title: Applied Propensity Score Analysis with R
-Version: 0.1.0
-Date: 2023-04-01
+Version: 0.1.1
+Date: 2023-07-04
 Author: Jason Bryer <jason@bryer.org>
 Maintainer: Jason Bryer <jason@bryer.org>
 Description: Shiny application and utility functions to assist with
