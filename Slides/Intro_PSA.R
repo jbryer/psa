@@ -28,7 +28,7 @@ library(rmarkdown)
 
 ################################################################################
 ##### Set some options
-cols <- palette2 <- c('#fc8d62', '#66c2a5')
+palette2 <- c('#fc8d62', '#66c2a5')
 theme_set(theme_bw())
 
 ################################################################################
@@ -39,6 +39,7 @@ data(psa_citations)
 data(lalonde, package='Matching')
 
 ################################################################################
+##### Overview of Causal Inference
 set.seed(2112)
 pop.mean <- 100
 pop.sd <- 15
@@ -99,6 +100,7 @@ ggplot(data.frame(x = sim.diff), aes(x = x)) +
 
 
 ################################################################################
+##### Propensity Score Analysis in Three Phases
 # Simulate a dataset to visualize the various ways to estimate treatment effects
 n <- 500
 treatment_effect <- 1.5
@@ -124,9 +126,9 @@ dat <- tibble(
 
 head(dat, n = 6)
 
-# Scatter plot
+# Scatterplot
 ggplot(dat, aes(x = x1, y = x2, shape = x3, color = factor(treatment))) + 
-	geom_point() + scale_color_manual('Treatment', values = cols)
+	geom_point() + scale_color_manual('Treatment', values = palette2)
 
 # Estimate the propensity scores using logistic regression
 lr.out <- glm(treatment ~ x1 + x2 + x3, data = dat, family = binomial(link='logit'))
@@ -189,10 +191,11 @@ dat <- dat |> mutate(
 psa::weighting_plot(ps = dat$ps,
 					treatment = dat$treatment,
 					outcome = dat$outcome)
-# 
+
+# Distribution of propensity scores
 ggplot(dat) +
-	geom_histogram(data = dat[dat$treatment == 1,], aes(x = ps, y = after_stat(count)), bins = 50, fill = cols[2]) +
-	geom_histogram(data = dat[dat$treatment == 0,], aes(x = ps, y = -after_stat(count)), bins = 50, fill = cols[1]) +
+	geom_histogram(data = dat[dat$treatment == 1,], aes(x = ps, y = after_stat(count)), bins = 50, fill = palette2[2]) +
+	geom_histogram(data = dat[dat$treatment == 0,], aes(x = ps, y = -after_stat(count)), bins = 50, fill = palette2[1]) +
 	geom_hline(yintercept = 0, lwd = 0.5) +	scale_y_continuous(label = abs) 
 
 # Covariate balance plot
@@ -218,14 +221,14 @@ ggplot() +
 	geom_histogram(data = dat[dat$treatment == 1,],
 				   aes(x = ps, weight = ate_weight, y = after_stat(count)),
 				   bins = 50, 
-				   fill = cols[2], alpha = 0.5) +
+				   fill = palette2[2], alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
 				   aes(x = ps, y = -after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
 				   aes(x = ps, weight = ate_weight, y = -after_stat(count)),
 				   bins = 50, 
-				   fill = cols[1], alpha = 0.5) +
+				   fill = palette2[1], alpha = 0.5) +
 	ggtitle('Average Treatment Effect (ATE)')
 
 # Average Treatment Effect Among the Treated (ATT)
@@ -236,14 +239,14 @@ ggplot() +
 	geom_histogram(data = dat[dat$treatment == 1,],
 				   aes(x = ps, weight = att_weight, y = after_stat(count)),
 				   bins = 50, 
-				   fill = cols[2], alpha = 0.5) +
+				   fill = palette2[2], alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
 				   aes(x = ps, y = -after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
 				   aes(x = ps, weight = att_weight, y = -after_stat(count)),
 				   bins = 50, 
-				   fill = cols[1], alpha = 0.5) +
+				   fill = palette2[1], alpha = 0.5) +
 	ggtitle('Average Treatment Effect Among the Treated (ATT)')
 
 # Average Treatment Effect Among the Control (ATC)
@@ -254,14 +257,14 @@ ggplot() +
 	geom_histogram(data = dat[dat$treatment == 1,],
 				   aes(x = ps, weight = atc_weight, y = after_stat(count)),
 				   bins = 50, 
-				   fill = cols[2], alpha = 0.5) +
+				   fill = palette2[2], alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
 				   aes(x = ps, y = -after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
 				   aes(x = ps, weight = atc_weight, y = -after_stat(count)),
 				   bins = 50, 
-				   fill = cols[1], alpha = 0.5) +
+				   fill = palette2[1], alpha = 0.5) +
 	ggtitle('Average Treatment Effect Among the Control (ATC)')
 
 # Average Treatment Effect Among the Evenly Matched (ACM)
@@ -272,14 +275,14 @@ ggplot() +
 	geom_histogram(data = dat[dat$treatment == 1,],
 				   aes(x = ps, weight = atm_weight, y = after_stat(count)),
 				   bins = 50, 
-				   fill = cols[2], alpha = 0.5) +
+				   fill = palette2[2], alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
 				   aes(x = ps, y = -after_stat(count)),
 				   bins = 50, alpha = 0.5) +
 	geom_histogram(data = dat[dat$treatment == 0,],
 				   aes(x = ps, weight = atm_weight, y = -after_stat(count)),
 				   bins = 50, 
-				   fill = cols[1], alpha = 0.5) +
+				   fill = palette2[1], alpha = 0.5) +
 	ggtitle('Average Treatment Effect Among the Evenly Matched (ACM)')
 
 # ATE
@@ -324,9 +327,9 @@ lm(outcome ~ treatment,
 
 
 ################################################################################
+##### Example: National Supported Work Demonstration
 # Example using Lalonde dataset
-lalonde.formu <- treat ~ age + educ + black + hisp +
-	married + nodegr + re74 + re75
+lalonde.formu <- treat ~ age + educ + black + hisp + married + nodegr + re74 + re75
 
 # Estimate Propensity scores
 glm1 <- glm(lalonde.formu, 
@@ -336,18 +339,25 @@ glm1 <- glm(lalonde.formu,
 # Get Propensity Scores
 lalonde$ps <- fitted(glm1)
 
-# Stratification
+# Stratification (5 strata)
 strata5 <- cut(lalonde$ps, 
 			   quantile(lalonde$ps, seq(0, 1, 1/5)), 
 			   include.lowest = TRUE, 
 			   labels = letters[1:5])
 
+# Stratification (10 strata)
+strata10 <- cut(lalonde$ps, 
+				quantile(lalonde$ps, seq(0, 1, 1/10)), 
+				include.lowest = TRUE,
+				labels = letters[1:10])
+
 summary(glm1)
 
+##### Checking Balance
 covars <- all.vars(lalonde.formu)
 covars <- lalonde[,covars[2:length(covars)]]
-cv.bal.psa(covars, lalonde$treat, lalonde$ps, strata = 5)
 
+cv.bal.psa(covars, lalonde$treat, lalonde$ps, strata = 5)
 
 box.psa(lalonde$age, lalonde$treat, strata5)
 
@@ -365,31 +375,30 @@ cat.psa(lalonde$black, lalonde$treat, strata5)
 
 cat.psa(lalonde$nodegr, lalonde$treat, strata5)
 
+##### Treatment estimation
+
+# Loess Regression
 psadf <- data.frame(ps = lalonde$ps, Y = lalonde$re78, Tr = lalonde$treat)
 psa::loess_plot(ps = psadf[psadf$Y < 30000,]$ps, 
 				outcome = psadf[psadf$Y < 30000,]$Y, 
 				treatment = as.logical(psadf[psadf$Y < 30000,]$Tr))
 
+# Stratification (5 strata)
 psa::stratification_plot(ps = psadf$ps,
 						 treatment = psadf$Tr,
 						 outcome = psadf$Y,
 						 n_strata = 5)
 
+# Stratification (10 strata)
 psa::stratification_plot(ps = psadf$ps,
 						 treatment = psadf$Tr,
 						 outcome = psadf$Y,
 						 n_strata = 10)
 
+# Stratification (5 strata)
 circ.psa(lalonde$re78, lalonde$treat, strata5)
 
-strata10 <- cut(lalonde$ps, 
-				quantile(lalonde$ps, seq(0, 1, 1/10)), 
-				include.lowest = TRUE,
-				labels = letters[1:10])
-circ.psa(lalonde$re78, lalonde$treat, strata10)
-
-circ.psa(lalonde$re78, lalonde$treat, strata5)
-
+# Stratification (10 strata)
 circ.psa(lalonde$re78, lalonde$treat, strata10)
 
 ################################################################################
@@ -422,6 +431,7 @@ psens(lalonde$re78[rr$index.treated],
 	  lalonde$re78[rr$index.control],
 	  Gamma = 2, GammaInc = 0.1)
 
+################################################################################
 # Bootstrapping
 library(PSAboot)
 psaboot <- PSAboot(Tr = lalonde$treat,

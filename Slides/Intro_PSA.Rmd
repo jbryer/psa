@@ -128,6 +128,21 @@ knitr::include_graphics('images/hex/psa.png')
 	* Matching for Non-Binary Treatments
 	* Multilevel PSA
 
+---
+# Getting Started in R
+
+Installing the `psa` package from Github with `dependencies = 'Enhances'` should install all the packages we will use in this workshop.
+
+```{r, eval = FALSE}
+install.packages('devtools')
+remotes::install_github('jbryer/psa', build_vignettes = TRUE, dependencies = 'Enhances')
+```
+
+You can download an R script to work through the commands in this slide deck at:
+
+https://github.com/jbryer/psa/blob/master/Slides/Intro_PSA.R
+
+Other resources are available on Github here: https://github.com/jbryer/psa
 
 ---
 class: inverse, middle, center
@@ -179,7 +194,7 @@ class: font80
 # RCT Example
 
 
-```{r}
+```{r RCT_Data_Setup}
 set.seed(2112)
 pop.mean <- 100
 pop.sd <- 15
@@ -204,7 +219,7 @@ tab.out <- describeBy(thedata$RCT_Value, group = thedata$RCT_Assignment, mat = T
 ---
 # True Counterfactual
 
-```{r, echo=FALSE, fig.width=5}
+```{r RCT_Simulation, echo=FALSE, fig.width=5}
 p1 <- ggplot(thedata) + 
 	geom_segment(aes(x = placebo, xend = treatment, y = id, yend = id)) +
 	geom_point(aes(x = placebo, y = id), color = 'blue') +
@@ -266,7 +281,7 @@ p2b
 # Distribution of Differences from 1,000 RCTs
 
 
-```{r, echo=FALSE}
+```{r RCT_distribution, echo=FALSE}
 sim.diff <- numeric(1000)
 for(i in seq_along(sim.diff)) {
 	treats <- sample(c(T,F), n, replace = TRUE)
