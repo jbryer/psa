@@ -46,7 +46,12 @@ Enhances:
     scholar,
     rbounds,
     tree,
-    TriMatch
+    TriMatch,
+    cowplot, 
+    mice,
+    badger,
+    BART,
+    randomForest
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
