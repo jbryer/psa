@@ -48,13 +48,11 @@ emphasized.
 [Click here](Slides/Intro_PSA.pdf) for latest version slides introducing
 propensity score analysis.
 
+<!--
 ## CUNY MSDS Talk
-
-This is a recording of a talk I gave at CUNY School of Professional
-Studies on April 24, 2023.
-
-[![Recording of talk given for CUNY MSDS on April 24,
-2023.](https://img.youtube.com/vi/Rq_od5KwqEA/maxresdefault.jpg)](https://www.youtube.com/watch?v=Rq_od5KwqEA)
+&#10;This is a recording of a talk I gave at CUNY School of Professional Studies on April 24, 2023.
+&#10;[![Recording of talk given for CUNY MSDS on April 24, 2023.](https://img.youtube.com/vi/Rq_od5KwqEA/maxresdefault.jpg)](https://www.youtube.com/watch?v=Rq_od5KwqEA)
+-->
 
 ## Getting Started
 
