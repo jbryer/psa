@@ -7,7 +7,7 @@
 <title>Chapter 3 Matching | Applied Propensity Score Analysis with R</title>
 <meta name="author" content="Jason Bryer, Ph.D.">
 <meta name="description" content="matchverb 1. correspond or cause to correspond in some essential respect; make or be harmonious. 2. be equal to (something) in quality or strength. As the name suggests, propensity score matching...">
-<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta name="generator" content="bookdown 0.34 with bs4_book()">
 <meta property="og:title" content="Chapter 3 Matching | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://psa.bryer.org/chapter-matching.html">
@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.5.0/transition.js"></script><script src="libs/bs3compat-0.5.0/tabs.js"></script><script src="libs/bs3compat-0.5.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
     
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
@@ -350,37 +350,37 @@ Figure 3.2: Covariate Balance Plot for Matching
 ## 
 ## Summary of Balance for Matched Data:
 ##           Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
-## distance         0.4468        0.4277          0.1627     1.2887    0.0400
-## age             25.8162       25.7514          0.0091     1.0691    0.0151
-## I(age^2)       717.3946      710.7568          0.0154     0.9977    0.0151
-## educ            10.3459       10.2054          0.0699     1.2231    0.0162
-## I(educ^2)      111.0595      107.4378          0.0921     1.3309    0.0162
-## black            0.8432        0.8324          0.0297          .    0.0108
-## hisp             0.0595        0.0811         -0.0914          .    0.0216
-## married          0.1892        0.1946         -0.0138          .    0.0054
+## distance         0.4468        0.4284          0.1571     1.3077    0.0387
+## age             25.8162       25.1351          0.0952     1.1734    0.0243
+## I(age^2)       717.3946      675.1676          0.0979     1.1512    0.0243
+## educ            10.3459       10.2649          0.0403     1.2869    0.0174
+## I(educ^2)      111.0595      108.4919          0.0653     1.3938    0.0174
+## black            0.8432        0.8486         -0.0149          .    0.0054
+## hisp             0.0595        0.0703         -0.0457          .    0.0108
+## married          0.1892        0.1892          0.0000          .    0.0000
 ## nodegr           0.7081        0.7676         -0.1308          .    0.0595
-## re74          2095.5740     2168.6782         -0.0150     1.0398    0.0125
-## I(re74^2) 28141433.9907 27544255.1664          0.0052     1.4319    0.0125
-## re75          1532.0556     1482.8937          0.0153     1.1270    0.0181
-## I(re75^2) 12654752.6909 11344693.3166          0.0234     2.2884    0.0181
-## u74              0.7081        0.7027          0.0119          .    0.0054
-## u75              0.6000        0.5946          0.0110          .    0.0054
+## re74          2095.5740     1741.2109          0.0725     1.5797    0.0146
+## I(re74^2) 28141433.9907 18066538.6428          0.0883     3.5436    0.0146
+## re75          1532.0556     1314.8073          0.0675     1.3933    0.0264
+## I(re75^2) 12654752.6909  9126579.7979          0.0630     3.4873    0.0264
+## u74              0.7081        0.7243         -0.0357          .    0.0162
+## u75              0.6000        0.6108         -0.0221          .    0.0108
 ##           eCDF Max Std. Pair Dist.
-## distance    0.1189          0.1627
-## age         0.0378          0.9912
-## I(age^2)    0.0378          0.9340
-## educ        0.0595          0.8442
-## I(educ^2)   0.0595          0.8353
-## black       0.0108          0.6244
-## hisp        0.0216          0.2743
-## married     0.0054          0.6211
+## distance    0.1189          0.1585
+## age         0.0541          0.8159
+## I(age^2)    0.0541          0.7701
+## educ        0.0595          0.7662
+## I(educ^2)   0.0595          0.7604
+## black       0.0054          0.5798
+## hisp        0.0108          0.2286
+## married     0.0000          0.2378
 ## nodegr      0.0595          0.5588
-## re74        0.0324          0.6787
-## I(re74^2)   0.0324          0.4400
-## re75        0.0486          0.7713
-## I(re75^2)   0.0486          0.4068
-## u74         0.0054          0.8204
-## u75         0.0054          0.7613
+## re74        0.0432          0.6080
+## I(re74^2)   0.0432          0.3620
+## re75        0.0649          0.7292
+## I(re75^2)   0.0649          0.3690
+## u74         0.0162          0.7728
+## u75         0.0108          0.7282
 ## 
 ## Sample Sizes:
 ##           Control Treated
@@ -520,7 +520,7 @@ Figure 3.2: Covariate Balance Plot for Matching
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-04-25.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-07-04.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

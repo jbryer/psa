@@ -77,13 +77,13 @@ summary(boot_out)
 ##       90% positive.
 ##       0% negative.
 ## MatchIt Results:
-##    Complete estimate = 2004
-##    Complete CI = [701, 3307]
-##    Bootstrap pooled estimate = 1653
-##    Bootstrap weighted pooled estimate = 1634
-##    Bootstrap pooled CI = [180, 3125]
-##    68% of bootstrap samples have confidence intervals that do not span zero.
-##       68% positive.
+##    Complete estimate = 1772
+##    Complete CI = [370, 3174]
+##    Bootstrap pooled estimate = 1684
+##    Bootstrap weighted pooled estimate = 1637
+##    Bootstrap pooled CI = [260, 3108]
+##    67% of bootstrap samples have confidence intervals that do not span zero.
+##       67% positive.
 ##       0% negative.
 ```
 
@@ -133,7 +133,7 @@ boot_balance
 
 ## 0.01
 
-## 0.05
+## 0.06
 
 ## 0.04
 
@@ -218,7 +218,7 @@ boot_balance$complete
 
 ## 0.00
 
-## 0.05
+## 0.09
 
 ## 0.09
 
@@ -230,7 +230,7 @@ boot_balance$complete
 
 ## 0.05
 
-## 0.01
+## 0.08
 
 ## 0.04
 
@@ -254,7 +254,7 @@ boot_balance$complete
 
 ## 0.00
 
-## 0.04
+## 0.00
 
 ## 0.03
 
@@ -266,7 +266,7 @@ boot_balance$complete
 
 ## 0.00
 
-## 0.19
+## 0.16
 
 ## 0.00
 
@@ -290,7 +290,7 @@ boot_balance$complete
 
 ## 0.01
 
-## 0.05
+## 0.04
 
 ## 0.06
 
@@ -302,7 +302,7 @@ boot_balance$complete
 
 ## 0.02
 
-## 0.04
+## 0.07
 
 ## 0.03
 
@@ -314,7 +314,7 @@ boot_balance$complete
 
 ## 0.02
 
-## 0.07
+## 0.06
 ```
 
 ```r
@@ -384,11 +384,11 @@ boot_balance$pooled |> head()
 
 ## 0.08
 
+## 0.10
+
 ## 0.09
 
 ## 0.07
-
-## 0.05
 
 ## 0.10
 
