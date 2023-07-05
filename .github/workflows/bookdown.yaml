@@ -35,7 +35,6 @@ jobs:
       - name: Build site
         run: |
           install.packages('devtools')
-          install.packages(c('cowplot', 'granovaGG', 'mice','badger','BART','randomForest'))
           devtools::install(upgrade = 'never', build_vignettes = FALSE, dependencies = 'Enhances')
           setwd('book')
           bookdown::render_book()
