@@ -51,7 +51,9 @@ Enhances:
     mice,
     badger,
     BART,
-    randomForest
+    randomForest,
+    stargazer,
+    gdata
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

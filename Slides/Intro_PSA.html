@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Estimating Causal Effects with Observational Data</title>
+    <title>Introduction to Propensity Score Analysis with R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Jason Bryer, Ph.D." />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -20,10 +20,10 @@ class: center, middle, inverse, title-slide
 
 
 
-# Estimating Causal Effects with Observational Data
-## Propensity Score Analysis with R
+# Introduction to Propensity Score Analysis with R
+## 
 ### Jason Bryer, Ph.D.
-### Last updated: July 04, 2023
+### Last updated: July 06, 2023
 
 
 ---
@@ -504,12 +504,13 @@ dat |&gt; head(n = 4)
 
 ```
 ## # A tibble: 4 × 11
-##      x1    x2 x3    treatment outcome    ps strata5 ate_weight att_weight atc_weight atm_weight
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;        &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
-## 1 1.35  0.744 FALSE         0  1.46   0.725 C             3.63       2.63     1          1     
-## 2 0.149 1.55  TRUE          0 -0.924  0.790 D             4.76       3.76     1          1     
-## 3 2.47  2.39  TRUE          1 -0.0527 0.982 E             1.02       1        0.0181     0.0181
-## 4 2.29  1.66  TRUE          1  1.05   0.922 D             1.08       1        0.0844     0.0844
+##      x1    x2 x3    treatment outcome    ps strata5 ate_weight att_weight
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;        &lt;dbl&gt;      &lt;dbl&gt;
+## 1 1.35  0.744 FALSE         0  1.46   0.725 C             3.63       2.63
+## 2 0.149 1.55  TRUE          0 -0.924  0.790 D             4.76       3.76
+## 3 2.47  2.39  TRUE          1 -0.0527 0.982 E             1.02       1   
+## 4 2.29  1.66  TRUE          1  1.05   0.922 D             1.08       1   
+## # ℹ 2 more variables: atc_weight &lt;dbl&gt;, atm_weight &lt;dbl&gt;
 ```
 
 
@@ -1272,56 +1273,56 @@ summary(psaboot)
 ## Stratification Results:
 ##    Complete estimate = 1587
 ##    Complete CI = [224, 2950]
-##    Bootstrap pooled estimate = 1581
-##    Bootstrap weighted pooled estimate = 1529
-##    Bootstrap pooled CI = [258, 2904]
-##    69% of bootstrap samples have confidence intervals that do not span zero.
-##       69% positive.
+##    Bootstrap pooled estimate = 1636
+##    Bootstrap weighted pooled estimate = 1659
+##    Bootstrap pooled CI = [269, 3002]
+##    62% of bootstrap samples have confidence intervals that do not span zero.
+##       62% positive.
 ##       0% negative.
 ## ctree Results:
 ##    Complete estimate = 1598
 ##    Complete CI = [-6.62, 3203]
-##    Bootstrap pooled estimate = 1517
-##    Bootstrap weighted pooled estimate = 1533
-##    Bootstrap pooled CI = [249, 2785]
-##    40.5% of bootstrap samples have confidence intervals that do not span zero.
-##       40.5% positive.
+##    Bootstrap pooled estimate = 1506
+##    Bootstrap weighted pooled estimate = 1485
+##    Bootstrap pooled CI = [84.4, 2927]
+##    41.3% of bootstrap samples have confidence intervals that do not span zero.
+##       41.3% positive.
 ##       0% negative.
 ## rpart Results:
 ##    Complete estimate = 1332
 ##    Complete CI = [-295, 2959]
-##    Bootstrap pooled estimate = 1455
-##    Bootstrap weighted pooled estimate = 1492
-##    Bootstrap pooled CI = [-200, 3110]
-##    29% of bootstrap samples have confidence intervals that do not span zero.
-##       29% positive.
+##    Bootstrap pooled estimate = 1506
+##    Bootstrap weighted pooled estimate = 1537
+##    Bootstrap pooled CI = [-250, 3262]
+##    34% of bootstrap samples have confidence intervals that do not span zero.
+##       34% positive.
 ##       0% negative.
 ## Matching Results:
 ##    Complete estimate = 1827
 ##    Complete CI = [1210, 2444]
-##    Bootstrap pooled estimate = 1445
-##    Bootstrap weighted pooled estimate = 1460
-##    Bootstrap pooled CI = [-353, 3243]
-##    87% of bootstrap samples have confidence intervals that do not span zero.
-##       86% positive.
-##       1% negative.
+##    Bootstrap pooled estimate = 1564
+##    Bootstrap weighted pooled estimate = 1539
+##    Bootstrap pooled CI = [-154, 3282]
+##    90% of bootstrap samples have confidence intervals that do not span zero.
+##       90% positive.
+##       0% negative.
 ## MatchIt Results:
 ##    Complete estimate = 2031
 ##    Complete CI = [797, 3266]
-##    Bootstrap pooled estimate = 1862
-##    Bootstrap weighted pooled estimate = 1866
-##    Bootstrap pooled CI = [571, 3153]
+##    Bootstrap pooled estimate = 1874
+##    Bootstrap weighted pooled estimate = 1858
+##    Bootstrap pooled CI = [427, 3321]
 ##    77% of bootstrap samples have confidence intervals that do not span zero.
 ##       77% positive.
 ##       0% negative.
 ## Weighting Results:
 ##    Complete estimate = 1641
 ##    Complete CI = [380, 2902]
-##    Bootstrap pooled estimate = 1587
-##    Bootstrap weighted pooled estimate = 1547
-##    Bootstrap pooled CI = [239, 2934]
-##    72% of bootstrap samples have confidence intervals that do not span zero.
-##       72% positive.
+##    Bootstrap pooled estimate = 1614
+##    Bootstrap weighted pooled estimate = 1570
+##    Bootstrap pooled CI = [234, 2993]
+##    70% of bootstrap samples have confidence intervals that do not span zero.
+##       70% positive.
 ##       0% negative.
 ```
 

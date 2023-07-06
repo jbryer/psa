@@ -1,8 +1,8 @@
 ################################################################################
 ##### Setup
 # Installing the `psa` package with  dependencies = 'Enhances' should install 
-# all the dependencies for the workshop. Uncomment to run the command once per
-# R installation.
+# all the dependencies for the workshop. Remove the comment to run the command 
+# once per R installation.
 
 # remotes::install_github('jbryer/psa', build_vignettes = TRUE, dependencies = 'Enhances')
 

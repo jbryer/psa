@@ -1,6 +1,6 @@
 ---
-title: "Estimating Causal Effects with Observational Data"
-subtitle: "Propensity Score Analysis with R"
+title: "Introduction to Propensity Score Analysis with R"
+# subtitle: "Propensity Score Analysis with R"
 author: "Jason Bryer, Ph.D."
 # date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
