@@ -1,7 +1,7 @@
 --- 
 title: "Applied Propensity Score Analysis with R"
 author: "Jason Bryer, Ph.D."
-date: "2023-07-05"
+date: "2023-07-06"
 site: bookdown::bookdown_site
 documentclass: book
 url: https://psa.bryer.org
@@ -14,7 +14,7 @@ bibliography: [book.bib, packages.bib]
 
 # Preface {-}
 
-Last updated: July 05, 2023
+Last updated: July 06, 2023
 
 <a href="https://psa.bryer.org" target="_blank"><img src="figures/cover.png" width="40%" style="float:right; padding:10px" style="display: block; margin: auto 0 auto auto;" /></a>
 
@@ -57,7 +57,7 @@ devtools::session_info()
 ##  collate  C.UTF-8
 ##  ctype    C.UTF-8
 ##  tz       UTC
-##  date     2023-07-05
+##  date     2023-07-06
 ##  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@ devtools::session_info()
 ##  P lattice         0.21-8   2023-04-05 [3] CRAN (R 4.3.1)
 ##    libcoin         1.0-9    2021-09-27 [1] CRAN (R 4.3.1)
 ##  P lifecycle       1.0.3    2022-10-07 [?] RSPM (R 4.3.0)
-##    lme4            1.1-33   2023-04-25 [1] CRAN (R 4.3.1)
+##    lme4            1.1-34   2023-07-04 [1] CRAN (R 4.3.1)
 ##  P magrittr        2.0.3    2022-03-30 [?] RSPM (R 4.3.0)
 ##  P MASS          * 7.3-60   2023-05-04 [3] CRAN (R 4.3.1)
 ##    Matching      * 4.10-8   2022-11-03 [1] CRAN (R 4.3.1)
