@@ -21,6 +21,14 @@ jobs:
       #   with:
       #     use-public-rspm: true
 
+      - name: Install R Packages
+        run: |
+          install.packages(c('cowplot', 'dplyr', 'ggplot2', 'grid', 'Matching', 'MatchIt', 'mice', 'plyr', 'psych', 'remotes', 'reshape2', 'shiny'))
+          install.packages(c('bookdown', 'devtools', 'granova', 'GGally', 'multilevelPSA', 'PSAgraphics', 'rgenoud', 'scholar', 'rbounds', 'tree', 'TriMatch', 'badger', 'BART', 'randomForest', 'stargazer', 'gdata'))
+          remotes::install_github('briandk/granovaGG')
+          remotes::install_github('jbryer/PSAboot')
+        shell: Rscript {0}
+        
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
