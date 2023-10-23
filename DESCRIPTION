@@ -47,8 +47,6 @@ Enhances:
     rbounds,
     tree,
     TriMatch,
-    cowplot, 
-    mice,
     badger,
     BART,
     randomForest,
