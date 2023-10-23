@@ -7,7 +7,7 @@
 <title>Chapter 6 Bootstrapping | Applied Propensity Score Analysis with R</title>
 <meta name="author" content="Jason Bryer, Ph.D.">
 <meta name="description" content="library(PSAboot) boot.matching.1to3 &lt;- function(Tr, Y, X, X.trans, formu, ...) {   return(boot.matching(Tr=Tr, Y=Y, X=X, X.trans=X.trans, formu=formu, M=3, ...)) }  boot_out &lt;- PSAboot(Tr =...">
-<meta name="generator" content="bookdown 0.34 with bs4_book()">
+<meta name="generator" content="bookdown 0.36 with bs4_book()">
 <meta property="og:title" content="Chapter 6 Bootstrapping | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://psa.bryer.org/chapter-bootstrapping.html">
@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.5.0/transition.js"></script><script src="libs/bs3compat-0.5.0/tabs.js"></script><script src="libs/bs3compat-0.5.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.5.1/transition.js"></script><script src="libs/bs3compat-0.5.1/tabs.js"></script><script src="libs/bs3compat-0.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
     
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
@@ -245,11 +245,11 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 
 ## 0.00
 
-## 0.09
-
 ## 0.01
 
-## 0.02
+## 0.00
+
+## 0.16
 
 ## 0.03
 
@@ -259,9 +259,9 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 
 ## 0.04
 
-## 0.00
+## 0.02
 
-## 0.09
+## 0.06
 
 ## 0.09
 
@@ -269,23 +269,23 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 
 ## 0.14
 
-## 0.02
-
-## 0.05
-
-## 0.08
-
-## 0.04
-
-## 0.05
-
-## 0.08
-
 ## 0.04
 
 ## 0.01
 
 ## 0.02
+
+## 0.04
+
+## 0.05
+
+## 0.08
+
+## 0.04
+
+## 0.00
+
+## 0.09
 
 ## 0.02
 
@@ -293,11 +293,11 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 
 ## 0.10
 
-## 0.06
+## 0.09
 
-## 0.00
+## 0.01
 
-## 0.00
+## 0.02
 
 ## 0.03
 
@@ -305,11 +305,11 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 
 ## 0.02
 
-## 0.01
+## 0.09
 
-## 0.00
+## 0.02
 
-## 0.16
+## 0.07
 
 ## 0.00
 
@@ -317,11 +317,11 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 
 ## 0.05
 
-## 0.10
+## 0.06
 
 ## 0.00
 
-## 0.05
+## 0.00
 
 ## 0.03
 
@@ -341,11 +341,11 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 
 ## 0.06
 
-## 0.09
-
 ## 0.02
 
-## 0.07
+## 0.05
+
+## 0.08
 
 ## 0.03
 
@@ -353,11 +353,11 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 
 ## 0.01
 
-## 0.04
+## 0.10
 
-## 0.02
+## 0.00
 
-## 0.06</code></pre>
+## 0.05</code></pre>
 <div class="sourceCode" id="cb106"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boot_balance</span><span class="op">$</span><span class="va">pooled</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 0.02
@@ -461,7 +461,7 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-07-06.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-10-23.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
