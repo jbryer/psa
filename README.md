@@ -6,7 +6,7 @@
 [![R-CMD-check](https://github.com/jbryer/psa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/R-CMD-check.yaml)
 [![Bookdown
 Status](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg)](https://github.com/jbryer/psa/actions/workflows/bookdown.yaml)
-[![](https://img.shields.io/badge/devel%20version-0.1.0-blue.svg)](https://github.com/jbryer/psa)
+[![](https://img.shields.io/badge/devel%20version-0.1.1-blue.svg)](https://github.com/jbryer/psa)
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
@@ -19,27 +19,24 @@ Bookdown Site: <https://psa.bryer.org>
 
 The use of propensity score methods (Rosenbaum & Rubin, 1983) for
 estimating causal effects in observational studies or certain kinds of
-quasi-experiments has been increasing in the social sciences (Thoemmes &
-Kim, 2011) and in medical research (Austin, 2008) in the last decade.
+quasi-experiments has been increasing over the last two decades.
 Propensity score analysis (PSA) attempts to adjust selection bias that
 occurs due to the lack of randomization. Analysis is typically conducted
-in two phases where in phase I, the probability of placement in the
-treatment is estimated to identify matched pairs or clusters so that in
-phase II, comparisons on the dependent variable can be made between
-matched pairs or within clusters. R (R Core Team, 2012) is ideal for
-conducting PSA given its wide availability of the most current
+in three phases. In phase I, the probability of placement in the
+treatment is estimated to identify matched pairs, clusters, or
+probability weights. In phase II, comparisons on the dependent variable
+can be made between matched pairs, within clusters, or using inverse
+probability weights in regression models. In phase III, sensitivity
+analysis is conducted to estimate how robust the effect sizes estimated
+in phase II are to unobserved confounders. R (R Core Team, 2012) is
+ideal for conducting PSA given its wide availability of the most current
 statistical methods vis-à-vis add-on packages as well as its superior
-graphics capabilities.
-
-This workshop will provide participants with a theoretical overview of
-propensity score methods as well as illustrations and discussion of PSA
-applications. Methods used in phase I of PSA (i.e. models or methods for
-estimating propensity scores) include logistic regression,
-classification trees, and matching. Discussions on appropriate
-comparisons and estimations of effect size and confidence intervals in
-phase II will also be covered. The use of graphics for diagnosing
-covariate balance as well as summarizing overall results will be
-emphasized.
+graphics capabilities. This talk will provide participants with a
+theoretical overview of propensity score methods with an emphasis on
+graphics. A survey of R packages for conducting PSA with multilevel
+data, non-binary treatments, and bootstrapping will also be provided.
+Lastly, a Shiny application to assist with all three phases of PSA will
+be demonstrated.
 
 <img src="man/figures/README-psa_citations_by_year-1.png" width="100%" />
 
