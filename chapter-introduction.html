@@ -232,6 +232,11 @@ C. Repeat A and B until sufficient balance is optimized</p>
 <li><p>Estimate causal effects.</p></li>
 <li><p>Check for sensitivity to unobserved confounders.</p></li>
 </ol>
+<div class="figure" style="text-align: center">
+<img src="figures/PSA_Flow.png" alt="Process of conducting propensity score analysis" width="100%"><p class="caption">
+(#fig:psa_flow)Process of conducting propensity score analysis
+</p>
+</div>
 <p>The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification (chapter <a href="chapter-stratification.html#chapter-stratification">2</a>), matching (chapter <a href="chapter-matching.html#chapter-matching">3</a>), and weighting (chapter <a href="chapter-weighting.html#chapter-weighting">4</a>).</p>
 <div id="phase-i-estimate-propensity-scores" class="section level3" number="1.3.1">
 <h3>
@@ -447,7 +452,7 @@ Figure 1.21: Histogram of average treatment effect among the evenly matched
 <h2>
 <span class="header-section-number">1.4</span> R Packages<a class="anchor" aria-label="anchor" href="#r-packages"><i class="fas fa-link"></i></a>
 </h2>
-<p>R is a statistical software language designed to be extended vis-à-vis packages. As of October 23, 2023, there are currently 19,953 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of R</p>
+<p>R is a statistical software language designed to be extended vis-à-vis packages. As of November 13, 2023, there are currently 20,017 packages available on <a href="https://cran.r-project.org">CRAN</a>. Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend <a href="https://r4ds.had.co.nz"><em>R for Data Science</em></a> <span class="citation">(Wickham and Grolemund 2016)</span> as an excellent introduction to R. This book will make use of a number of R</p>
 <ul>
 <li>
 <a href="http://gking.harvard.edu/gking/matchit"><code>MatchIt</code></a> <span class="citation">(Ho et al. 2023)</span> Nonparametric Preprocessing for Parametric Causal Inference</li>
@@ -464,7 +469,7 @@ Figure 1.21: Histogram of average treatment effect among the evenly matched
 <li>
 <a href="http://www.personal.psu.edu/ljk20/rbounds%20vignette.pdf"><code>rbounds</code></a> <span class="citation">(<strong>R-rbounds?</strong>)</span> An Overview of rebounds: An R Package for Rosenbaum bounds sensitivity analysis with matched data.</li>
 <li>
-<a href="http://cran.r-project.org/web/packages/rpart/index.html"><code>rpart</code></a> <span class="citation">(Therneau and Atkinson 2022)</span> Recursive Partitioning</li>
+<a href="http://cran.r-project.org/web/packages/rpart/index.html"><code>rpart</code></a> <span class="citation">(Therneau and Atkinson 2023)</span> Recursive Partitioning</li>
 <li>
 <a href="https://github.com/jbryer/TriMatch"><code>TriMatch</code></a> <span class="citation">(Bryer 2017)</span> Propensity Score Matching for Non-Binary Treatments</li>
 </ul>
@@ -859,7 +864,7 @@ Figure 1.21: Histogram of average treatment effect among the evenly matched
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-10-23.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-11-13.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

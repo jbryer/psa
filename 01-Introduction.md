@@ -161,6 +161,12 @@ Propensity score analysis is typically conducted in three phases, namely:
 
 3. Check for sensitivity to unobserved confounders.
 
+<div class="figure" style="text-align: center">
+<img src="figures/PSA_Flow.png" alt="Process of conducting propensity score analysis" width="100%" />
+<p class="caption">(\#fig:psa_flow)Process of conducting propensity score analysis</p>
+</div>
+
+
 The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification (chapter \@ref(chapter-stratification)), matching (chapter \@ref(chapter-matching)), and weighting (chapter \@ref(chapter-weighting)).
 
 ### Phase I: Estimate Propensity Scores
@@ -370,7 +376,7 @@ Sensitivity analysis is only well defined for matching methods. @Rosenbaum2012 p
 
 ## R Packages
 
-R is a statistical software language designed to be extended vis-à-vis packages. As of October 23, 2023, there are currently 19,953 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend [*R for Data Science*](https://r4ds.had.co.nz) [@Wickham2016] as an excellent introduction to R. This book will make use of a number of R 
+R is a statistical software language designed to be extended vis-à-vis packages. As of November 13, 2023, there are currently 20,017 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend [*R for Data Science*](https://r4ds.had.co.nz) [@Wickham2016] as an excellent introduction to R. This book will make use of a number of R 
 
 
 * [`MatchIt`](http://gking.harvard.edu/gking/matchit) [@R-MatchIt] Nonparametric Preprocessing for Parametric Causal Inference
