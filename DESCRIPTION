@@ -6,9 +6,9 @@ Date: 2023-07-04
 Author: Jason Bryer <jason@bryer.org>
 Maintainer: Jason Bryer <jason@bryer.org>
 Description: Shiny application and utility functions to assist with
-    conducting propensity score analysis in R. The functions and data in this 
-    package are also used to support the 'bookdown' book, "Applied Propensity
-    Score Analaysis with R" <https://psa.bryer.org>.
+    conducting propensity score analysis in R. The functions and data in
+    this package are also used to support the 'bookdown' book, "Applied
+    Propensity Score Analaysis with R" <https://psa.bryer.org>.
 License: GPL (>= 3)
 URL: http://github.com/jbryer/psa
 BugReports: https://github.com/jbryer/psa/issues
@@ -31,27 +31,25 @@ Suggests:
     lubridate,
     mvtnorm,
     party,
-    rmarkdown,
-    stargazer
+    rmarkdown
 Enhances:
-    granovaGG,
+    badger,
+    BART,
     bookdown,
     devtools,
-    granova,
+    gdata,
     GGally,
+    granova,
     multilevelPSA,
     PSAboot,
     PSAgraphics,
+    randomForest,
+    rbounds,
     rgenoud,
     scholar,
-    rbounds,
-    tree,
-    TriMatch,
-    badger,
-    BART,
-    randomForest,
     stargazer,
-    gdata
+    tree,
+    TriMatch
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

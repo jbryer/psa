@@ -19,3 +19,4 @@ docs/
 ^\.github$
 ^LICENSE\.md$
 ^CODE_OF_CONDUCT\.md$
+render-readme.yaml

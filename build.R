@@ -34,7 +34,7 @@ remotes::install_github('jbryer/PSAboot')
 # library(bookdown)
 wd <- setwd('book')
 bookdown::render_book(input = "index.Rmd", output_format = "bookdown::bs4_book")
-# bookdown::render_book(input = "index.Rmd", output_format = "bookdown::pdf_book")
+ # bookdown::render_book(input = "index.Rmd", output_format = "bookdown::pdf_book")
 setwd(wd)
 
 library(RefManageR)
