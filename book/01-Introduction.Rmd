@@ -223,6 +223,11 @@ Propensity score analysis is typically conducted in three phases, namely:
 
 3. Check for sensitivity to unobserved confounders.
 
+```{r psa_flow, echo=FALSE, fig.cap='Process of conducting propensity score analysis'}
+knitr::include_graphics("figures/PSA_Flow.png")
+```
+
+
 The following sections will provide an overview of these phases and the details on implementing each phase using one of the three main methods for conducting PSA, stratification (chapter \@ref(chapter-stratification)), matching (chapter \@ref(chapter-matching)), and weighting (chapter \@ref(chapter-weighting)).
 
 ### Phase I: Estimate Propensity Scores

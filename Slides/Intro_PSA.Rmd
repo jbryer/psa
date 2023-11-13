@@ -393,6 +393,13 @@ ggplot(dat, aes(x = x1, y = x2, shape = x3, color = factor(treatment))) +
 
 
 ---
+# Steps for Implementing Propensity Score Analysis
+
+```{r, echo=FALSE, out.width = '90%'}
+knitr::include_graphics('images/PSA_Flow.png')
+```
+
+---
 # Propensity score methods
 
 There are three major approaches for conducting PSA:
@@ -523,20 +530,6 @@ knitr::include_graphics('images/psa_simulation_screenshot.png')
 ```
 
 
----
-# Steps for Implementing Propensity Score Analysis
-
-Stuart and Rubin (2008) outline the following steps for matching, but the same approach can be used for stratification and weighting as well.
-
-1. Choose the covariates to be used.
-
-2. Define a distance measure (i.e. what constitutes similar).
-
-3. Choose the matching algorithm.
-
-4. Diagnose the matches (or strata) obtained (iterating through steps 2 and 3 as well).
-
-5. Estimate the treatment effect using the matches (or strata) found in step 4.
 
 ---
 # Phase I: Estimate Propensity Scores
