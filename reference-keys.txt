@@ -10,6 +10,7 @@ eq:eq4
 eq:eq5
 eq:eq6
 eq:eq7
+fig:psa-flow
 fig:sim-scatter
 fig:sim-ggpairs
 fig:sim-dist

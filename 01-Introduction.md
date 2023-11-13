@@ -149,7 +149,7 @@ Simply put, what Rosenbaum and Rubin (1983) proved was that observations similar
 
 ## Phases of Propensity Score Analysis
 
-Propensity score analysis is typically conducted in three phases, namely:
+Propensity score analysis is typically conducted in three phases (see \@ref(fig:psa-flow)), namely:
 
 1. Model for selection bias
 
@@ -163,7 +163,7 @@ Propensity score analysis is typically conducted in three phases, namely:
 
 <div class="figure" style="text-align: center">
 <img src="figures/PSA_Flow.png" alt="Process of conducting propensity score analysis" width="100%" />
-<p class="caption">(\#fig:psa_flow)Process of conducting propensity score analysis</p>
+<p class="caption">(\#fig:psa-flow)Process of conducting propensity score analysis</p>
 </div>
 
 
@@ -285,7 +285,7 @@ Similar to Figure \@ref(fig:intro-circ-psa) for stratification, Figure \@ref(fig
 
 #### Weighting
 
-Propensity score weighting is useful when you wish to use the propensity scores within other regression models. Specifically, each observation is weighted by the inverse of the probability of being in that group. Figure \@ref(fig:intro-weighting) plots the propensity scores against the outcome, however here the size of the point is proportional to the propensity score weight. In this example the weights are calculated to estimate the average treatment effect. Details on the different treatment effects are discussed in section \@ref(intro-treatment-effects). A Loess regression line (blue) with an approximate 95% confidence interval (grey) is provided along with a line $y - 0$. Since the Loess regression lines does not overlap zero, we would conclude there is a statistically significant treatment effect across the entire range of propensity scores. In later examples of the book we will find that not all treatment effects are homogeneous meaning the treatment effect is not the same across the entire range of propensity scores. This plot, along with the Loess regression plot (Figure \@ref(intro-sim-loess)) are effective tools for determining whether treatment effects may differ depending on different covariate profiles.
+Propensity score weighting is useful when you wish to use the propensity scores within other regression models. Specifically, each observation is weighted by the inverse of the probability of being in that group. Figure \@ref(fig:intro-weighting) plots the propensity scores against the outcome, however here the size of the point is proportional to the propensity score weight. In this example the weights are calculated to estimate the average treatment effect. Details on the different treatment effects are discussed in section \@ref(intro-treatment-effects). A Loess regression line (blue) with an approximate 95% confidence interval (grey) is provided along with a line $y - 0$. Since the Loess regression lines does not overlap zero, we would conclude there is a statistically significant treatment effect across the entire range of propensity scores. In later examples of the book we will find that not all treatment effects are homogeneous meaning the treatment effect is not the same across the entire range of propensity scores. This plot, along with the Loess regression plot (Figure \@ref(fig:intro-sim-loess)) are effective tools for determining whether treatment effects may differ depending on different covariate profiles.
 
 
 <div class="figure" style="text-align: center">
