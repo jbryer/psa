@@ -43,7 +43,8 @@ be demonstrated.
 ## Slides
 
 The latest version slides introducing propensity score analysis:
-[PDF](Slides/Intro_PSA.pdf) or [HTML](Slides/Intro_PSA.html).
+[PDF](Slides/Intro_PSA.pdf) or
+[HTML](http://htmlpreview.github.io/?https://github.com/jbryer/psa/blob/master/Slides/Intro_PSA.html).
 
 <!--
 ## CUNY MSDS Talk
