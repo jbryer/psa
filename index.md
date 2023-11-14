@@ -1,7 +1,7 @@
 --- 
 title: "Applied Propensity Score Analysis with R"
 author: "Jason Bryer, Ph.D."
-date: "2023-11-13"
+date: "2023-11-14"
 site: bookdown::bookdown_site
 documentclass: book
 url: https://psa.bryer.org
@@ -14,7 +14,7 @@ bibliography: [book.bib, packages.bib]
 
 # Preface {-}
 
-Last updated: November 13, 2023
+Last updated: November 14, 2023
 
 <a href="https://psa.bryer.org" target="_blank"><img src="figures/cover.png" width="40%" style="float:right; padding:10px" style="display: block; margin: auto 0 auto auto;" /></a>
 
@@ -57,7 +57,7 @@ devtools::session_info()
 ##  collate  C.UTF-8
 ##  ctype    C.UTF-8
 ##  tz       UTC
-##  date     2023-11-13
+##  date     2023-11-14
 ##  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)
 ## 
 ## ─ Packages ───────────────────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ devtools::session_info()
 ##  ggthemes        4.2.4    2021-01-20 [1] RSPM (R 4.3.0)
 ##  glue            1.6.2    2022-02-24 [1] RSPM (R 4.3.0)
 ##  granova       * 2.2      2023-03-22 [1] RSPM (R 4.3.0)
-##  granovaGG     * 1.4.0    2023-11-13 [1] Github (briandk/granovaGG@3b95715)
+##  granovaGG     * 1.4.0    2023-11-14 [1] Github (briandk/granovaGG@3b95715)
 ##  gridExtra       2.3      2017-09-09 [1] RSPM (R 4.3.0)
 ##  gtable          0.3.4    2023-08-21 [1] RSPM (R 4.3.0)
 ##  highr           0.10     2022-12-22 [1] RSPM (R 4.3.0)
@@ -136,7 +136,7 @@ devtools::session_info()
 ##  profvis         0.3.8    2023-05-02 [1] RSPM (R 4.3.0)
 ##  promises        1.2.1    2023-08-10 [1] RSPM (R 4.3.0)
 ##  ps              1.7.5    2023-04-18 [1] RSPM (R 4.3.0)
-##  PSAboot       * 1.3.8    2023-11-13 [1] Github (jbryer/PSAboot@f5d73cd)
+##  PSAboot       * 1.3.8    2023-11-14 [1] Github (jbryer/PSAboot@f5d73cd)
 ##  PSAgraphics   * 2.1.2    2023-03-21 [1] RSPM (R 4.3.0)
 ##  psych           2.3.9    2023-09-26 [1] RSPM (R 4.3.0)
 ##  purrr           1.0.2    2023-08-10 [1] RSPM (R 4.3.0)
@@ -155,7 +155,7 @@ devtools::session_info()
 ##  scales        * 1.2.1    2022-08-20 [1] RSPM (R 4.3.0)
 ##  sessioninfo     1.2.2    2021-12-06 [1] RSPM (R 4.3.0)
 ##  shiny           1.7.5.1  2023-10-14 [1] RSPM (R 4.3.0)
-##  stringi         1.7.12   2023-01-11 [1] RSPM (R 4.3.0)
+##  stringi         1.8.1    2023-11-13 [1] RSPM (R 4.3.0)
 ##  stringr         1.5.0    2022-12-02 [1] RSPM (R 4.3.0)
 ##  strucchange     1.5-3    2022-06-15 [1] RSPM (R 4.3.0)
 ##  survival        3.5-7    2023-08-14 [2] CRAN (R 4.3.2)
