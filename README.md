@@ -42,8 +42,8 @@ be demonstrated.
 
 ## Slides
 
-[Click here](Slides/Intro_PSA.pdf) for latest version slides introducing
-propensity score analysis.
+The latest version slides introducing propensity score analysis:
+[PDF](Slides/Intro_PSA.pdf) or [HTML](Slides/Intro_PSA.html).
 
 <!--
 ## CUNY MSDS Talk
@@ -218,79 +218,6 @@ score analysis. These are the packages this workshop will make use of:
   (Therneau, Atkinson, & Ripley, 2012) Recursive Partitioning
 - [`TriMatch`](http://jason.bryer.org/TriMatch) (Bryer, 2013) Propensity
   Score Matching for Non-Binary Treatments
-
-## References
-
-Rosenbaum, P.R., & Rubin, D.B. (1983). [The central role of the
-propensity score in observational studies for causal
-effects](http://faculty.smu.edu/Millimet/classes/eco7377/papers/rosenbaum%20rubin%2083a.pdf).
-*Biometrika, 70*(1), 41-55.
-
-Rosenbaum, P.R. (2010). *Design of Observational Studies*. New York:
-Springer.
-
-Austin, P. C. (2011). Comparing paired vs non-paired statistical methods
-of analyses when making inferences about absolute risk reductions in
-propensity-score matched samples. *Statistics in Medicine, 30*.
-
-Bryer, J. (2011). multilevelPSA: Multilevel propensity score analysis
-\[Computer software manual\]. Retrieved from
-<http://github.com/jbryer/multilevelPSA>
-
-Bryer, J., & Pruzek, R.M. (2011). An international comparison of private
-and public schools using multilevel propensity score methods and
-graphics (Abstract). *Multivariate Behavioral Research, 46*(6),
-1010-1011.
-
-Helmreich, J. E., & Pruzek, R. M. (2009). PSAgraphics: An R package to
-support propensity score analysis. *Journal of Statistical Software,
-29*(6). Available from <http://www.jstatsoft.org/v29/i06/paper>
-
-Ho, D.E., Imai, K., King, G., and Stuart, E.A (2011). [MatchIt:
-Nonparametric Preprocessing for Parametric Causal
-Inference](http://www.jstatsoft.org/v42/i08/). *Journal of Statistical
-Software 42*(8).
-
-Hothorn, T., Hornik, K., & Zeileis, A. (2006). Unbiased Recursive
-Partitioning: A Conditional Inference Framework. *Journal of
-Computational and Graphical Statistics, 15*(3), 651–674.
-
-R Core Team (2012). [R: A language and environment for statistical
-computing](http://www.R-project.org/). R Foundation for Statistical
-Computing, Vienna, Austria. ISBN 3-900051-07-0.
-
-Rosenbaum, P.R. (2005). Sensitivity analysis in observational studies.
-In B.S. Everitt & D.C. Howell *Encyclopedia of Statistics in Behavioral
-Science*, pp. 1809-1814. Chichester: John Wiley & Sons.
-
-Rosenbaum, P.R. (2012). Testing one hypothesis twice in observational
-studies. *Biometrika*.
-
-Sekhon, J.S. (2011). [Multivariate and Propensity Score Matching
-Software with Automated Balance Optimization: The Matching Package for
-R](http://www.jstatsoft.org/v42/i07/). *Journal of Statistical Software,
-42*(7), 1-52.
-
-Shadish, W.R., Clark, M.H., & Steiner, P.M. (2008). Can nonrandomized
-experiments yield accurate answers? A randomized experiment comparing
-random and nonrandom assignments. *Journal of the American Statistical
-Association, 103*(484). 1334-1356.
-
-Stuart, E. A. (2010). Matching methods for causal inference: A review
-and a look forward. *Statistical Science, 25*, 1-21.
-
-Stuart, E.A., & Rubin, D.B. (2007). Best practices in quasi-experimental
-designs: Matching methods for causal inference. Chapter 11 (pp. 155-176)
-in J. Osborne (Ed.). *Best Practices in Quantitative Social Science*.
-Thousand Oaks, CA: Sage Publications.
-
-Therneau, T., Atkinson, B., & Ripley, B. (2012). [rpart: Recursive
-Partitioning](http://CRAN.R-project.org/package=rpart). R package
-version 4.0-1.
-
-Thoemmes, F. J., & Kim, E. S. (2011). A systematic review of propensity
-score methods in the social sciences. Multivariate Behavioral Research,
-46, 90-118.
 
 ## Code of Conduct
 

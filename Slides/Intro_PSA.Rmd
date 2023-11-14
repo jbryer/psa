@@ -1,6 +1,6 @@
 ---
-title: "Introduction to Propensity Score Analysis with R"
-# subtitle: "Propensity Score Analysis with R"
+title: "A Visual Introduction to Propensity Score Analysis with R"
+subtitle: "New York Open Statistical Programming Meetup"
 author: "Jason Bryer, Ph.D."
 # date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:

@@ -4,7 +4,10 @@
 \alias{psa_shiny}
 \title{Run the PSA shiny application.}
 \usage{
-psa_shiny()
+psa_shiny(...)
+}
+\arguments{
+\item{...}{other parameters passed to [shiny::runApp].}
 }
 \description{
 Run the PSA shiny application.
