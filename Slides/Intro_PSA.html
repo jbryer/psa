@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>A Visual Introduction to Propensity Score Analysis with R</title>
+    <title>Introduction to Propensity Score Analysis with R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Jason Bryer, Ph.D." />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -20,10 +20,10 @@ class: center, middle, inverse, title-slide
 
 
 
-# A Visual Introduction to Propensity Score Analysis with R
-## New York Open Statistical Programming Meetup
+# Introduction to Propensity Score Analysis with R
+## 
 ### Jason Bryer, Ph.D.
-### Last updated: November 14, 2023
+### Last updated: April 09, 2024
 
 
 ---
@@ -76,7 +76,7 @@ class: inverse, middle, center
 ---
 # Counterfactuals
 
-&lt;img src="images/Causality.png" width="3099" style="display: block; margin: auto;" /&gt;
+&lt;img src="images/Causality.png" style="display: block; margin: auto;" /&gt;
 
 ---
 # The Randomized Experiment
@@ -1256,56 +1256,56 @@ summary(psaboot)
 ## Stratification Results:
 ##    Complete estimate = 1587
 ##    Complete CI = [224, 2950]
-##    Bootstrap pooled estimate = 1610
-##    Bootstrap weighted pooled estimate = 1558
-##    Bootstrap pooled CI = [234, 2985]
-##    68% of bootstrap samples have confidence intervals that do not span zero.
-##       68% positive.
+##    Bootstrap pooled estimate = 1690
+##    Bootstrap weighted pooled estimate = 1612
+##    Bootstrap pooled CI = [322, 3058]
+##    70% of bootstrap samples have confidence intervals that do not span zero.
+##       70% positive.
 ##       0% negative.
 ## ctree Results:
 ##    Complete estimate = 1598
 ##    Complete CI = [-6.62, 3203]
-##    Bootstrap pooled estimate = 1654
-##    Bootstrap weighted pooled estimate = 1643
-##    Bootstrap pooled CI = [228, 3080]
-##    37.1% of bootstrap samples have confidence intervals that do not span zero.
-##       37.1% positive.
+##    Bootstrap pooled estimate = 1576
+##    Bootstrap weighted pooled estimate = 1619
+##    Bootstrap pooled CI = [287, 2865]
+##    45.6% of bootstrap samples have confidence intervals that do not span zero.
+##       45.6% positive.
 ##       0% negative.
 ## rpart Results:
 ##    Complete estimate = 1332
 ##    Complete CI = [-295, 2959]
-##    Bootstrap pooled estimate = 1529
-##    Bootstrap weighted pooled estimate = 1537
-##    Bootstrap pooled CI = [24.7, 3034]
-##    31% of bootstrap samples have confidence intervals that do not span zero.
-##       31% positive.
-##       0% negative.
+##    Bootstrap pooled estimate = 1504
+##    Bootstrap weighted pooled estimate = 1468
+##    Bootstrap pooled CI = [-471, 3478]
+##    34% of bootstrap samples have confidence intervals that do not span zero.
+##       33% positive.
+##       1% negative.
 ## Matching Results:
 ##    Complete estimate = 1827
 ##    Complete CI = [1210, 2444]
-##    Bootstrap pooled estimate = 1494
-##    Bootstrap weighted pooled estimate = 1463
-##    Bootstrap pooled CI = [-297, 3285]
+##    Bootstrap pooled estimate = 1572
+##    Bootstrap weighted pooled estimate = 1553
+##    Bootstrap pooled CI = [-329, 3473]
 ##    84% of bootstrap samples have confidence intervals that do not span zero.
-##       84% positive.
-##       0% negative.
+##       82% positive.
+##       2% negative.
 ## MatchIt Results:
 ##    Complete estimate = 2031
 ##    Complete CI = [797, 3266]
-##    Bootstrap pooled estimate = 1899
-##    Bootstrap weighted pooled estimate = 1907
-##    Bootstrap pooled CI = [410, 3389]
-##    78% of bootstrap samples have confidence intervals that do not span zero.
-##       78% positive.
+##    Bootstrap pooled estimate = 1925
+##    Bootstrap weighted pooled estimate = 1868
+##    Bootstrap pooled CI = [573, 3278]
+##    81% of bootstrap samples have confidence intervals that do not span zero.
+##       81% positive.
 ##       0% negative.
 ## Weighting Results:
 ##    Complete estimate = 1641
 ##    Complete CI = [380, 2902]
-##    Bootstrap pooled estimate = 1622
-##    Bootstrap weighted pooled estimate = 1602
-##    Bootstrap pooled CI = [227, 3016]
-##    75% of bootstrap samples have confidence intervals that do not span zero.
-##       75% positive.
+##    Bootstrap pooled estimate = 1667
+##    Bootstrap weighted pooled estimate = 1725
+##    Bootstrap pooled CI = [376, 2957]
+##    72% of bootstrap samples have confidence intervals that do not span zero.
+##       72% positive.
 ##       0% negative.
 ```
 
@@ -1565,7 +1565,7 @@ class: inverse, middle, center
 psa::psa_shiny()
 ```
 
-&lt;img src="images/shiny_screenshot.png" width="643" style="display: block; margin: auto;" /&gt;
+&lt;img src="images/shiny_screenshot.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: inverse, right, middle, hide-logo
