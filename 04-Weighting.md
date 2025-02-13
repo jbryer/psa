@@ -30,7 +30,7 @@ To begin, we estimate the propensity scores, here using logistic regression.
 
 
 
-```r
+``` r
 data("lalonde", package = 'Matching')
 lr_out <- glm(formula = lalonde.formu,
 			  data = lalonde,
@@ -44,7 +44,7 @@ lalonde$lr_ps <- fitted(lr_out)
 Checking balance for propensity score weighting is the same as stratification. Figure \@ref(fig:weight-balance) is a multiple covariate balance assessment plot. See section \@ref(stratification-balance) in the stratification chapter for more details on how you can check for balance for individual covariates.
 
 
-```r
+``` r
 PSAgraphics::cv.bal.psa(covariates = lalonde[,all.vars(lalonde.formu)[-1]],
 						treatment = lalonde$treat,
 						propensity = lalonde$lr_ps,
@@ -73,7 +73,7 @@ w_{ATE} = \frac{Z_i}{\pi_i} + \frac{1 - Z_i}{1 - \pi_i}
 \end{equation}
 
 
-```r
+``` r
 ate_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 						  
 										 estimand = 'ATE')
@@ -84,7 +84,7 @@ ate_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 ### Check Balance with ATE Weights
 
 
-```r
+``` r
 glm(formula = lalonde.formu,
 	data = lalonde,
 	family = quasibinomial(link = 'logit'),
@@ -128,7 +128,7 @@ glm(formula = lalonde.formu,
 ### Estimate ATE
 
 
-```r
+``` r
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = ate_weights) |> summary()
@@ -153,7 +153,7 @@ lm(formula = re78 ~ treat,
 ## F-statistic: 5.983 on 1 and 443 DF,  p-value: 0.01483
 ```
 
-```r
+``` r
 psa::treatment_effect(treatment = lalonde$treat,
 					  outcome = lalonde$re78,
 					  weights = ate_weights)
@@ -173,7 +173,7 @@ w_{ATT} = \frac{\pi_i Z_i}{\pi_i} + \frac{\pi_i (1 - Z_i)}{1 - \pi_i}
 \end{equation}
 
 
-```r
+``` r
 att_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 
 										 estimand = 'ATT')
@@ -182,7 +182,7 @@ att_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 ### Check Balance with ATT Weights
 
 
-```r
+``` r
 glm(formula = lalonde.formu,
 	data = lalonde,
 	family = quasibinomial(link = 'logit'),
@@ -227,7 +227,7 @@ glm(formula = lalonde.formu,
 
 
 
-```r
+``` r
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = att_weights) |> summary()
@@ -252,7 +252,7 @@ lm(formula = re78 ~ treat,
 ## F-statistic:  7.77 on 1 and 443 DF,  p-value: 0.00554
 ```
 
-```r
+``` r
 psa::treatment_effect(treatment = lalonde$treat,
 					  outcome = lalonde$re78,
 					  weights = att_weights)
@@ -272,7 +272,7 @@ w_{ATC} = \frac{(1 - \pi_i) Z_i}{\pi_i} + \frac{(1 - e_i)(1 - Z_i)}{1 - \pi_i}
 \end{equation}
 
 
-```r
+``` r
 atc_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 
 										 estimand = 'ATC')
@@ -281,7 +281,7 @@ atc_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 ### Check Balance with ATC Weights
 
 
-```r
+``` r
 glm(formula = lalonde.formu,
 	data = lalonde,
 	family = quasibinomial(link = 'logit'),
@@ -325,7 +325,7 @@ glm(formula = lalonde.formu,
 ### Estimate ATC
 
 
-```r
+``` r
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = atc_weights) |> summary()
@@ -350,7 +350,7 @@ lm(formula = re78 ~ treat,
 ## F-statistic: 4.835 on 1 and 443 DF,  p-value: 0.0284
 ```
 
-```r
+``` r
 psa::treatment_effect(treatment = lalonde$treat,
 					  outcome = lalonde$re78,
 					  weights = atc_weights)
@@ -370,7 +370,7 @@ w_{ATM} = \frac{min\{\pi_i, 1 - \pi_i\}}{Z_i \pi_i (1 - Z_i)(1 - \pi_i)}
 \end{equation}
 
 
-```r
+``` r
 atm_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 										 ps = lalonde$lr_ps, 
 										 estimand = 'ATM')
@@ -379,7 +379,7 @@ atm_weights <- psa::calculate_ps_weights(treatment = lalonde$treat,
 ### Check Balance with ATM Weights
 
 
-```r
+``` r
 glm(formula = lalonde.formu,
 	data = lalonde,
 	family = quasibinomial(link = 'logit'),
@@ -423,7 +423,7 @@ glm(formula = lalonde.formu,
 ### Estimate ATM
 
 
-```r
+``` r
 lm(formula = re78 ~ treat, 
    data = lalonde,
    weights = atm_weights) |> summary()
@@ -448,7 +448,7 @@ lm(formula = re78 ~ treat,
 ## F-statistic: 6.928 on 1 and 443 DF,  p-value: 0.008783
 ```
 
-```r
+``` r
 psa::treatment_effect(treatment = lalonde$treat,
 					  outcome = lalonde$re78,
 					  weights = atm_weights)

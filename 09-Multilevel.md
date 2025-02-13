@@ -7,7 +7,7 @@ editor_options:
 
 
 
-```r
+``` r
 library(multilevelPSA)
 library(grid)
 
@@ -86,7 +86,7 @@ str(pisana)
 ##  $ STRATIO : num  14.4 14.4 14.4 14.4 14.4 ...
 ```
 
-```r
+``` r
 table(pisana$CNT, pisana$PUBPRIV, useNA='ifany')
 ```
 
@@ -98,7 +98,7 @@ table(pisana$CNT, pisana$PUBPRIV, useNA='ifany')
 ##   USA     345   4888
 ```
 
-```r
+``` r
 prop.table(table(pisana$CNT, pisana$PUBPRIV, useNA='ifany'), 1) * 100
 ```
 
@@ -120,7 +120,7 @@ Phase I
 Use conditional inference trees from the party package
 
 
-```r
+``` r
 mlctree <- mlpsa.ctree(pisana[,c('CNT','PUBPRIV',pisa.psa.cols)], 
 					   formula=PUBPRIV ~ ., level2='CNT')
 ```
@@ -129,12 +129,12 @@ mlctree <- mlpsa.ctree(pisana[,c('CNT','PUBPRIV',pisa.psa.cols)],
 ##   |                                                                              |                                                                      |   0%  |                                                                              |=======================                                               |  33%  |                                                                              |===============================================                       |  67%  |                                                                              |======================================================================| 100%
 ```
 
-```r
+``` r
 pisana.party <- getStrata(mlctree, pisana, level2='CNT')
 ```
 
 
-```r
+``` r
 tree.plot(mlctree, level2Col=pisana$CNT, 
 		  colLabels=pisa.colnames[,c('Variable','ShortDesc')])
 ```
@@ -145,7 +145,7 @@ tree.plot(mlctree, level2Col=pisana$CNT,
 </div>
 
 
-```r
+``` r
 #NOTE: This is not entirely correct but is sufficient for visualization purposes
 #      See mitools package for combining multiple plausible values.
 pisana.party$mathscore <- apply(pisana.party[,paste0('PV',1:5,'MATH')],1,sum)/5
@@ -156,7 +156,7 @@ pisana.party$sciescore <- apply(pisana.party[,paste0('PV',1:5,'SCIE')],1,sum)/5
 Phase II
 
 
-```r
+``` r
 results.psa.math <- mlpsa(response = pisana.party$mathscore, 
 						  treatment = pisana.party$PUBPRIV, 
 						  strata = pisana.party$strata, 
@@ -177,31 +177,29 @@ results.psa.math$level2.summary[,c('level2','n','Private','Private.n','Public',
 ## 3  -8.756334  5213
 ```
 
-```r
+``` r
 # Confidence interval
 results.psa.math$overall.ci
 ```
 
 ```
 ## -31.30
-
 ## -24.75
 ```
 
-```r
+``` r
 # Effect Size
 results.psa.math$overall.ci / sd(pisana.party$mathscore)
 ```
 
 ```
 ## -0.35
-
 ## -0.28
 ```
 
 
 
-```r
+``` r
 plot(results.psa.math)
 ```
 
@@ -212,7 +210,7 @@ plot(results.psa.math)
 
 
 
-```r
+``` r
 mlpsa.difference.plot(results.psa.math)
 ```
 

@@ -64,7 +64,7 @@ MatchIt::matchit(method = "cardinality")
 
 
 
-```r
+``` r
 lr_out <- glm(lalonde.formu, 
 			  data = lalonde,
 			  family = binomial(link = logit))
@@ -83,7 +83,7 @@ lalonde$lr_ps <- fitted(lr_out)  # Propensity scores
 One-to-one matching with replacement (the `M = 1` option). Estimating the treatment effect on the treated (default is ATT).
 
 
-```r
+``` r
 rr_att <- Match(Y = lalonde$re78, 
 				Tr = lalonde$treat, 
 				X = lalonde$lr_ps,
@@ -108,7 +108,7 @@ summary(rr_att) # The default estimate is ATT here
 ### Checking Balance
 
 
-```r
+``` r
 rr_att_mb <- psa::MatchBalance(
 	df = lalonde,
 	formu = lalonde.formu,
@@ -126,7 +126,7 @@ plot(rr_att_mb)
 <p class="caption">(\#fig:unnamed-chunk-3)Covariate Balance Plot for Matching</p>
 </div>
 
-```r
+``` r
 # ls(rr_att_mb)
 summary(rr_att_mb)
 ```
@@ -177,7 +177,7 @@ summary(rr_att_mb)
 ## One-to-One matching (ATT)
 
 
-```r
+``` r
 rr.ate <- Match(Y = lalonde$re78, 
 				Tr = lalonde$treat, 
 				X = lalonde$lr_ps,
@@ -203,7 +203,7 @@ summary(rr.ate)
 
 
 
-```r
+``` r
 rr2 <- Match(Y = lalonde$re78, 		
 			 Tr = lalonde$treat, 
 			 X = lalonde$lr_ps,
@@ -230,7 +230,7 @@ summary(rr2) # The default estimate is ATT here
 ## The `MatchIt` Package
 
 
-```r
+``` r
 matchit.out <- MatchIt::matchit(lalonde.formu, data = lalonde)
 summary(matchit.out)
 ```
@@ -316,7 +316,7 @@ summary(matchit.out)
 ## Discarded       0       0
 ```
 
-```r
+``` r
 # Same as above but calculate average treatment effect
 rr.ate <- Match(Y = lalonde$re78, 
 				Tr = lalonde$treat, 
@@ -341,7 +341,7 @@ summary(rr.ate) # Here the estimate is ATE
 ## Matched number of observations  (unweighted).  370
 ```
 
-```r
+``` r
 ## Genetic Matching
 rr.gen <- GenMatch(Tr = lalonde$treat, 
 				   X = lalonde$lr_ps, 
@@ -371,7 +371,7 @@ summary(rr.gen.mout)
 ## Matched number of observations  (unweighted).  650
 ```
 
-```r
+``` r
 ## Partial exact matching
 rr2 <- Matchby(Y = lalonde$re78, 
 			   Tr = lalonde$treat, 
@@ -394,7 +394,7 @@ summary(rr2)
 ## Matched number of observations  (unweighted).  185
 ```
 
-```r
+``` r
 ## Partial exact matching on two covariates
 rr3 <- Matchby(Y = lalonde$re78, 
 			   Tr = lalonde$treat, 

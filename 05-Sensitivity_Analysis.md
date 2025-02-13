@@ -2,7 +2,7 @@
 
 
 
-```r
+``` r
 require(rbounds)
 data(lalonde, package='Matching')
 
@@ -35,7 +35,7 @@ summary(mgen1)
 ## Matched number of observations  (unweighted).  185
 ```
 
-```r
+``` r
 rbounds::psens(x = Y[mgen1$index.treated],
 	  y =Y[mgen1$index.contro],
 	  Gamma = 1.5, 
@@ -63,7 +63,7 @@ rbounds::psens(x = Y[mgen1$index.treated],
 
 
 
-```r
+``` r
 rbounds::hlsens(x = Y[mgen1$index.treated],
 	   y = Y[mgen1$index.contro],
 	   Gamma = 1.5, 

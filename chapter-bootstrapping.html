@@ -7,7 +7,7 @@
 <title>Chapter 6 Bootstrapping | Applied Propensity Score Analysis with R</title>
 <meta name="author" content="Jason Bryer, Ph.D.">
 <meta name="description" content="library(PSAboot) boot.matching.1to3 &lt;- function(Tr, Y, X, X.trans, formu, ...) {   return(boot.matching(Tr=Tr, Y=Y, X=X, X.trans=X.trans, formu=formu, M=3, ...)) }  boot_out &lt;- PSAboot(Tr =...">
-<meta name="generator" content="bookdown 0.36 with bs4_book()">
+<meta name="generator" content="bookdown 0.42 with bs4_book()">
 <meta property="og:title" content="Chapter 6 Bootstrapping | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://psa.bryer.org/chapter-bootstrapping.html">
@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.5.1/transition.js"></script><script src="libs/bs3compat-0.5.1/tabs.js"></script><script src="libs/bs3compat-0.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.9.0/transition.js"></script><script src="libs/bs3compat-0.9.0/tabs.js"></script><script src="libs/bs3compat-0.9.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
     
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
@@ -29,6 +29,7 @@
     div.csl-bib-body { }
     div.csl-entry {
       clear: both;
+          margin-bottom: 0em;
         }
     .hanging div.csl-entry {
       margin-left:2em;
@@ -111,64 +112,10 @@
 <span>                              <span class="st">'rpart'</span> <span class="op">=</span> <span class="va">boot.rpart</span>,</span>
 <span>                              <span class="st">'Matching'</span> <span class="op">=</span> <span class="va">boot.matching</span>,</span>
 <span>                              <span class="st">'Matching-1-to-3'</span> <span class="op">=</span> <span class="va">boot.matching.1to3</span>,</span>
-<span>                              <span class="st">'MatchIt'</span> <span class="op">=</span> <span class="va">boot.matchit</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
+<span>                              <span class="st">'MatchIt'</span> <span class="op">=</span> <span class="va">boot.matchit</span><span class="op">)</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span></code></pre></div>
-<pre><code>## Stratification Results:
-##    Complete estimate = 1658
-##    Complete CI = [242, 3074]
-##    Bootstrap pooled estimate = 1476
-##    Bootstrap weighted pooled estimate = 1461
-##    Bootstrap pooled CI = [66.5, 2885]
-##    59% of bootstrap samples have confidence intervals that do not span zero.
-##       59% positive.
-##       0% negative.
-## ctree Results:
-##    Complete estimate = 1598
-##    Complete CI = [-6.62, 3203]
-##    Bootstrap pooled estimate = 1465
-##    Bootstrap weighted pooled estimate = 1472
-##    Bootstrap pooled CI = [172, 2758]
-##    38.1% of bootstrap samples have confidence intervals that do not span zero.
-##       38.1% positive.
-##       0% negative.
-## rpart Results:
-##    Complete estimate = 1332
-##    Complete CI = [-295, 2959]
-##    Bootstrap pooled estimate = 1429
-##    Bootstrap weighted pooled estimate = 1442
-##    Bootstrap pooled CI = [-136, 2993]
-##    32% of bootstrap samples have confidence intervals that do not span zero.
-##       32% positive.
-##       0% negative.
-## Matching Results:
-##    Complete estimate = 861
-##    Complete CI = [234, 1487]
-##    Bootstrap pooled estimate = 1429
-##    Bootstrap weighted pooled estimate = 1396
-##    Bootstrap pooled CI = [-339, 3196]
-##    86% of bootstrap samples have confidence intervals that do not span zero.
-##       85% positive.
-##       1% negative.
-## Matching-1-to-3 Results:
-##    Complete estimate = 1536
-##    Complete CI = [1089, 1983]
-##    Bootstrap pooled estimate = 1450
-##    Bootstrap weighted pooled estimate = 1400
-##    Bootstrap pooled CI = [-135, 3034]
-##    90% of bootstrap samples have confidence intervals that do not span zero.
-##       90% positive.
-##       0% negative.
-## MatchIt Results:
-##    Complete estimate = 1772
-##    Complete CI = [370, 3174]
-##    Bootstrap pooled estimate = 1684
-##    Bootstrap weighted pooled estimate = 1637
-##    Bootstrap pooled CI = [260, 3108]
-##    67% of bootstrap samples have confidence intervals that do not span zero.
-##       67% positive.
-##       0% negative.</code></pre>
-<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:psaboot-plot"></span>
@@ -176,260 +123,146 @@
 Figure 6.1: Mean difference across all bootstrap samples by method
 </p>
 </div>
-<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb93"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="06-Bootstrapping_files/figure-html/psaboot-boxplot-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb96"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/PSAboot/man/matrixplot.html">matrixplot</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="06-Bootstrapping_files/figure-html/psaboot-matrixplot-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boot_balance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/PSAboot/man/balance.html">balance</a></span><span class="op">(</span><span class="va">boot_out</span><span class="op">)</span></span>
 <span><span class="va">boot_balance</span></span></code></pre></div>
 <pre><code>## Unadjusted balance: 1.48309081605193</code></pre>
 <pre><code>## 0.04
-
 ## 0.08
-
 ## 0.05
-
 ## 0.06
-
 ## 0.01
-
 ## 0.06
-
 ## 0.04
-
 ##  NA
-
 ## 0.07
-
 ## 0.07
-
 ## 0.05
-
 ## 0.08</code></pre>
-<div class="sourceCode" id="cb100"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb98"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">boot_balance</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="06-Bootstrapping_files/figure-html/psaboot-balance-plot-1.png" width="100%" style="display: block; margin: auto;"></div>
-<div class="sourceCode" id="cb101"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb99"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">boot_balance</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept<span class="op">=</span><span class="fl">.1</span>, color<span class="op">=</span><span class="st">'red'</span><span class="op">)</span></span></code></pre></div>
 <div class="inline-figure"><img src="06-Bootstrapping_files/figure-html/psaboot-balance-boxplot-1.png" width="100%" style="display: block; margin: auto;"></div>
 <p>Details are available within the returned object</p>
-<div class="sourceCode" id="cb102"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb100"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boot_balance</span><span class="op">$</span><span class="va">unadjusted</span></span></code></pre></div>
 <pre><code>## 3.51
-
 ## 5.46
-
 ## 1.12
-
 ## 1.16
-
 ## 0.66
-
 ## 0.89
-
 ## 0.39
-
 ## 0.44
-
 ## 0.72
-
 ## 0.49</code></pre>
-<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb102"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boot_balance</span><span class="op">$</span><span class="va">complete</span></span></code></pre></div>
 <pre><code>## 0.04
-
 ## 0.00
-
 ## 0.00
-
 ## 0.01
-
 ## 0.00
-
 ## 0.16
-
 ## 0.03
-
 ## 0.16
-
 ## 0.05
-
 ## 0.04
-
 ## 0.02
-
 ## 0.06
-
 ## 0.09
-
 ## 0.15
-
 ## 0.14
-
 ## 0.04
-
 ## 0.01
-
 ## 0.02
-
 ## 0.04
-
 ## 0.05
-
 ## 0.08
-
 ## 0.04
-
 ## 0.00
-
 ## 0.09
-
 ## 0.02
-
 ## 0.08
-
 ## 0.10
-
 ## 0.09
-
 ## 0.01
-
 ## 0.02
-
 ## 0.03
-
 ## 0.08
-
 ## 0.02
-
 ## 0.09
-
 ## 0.02
-
 ## 0.07
-
 ## 0.00
-
 ## 0.09
-
 ## 0.05
-
 ## 0.06
-
 ## 0.00
-
 ## 0.00
-
 ## 0.03
-
 ## 0.09
-
 ## 0.01
-
 ## 0.07
-
 ## 0.01
-
 ## 0.04
-
 ## 0.06
-
 ## 0.06
-
 ## 0.06
-
 ## 0.02
-
 ## 0.05
-
 ## 0.08
-
 ## 0.03
-
 ## 0.03
-
 ## 0.01
-
 ## 0.10
-
 ## 0.00
-
 ## 0.05</code></pre>
-<div class="sourceCode" id="cb106"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">boot_balance</span><span class="op">$</span><span class="va">pooled</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 0.02
-
 ## 0.03
-
 ## 0.04
-
 ## 0.03
-
 ## 0.04
-
 ## 0.05
-
 ## 0.07
-
 ## 0.09
-
 ## 0.12
-
 ##  NA
-
 ## 0.06
-
 ## 0.12
-
 ## 0.05
-
 ## 0.09
-
 ## 0.08
-
 ## 0.11
-
 ## 0.08
-
 ## 0.07
-
 ## 0.06
-
 ## 0.07
-
 ## 0.03
-
 ## 0.07
-
 ## 0.05
-
 ## 0.06
-
 ## 0.04
-
 ## 0.03
-
 ## 0.03
-
 ## 0.08
-
 ## 0.03
-
 ## 0.05
-
 ## 0.08
-
 ## 0.10
-
 ## 0.09
-
 ## 0.07
-
 ## 0.10
-
 ## 0.10</code></pre>
 
 </div>
@@ -461,7 +294,7 @@ Figure 6.1: Mean difference across all bootstrap samples by method
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-11-14.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2025-02-13.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

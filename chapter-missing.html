@@ -7,7 +7,7 @@
 <title>Chapter 7 Missing Data | Applied Propensity Score Analysis with R</title>
 <meta name="author" content="Jason Bryer, Ph.D.">
 <meta name="description" content="require(Matching) require(mice) data(lalonde, package='Matching') Tr &lt;- lalonde$treat Y &lt;- lalonde$re78 X &lt;- lalonde[,c('age','educ','black','hisp','married','nodegr','re74','re75')] lalonde.glm...">
-<meta name="generator" content="bookdown 0.36 with bs4_book()">
+<meta name="generator" content="bookdown 0.42 with bs4_book()">
 <meta property="og:title" content="Chapter 7 Missing Data | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://psa.bryer.org/chapter-missing.html">
@@ -19,7 +19,7 @@
 <meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.5.1/transition.js"></script><script src="libs/bs3compat-0.5.1/tabs.js"></script><script src="libs/bs3compat-0.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.9.0/transition.js"></script><script src="libs/bs3compat-0.9.0/tabs.js"></script><script src="libs/bs3compat-0.9.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
     
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
@@ -29,6 +29,7 @@
     div.csl-bib-body { }
     div.csl-entry {
       clear: both;
+          margin-bottom: 0em;
         }
     .hanging div.csl-entry {
       margin-left:2em;
@@ -94,11 +95,11 @@
 <h1>
 <span class="header-section-number">7</span> Missing Data<a class="anchor" aria-label="anchor" href="#chapter-missing"><i class="fas fa-link"></i></a>
 </h1>
-<div class="sourceCode" id="cb108"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb106"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/JasjeetSekhon/Matching">Matching</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/amices/mice">mice</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lalonde</span>, package<span class="op">=</span><span class="st">'Matching'</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb109"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb107"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Tr</span> <span class="op">&lt;-</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span></span>
 <span><span class="va">Y</span> <span class="op">&lt;-</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span></span>
 <span><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">lalonde</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'age'</span>,<span class="st">'educ'</span>,<span class="st">'black'</span>,<span class="st">'hisp'</span>,<span class="st">'married'</span>,<span class="st">'nodegr'</span>,<span class="st">'re74'</span>,<span class="st">'re75'</span><span class="op">)</span><span class="op">]</span></span>
@@ -131,7 +132,7 @@
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <p>Create a copy of the covariates to simulate missing at random (<code>mar</code>) and not missing at random (<code>nmar</code>).</p>
-<div class="sourceCode" id="cb111"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb109"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lalonde.mar</span> <span class="op">&lt;-</span> <span class="va">X</span></span>
 <span><span class="va">lalonde.nmar</span> <span class="op">&lt;-</span> <span class="va">X</span></span>
 <span></span>
@@ -142,7 +143,7 @@
 <span><span class="va">treat.rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">control.rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 <p>Add missingness to the existing data. For the not missing at random data treatment units will have twice as many missing values as the control group.</p>
-<div class="sourceCode" id="cb112"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb110"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2112</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="va">missing.cols</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">lalonde.mar</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">)</span> <span class="op">*</span> <span class="va">missing.rate</span><span class="op">)</span>, <span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
@@ -150,27 +151,27 @@
 <span>    <span class="va">lalonde.nmar</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">control.rows</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">control.rows</span><span class="op">)</span> <span class="op">*</span> <span class="va">missing.rate</span><span class="op">)</span>, <span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>The proportion of missing values for the first covariate</p>
-<div class="sourceCode" id="cb113"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb111"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/proportions.html">prop.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">lalonde.mar</span><span class="op">[</span>,<span class="va">missing.cols</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, useNA<span class="op">=</span><span class="st">'ifany'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##        
 ##                  0          1
 ##   FALSE 0.46292135 0.33707865
 ##   TRUE  0.12134831 0.07865169</code></pre>
-<div class="sourceCode" id="cb115"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb113"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/proportions.html">prop.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">lalonde.nmar</span><span class="op">[</span>,<span class="va">missing.cols</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, useNA<span class="op">=</span><span class="st">'ifany'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code>##        
 ##                 0         1
 ##   FALSE 0.4674157 0.2494382
 ##   TRUE  0.1168539 0.1662921</code></pre>
 <p>Create a shadow matrix. This is a logical vector where each cell is TRUE if the value is missing in the original data frame.</p>
-<div class="sourceCode" id="cb117"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb115"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">shadow.matrix.mar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">lalonde.mar</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">shadow.matrix.nmar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">lalonde.nmar</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Change the column names to include “_miss” in their name.</p>
-<div class="sourceCode" id="cb118"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb116"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">shadow.matrix.mar</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">shadow.matrix.nmar</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">shadow.matrix.mar</span><span class="op">)</span>, <span class="st">'_miss'</span><span class="op">)</span></span></code></pre></div>
 <p>Impute the missing values using the mice package</p>
-<div class="sourceCode" id="cb119"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb117"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2112</span><span class="op">)</span></span>
 <span><span class="va">mice.mar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://amices.org/mice/reference/mice.html">mice</a></span><span class="op">(</span><span class="va">lalonde.mar</span>, m<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
@@ -180,7 +181,7 @@
 ##   3   1  nodegr  re75
 ##   4   1  nodegr  re75
 ##   5   1  nodegr  re75</code></pre>
-<div class="sourceCode" id="cb121"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb119"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mice.nmar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://amices.org/mice/reference/mice.html">mice</a></span><span class="op">(</span><span class="va">lalonde.nmar</span>, m<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ##  iter imp variable
@@ -190,15 +191,15 @@
 ##   4   1  nodegr  re75
 ##   5   1  nodegr  re75</code></pre>
 <p>Get the imputed data set.</p>
-<div class="sourceCode" id="cb123"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb121"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">complete.mar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html">complete</a></span><span class="op">(</span><span class="va">mice.mar</span><span class="op">)</span></span>
 <span><span class="va">complete.nmar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html">complete</a></span><span class="op">(</span><span class="va">mice.nmar</span><span class="op">)</span></span></code></pre></div>
 <p>Estimate the propensity scores using logistic regression.</p>
-<div class="sourceCode" id="cb124"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb122"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lalonde.mar.glm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">treat</span><span class="op">~</span><span class="va">.</span>, data<span class="op">=</span><span class="fu"><a href="https://amices.org/mice/reference/cbind.html">cbind</a></span><span class="op">(</span>treat<span class="op">=</span><span class="va">Tr</span>, <span class="va">complete.mar</span>, <span class="va">shadow.matrix.mar</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">lalonde.nmar.glm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">treat</span><span class="op">~</span><span class="va">.</span>, data<span class="op">=</span><span class="fu"><a href="https://amices.org/mice/reference/cbind.html">cbind</a></span><span class="op">(</span>treat<span class="op">=</span><span class="va">Tr</span>, <span class="va">complete.nmar</span>, <span class="va">shadow.matrix.nmar</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We see that the two indicator columns from the shadow matrix are statistically significant predictors suggesting that the data is not missing at random.</p>
-<div class="sourceCode" id="cb125"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb123"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">lalonde.mar.glm</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## Call:
@@ -234,7 +235,7 @@
 ## AIC: 633.48
 ## 
 ## Number of Fisher Scoring iterations: 2</code></pre>
-<div class="sourceCode" id="cb127"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb125"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">lalonde.nmar.glm</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 
 ## Call:
@@ -300,7 +301,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2023-11-14.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2025-02-13.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

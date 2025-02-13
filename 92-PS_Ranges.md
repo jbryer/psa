@@ -8,7 +8,7 @@ The "shrinking" of propensity score ranges as the ratio of treatment-to-control 
 
 
 
-```r
+``` r
 library(multilevelPSA)
 getSimulatedData <- function(nvars = 3, ntreat = 100, treat.mean = 0.6, treat.sd = 0.5, 
     ncontrol = 1000, control.mean = 0.4, control.sd = 0.5) {
@@ -39,7 +39,7 @@ getSimulatedData <- function(nvars = 3, ntreat = 100, treat.mean = 0.6, treat.sd
 1:10 (100 treatments, 1000 control units)
 
 
-```r
+``` r
 test.df1 <- getSimulatedData(ntreat = 100, ncontrol = 1000)
 psranges1 <- psrange(test.df1, test.df1$treat, treat ~ ., samples = seq(100, 
     1000, by = 100), nboot = 20)
@@ -49,7 +49,7 @@ plot(psranges1)
 <img src="92-PS_Ranges_files/figure-html/psranges-1to10-1.png" width="100%" style="display: block; margin: auto;" />
 
 
-```r
+``` r
 summary(psranges1)
 ```
 
@@ -92,7 +92,7 @@ summary(psranges1)
 1:20 (100 treatments, 2000 control units)
 
 
-```r
+``` r
 test.df2 <- getSimulatedData(ncontrol = 2000)
 psranges2 <- psrange(test.df2, test.df2$treat, treat ~ ., samples = seq(100, 
     2000, by = 100), nboot = 20)
@@ -102,7 +102,7 @@ plot(psranges2)
 <img src="92-PS_Ranges_files/figure-html/psranges-1to20-1.png" width="100%" style="display: block; margin: auto;" />
 
 
-```r
+``` r
 summary(psranges2)
 ```
 
@@ -175,7 +175,7 @@ summary(psranges2)
 100 treatments, 1000 control units, equal means and standard deviations
 
 
-```r
+``` r
 test.df3 <- getSimulatedData(ncontrol = 1000, treat.mean = 0.5, control.mean = 0.5)
 psranges3 <- psrange(test.df3, test.df3$treat, treat ~ ., samples = seq(100, 
     1000, by = 100), nboot = 20)
@@ -185,7 +185,7 @@ plot(psranges3)
 <img src="92-PS_Ranges_files/figure-html/psranges-100to1000-1.png" width="100%" style="display: block; margin: auto;" />
 
 
-```r
+``` r
 summary(psranges3)
 ```
 
@@ -228,7 +228,7 @@ summary(psranges3)
 100 treatments, 1000 control units, very little overlap
 
 
-```r
+``` r
 test.df4 <- getSimulatedData(ncontrol = 1000, treat.mean = 0.25, treat.sd = 0.3, 
     control.mean = 0.75, control.sd = 0.3)
 psranges4 <- psrange(test.df4, test.df4$treat, treat ~ ., samples = seq(100, 
@@ -239,7 +239,7 @@ plot(psranges4)
 <img src="92-PS_Ranges_files/figure-html/psranges-nooverlap-1.png" width="100%" style="display: block; margin: auto;" />
 
 
-```r
+``` r
 summary(psranges4)
 ```
 
@@ -282,7 +282,7 @@ summary(psranges4)
 100 treat, 1000 control, 10 covariates
 
 
-```r
+``` r
 test.df5 <- getSimulatedData(nvars = 10, ntreat = 100, ncontrol = 1000)
 psranges5 <- psrange(test.df5, test.df5$treat, treat ~ ., samples = seq(100, 
     1000, by = 100), nboot = 20)
@@ -292,7 +292,7 @@ plot(psranges5)
 <img src="92-PS_Ranges_files/figure-html/psranges-10covariates-1.png" width="100%" style="display: block; margin: auto;" />
 
 
-```r
+``` r
 summary(psranges5)
 ```
 

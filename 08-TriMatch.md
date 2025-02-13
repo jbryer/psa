@@ -2,7 +2,7 @@
 
 
 
-```r
+``` r
 require(TriMatch)
 
 data(tutoring)
@@ -30,7 +30,7 @@ str(tutoring)
 ##  $ ID        : int  377 882 292 215 252 265 1016 282 39 911 ...
 ```
 
-```r
+``` r
 table(tutoring$treat)
 ```
 
@@ -41,7 +41,7 @@ table(tutoring$treat)
 ```
 
 
-```r
+``` r
 # Histogram of unadjusted grades
 tmp <- as.data.frame(prop.table(table(tutoring$treat, tutoring$Grade), 1))
 ggplot(tmp, aes(x=Var2, y=Freq, fill=Var1)) + 
@@ -53,7 +53,7 @@ ggplot(tmp, aes(x=Var2, y=Freq, fill=Var1)) +
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;" />
 
 
-```r
+``` r
 ## Phase I
 
 # Note that the dependent variable is not included in the formula. The TriMatch
@@ -70,7 +70,7 @@ plot(tutoring.tpsa, sample=c(200))
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 # trimatch finds matched triplets.
 tutoring.matched <- trimatch(tutoring.tpsa)
 
@@ -85,7 +85,7 @@ plot(tutoring.matched, rows=1, line.alpha=1, draw.segments=TRUE)
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-2.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 ## Examine the unmatched students
 unmatched <- unmatched(tutoring.matched)
 summary(unmatched)
@@ -98,20 +98,20 @@ summary(unmatched)
 ## 795 (86.6%)  17 (12.7%)   7 (7.78%)
 ```
 
-```r
+``` r
 plot(unmatched)
 ```
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-3.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 ## Check balance
 multibalance.plot(tutoring.tpsa)
 ```
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-4.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 balance.plot(tutoring.matched, tutoring$Age, label='Age')
 ```
 
@@ -130,7 +130,7 @@ balance.plot(tutoring.matched, tutoring$Age, label='Age')
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-5.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 balance.plot(tutoring.matched, tutoring$Military, label='Military')
 ```
 
@@ -144,7 +144,7 @@ balance.plot(tutoring.matched, tutoring$Military, label='Military')
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-6.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 # Create a grid of figures.
 bplots <- balance.plot(tutoring.matched, tutoring[,all.vars(tutoring.formu)], 
 					   legend.position='none', 
@@ -154,7 +154,7 @@ bplots[['Military']] # We can plot one at at time.
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-7.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 summary(bplots) # Create a data frame with the statistical results
 ```
 
@@ -185,13 +185,13 @@ summary(bplots) # Create a data frame with the statistical results
 ## 11
 ```
 
-```r
+``` r
 plot(bplots, cols=3, byrow=FALSE)
 ```
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-8.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 ## Phase II
 # The summary function performs a number of statistical tests including Friedman
 # rank sum test, repeated measures ANOVA, and if one or both of those tests have
@@ -253,7 +253,7 @@ plot(bplots, cols=3, byrow=FALSE)
 ## [1] "trimatch.summary" "list"
 ```
 
-```r
+``` r
 ls(sout)
 ```
 
@@ -262,14 +262,14 @@ ls(sout)
 ## [4] "rmanova"              "t.tests"
 ```
 
-```r
+``` r
 # TODO: boxdiff.plot(tutoring.matched, tutoring$Grade, ordering=c('Treatment2','Treatment1','Control'))
 parallel.plot(tutoring.matched, tutoring$Grade)
 ```
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-9.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 # The Loess plot is imperfect with three sets of propensity scores. There is a
 # model parameter to specify which model to use. Once we a model is selected
 # we have propensity scores for two of the three groups. We impute a propensity
@@ -280,21 +280,21 @@ loess3.plot(tutoring.matched, tutoring$Grade, se=FALSE, method='loess')
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-10.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 # Turn on 95% confidence interval (see also the level parameter)
 loess3.plot(tutoring.matched, tutoring$Grade, se=TRUE, method='loess')
 ```
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-11.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 # We can also pass other parameters to the loess function.
 loess3.plot(tutoring.matched, tutoring$Grade, se=TRUE, method='loess', span=1)
 ```
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-12.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 # This is a busy plot, but since all the lines are practically vertical, the
 # distance between each pair of propensity scores is minimal.
 loess3.plot(tutoring.matched, tutoring$Grade, se=FALSE, method='loess', 
@@ -303,7 +303,7 @@ loess3.plot(tutoring.matched, tutoring$Grade, se=FALSE, method='loess',
 
 <img src="08-TriMatch_files/figure-html/unnamed-chunk-3-13.png" width="100%" style="display: block; margin: auto;" />
 
-```r
+``` r
 # The merge function will add the outcome to the matched triplet data frame.
 # This is useful for other approaches to analyzing the matched triplets.
 tmatch.out <- merge(tutoring.matched, tutoring$Grade)

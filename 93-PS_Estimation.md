@@ -8,7 +8,7 @@ editor_options:
 This appendix provide R code for multiple statistical models for estimating propensity scores. The examples use the `lalonde` dataset with the following formula:
 
 
-```r
+``` r
 lalonde.formu <- treat ~ age + I(age^2) + educ + I(educ^2) + black +
 	hisp + married + nodegr + re74  + I(re74^2) + re75 + I(re75^2) +
 	u74 + u75
@@ -17,7 +17,7 @@ lalonde.formu <- treat ~ age + I(age^2) + educ + I(educ^2) + black +
 ## Logistic Regression
 
 
-```r
+``` r
 lr_out <- glm(lalonde.formu,
 			  data = lalonde,
 			  family = binomial(link = logit))
@@ -28,7 +28,7 @@ lr_ps <- fitted(lr_out)
 ## Conditional Inference Trees with `party` package
 
 
-```r
+``` r
 library(party)
 ctree_out <- ctree(lalonde.formu,
 				   data = lalonde)
@@ -39,7 +39,7 @@ ctree_out <- ctree(lalonde.formu,
 ## Recusrive Partitioning with `rpart`
 
 
-```r
+``` r
 library(rpart)
 rpart_out <- rpart(lalonde.formu,
 				   data = lalonde,
@@ -53,7 +53,7 @@ rpart_ps <- predict(rpart_out, type = 'prob')[,1]
 ## Bayesian Logistic Regression
 
 
-```r
+``` r
 library(rstanarm)
 stan_out <- stan_glm(lalonde.formu,
 					 data = lalonde)
@@ -63,7 +63,7 @@ stan_ps <- predict(stan_out, type = 'response')
 ## Probit BART for dichotomous outcomes with Normal latents
 
 
-```r
+``` r
 library(BART)
 bart_out <- pbart(x.train = lalonde[,all.vars(lalonde.formu)[-1]],
 				  y.train = lalonde[,all.vars(lalonde.formu)[1]])
@@ -74,7 +74,7 @@ bart_ps <- bart_out$prob.test.mean
 
 
 
-```r
+``` r
 library(randomForest)
 rf_out <- randomForest(update.formula(lalonde.formu, factor(treat) ~ .),
 					   data = lalonde)

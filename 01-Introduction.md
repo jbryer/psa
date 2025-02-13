@@ -376,7 +376,7 @@ Sensitivity analysis is only well defined for matching methods. @Rosenbaum2012 p
 
 ## R Packages
 
-R is a statistical software language designed to be extended vis-à-vis packages. As of November 14, 2023, there are currently 20,013 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend [*R for Data Science*](https://r4ds.had.co.nz) [@Wickham2016] as an excellent introduction to R. This book will make use of a number of R 
+R is a statistical software language designed to be extended vis-à-vis packages. As of February 13, 2025, there are currently 22,037 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend [*R for Data Science*](https://r4ds.had.co.nz) [@Wickham2016] as an excellent introduction to R. This book will make use of a number of R 
 
 
 * [`MatchIt`](http://gking.harvard.edu/gking/matchit) [@R-MatchIt] Nonparametric Preprocessing for Parametric Causal Inference
@@ -392,7 +392,7 @@ R is a statistical software language designed to be extended vis-à-vis packages
 The [`psa` R package](https://github.com/jbryer/psa) was specifically designed to accompany this book including some utility functions to assist with conducting propensity score analysis. The following command will install the `psa` R package along with all the R packages we will use in this book.
 
 
-```r
+``` r
 remotes::install_github('jbryer/psa', dependencies = 'Enhances')
 ```
 
@@ -407,7 +407,7 @@ This section provides a description of the datasets that will be used throughout
 The `lalonde` dataset is perhaps one of the most used datasets when introducing or evaluating propensity score methods. The data was collected by @Lalonde1986 but became widely used in the PSA literature after @DehejiaWahba1999 used it in their paper to evaluate propensity score matching. The dataset originated from the National Supported Work Demonstration study conducted in the 1970s. The program provided 12 to 18 months of employment to people with longstanding employment problems. The dataset contains 445 observations of 12 variables. The primary outcome is `re78` which is real earnings in 1978. Observed covariates used to adjust for selection bias include `age` (age in years), `edu` (number of years of education), `black` (black or not), `hisp` (Hispanic or not), `married` (married or not), `nodegr` (whether the worker has a degree or not, note that 1 = no degree), `re74` (real earnings in 1974), and `re75` (real earnings in 1975).
 
 
-```r
+``` r
 data(lalonde, package='Matching')
 ```
 
@@ -429,7 +429,7 @@ data(lalonde, package='Matching')
 Data from an observational study of 996 patients receiving a PCI at Ohio Heart Health in 1997 and followed for at least 6 months by the staff of the Lindner Center. This is a landmark dataset in the literature on propensity score adjustment for treatment selection bias due to practice of evidence based medicine; patients receiving `abciximab` tended to be more severely diseased than those who did not receive a IIb/IIIa cascade blocker.
 
 
-```r
+``` r
 data(lindner, package='PSAgraphics')
 ```
 
@@ -449,7 +449,7 @@ data(lindner, package='PSAgraphics')
 The `tutoring` dataset originates from a study conducted at an online adult serving institution examining the effects of tutoring services for students in English 101, English 201, and History 310. Tutoring services were available to all students but Treatment (`treat`) is operationalized as students who used tutoring services at least once during the course. Only 19.6% of students used tutoring services with approximately half using it more than once. We will use this dataset with both a dichotomous treatment (used tutoring or not) or as a two level treatment (used tutoring services once, used tutoring services two or more times).
 
 
-```r
+``` r
 data(tutoring, package='TriMatch')
 tutoring$treat2 <- tutoring$treat != 'Control'
 table(tutoring$Course, tutoring$treat)
@@ -487,7 +487,7 @@ table(tutoring$Course, tutoring$treat)
 [The Programme of International Student Assessment](https://www.oecd.org/pisa) (PISA) is a study conducted by [OECD](https://www.oecd.org) every three years to measure 15-year-olds' academic abilities in reading, mathematics, and science along with a rich set of demographic and background information. The `pisana` dataset included in the `multilevelPSA` package contains the results from the 2009 study for North America (i.e. Canada, Mexico, and the United States).
 
 
-```r
+``` r
 data(pisana, package='multilevelPSA')
 ```
 
@@ -562,7 +562,7 @@ data(pisana, package='multilevelPSA')
 The National Medical Expenditure Study dataset was used by @Imai2004 in evaluating a method for non-binary treatments. This study examined the relationship between smoking status and medical expenditures.
 
 
-```r
+``` r
 data(nmes, package='TriMatch')
 ```
 

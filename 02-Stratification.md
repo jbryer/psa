@@ -20,7 +20,7 @@ Propensity score stratification leverages propensity scores so we can define str
 To begin let's estimate propensity scores using logistic regression with the National Supported Work Demonostration (`lalonde`) dataset [@Lalonde1986]. Here, we are using the final model specification used by @DehejiaWahba1999. 
 
 
-```r
+``` r
 data(lalonde, package = 'Matching')
 lalonde_formu <- treat ~ age + I(age^2) + educ + I(educ^2) + black +
 	hisp + married + nodegr + re74  + I(re74^2) + re75 + I(re75^2)
@@ -32,7 +32,7 @@ lr_out <- glm(formula = lalonde_formu,
 
 
 
-```r
+``` r
 summary(lr_out)
 ```
 
@@ -70,14 +70,14 @@ summary(lr_out)
 ```
 
 
-```r
+``` r
 lalonde$lr_ps <- fitted(lr_out)
 ```
 
 Check the distributions of propensity scores to ensure we have good overlap
 
 
-```r
+``` r
 ggplot(lalonde, aes(x = lr_ps, color = as.logical(treat))) + 
 	geom_density() +
 	scale_color_manual('Treatment', values = palette2) +
@@ -93,7 +93,7 @@ ggplot(lalonde, aes(x = lr_ps, color = as.logical(treat))) +
 Stratification using quintiles.
 
 
-```r
+``` r
 breaks5 <- psa::get_strata_breaks(lalonde$lr_ps)
 breaks5
 ```
@@ -112,7 +112,7 @@ breaks5
 ## 80%      E 0.51119006 0.8304751 0.6708326
 ```
 
-```r
+``` r
 lalonde$lr_strata5 <- cut(x = lalonde$lr_ps, 
 						  breaks = breaks5$breaks, 
 						  include.lowest = TRUE, 
@@ -120,7 +120,7 @@ lalonde$lr_strata5 <- cut(x = lalonde$lr_ps,
 ```
 
 
-```r
+``` r
 table(lalonde$treat, lalonde$lr_strata5)
 ```
 
@@ -147,7 +147,7 @@ table(lalonde$treat, lalonde$lr_strata5)
 ### Checking Balance {#stratification-balance}
 
 
-```r
+``` r
 covars <- all.vars(lalonde.formu)
 covars <- lalonde[,covars[-1]]
 PSAgraphics::cv.bal.psa(covariates = covars, 
@@ -161,7 +161,7 @@ PSAgraphics::cv.bal.psa(covariates = covars,
 
 
 
-```r
+``` r
 PSAgraphics::box.psa(continuous = lalonde$age, 
 					 treatment = lalonde$treat, 
 					 strata = lalonde$lr_strata,
@@ -173,7 +173,7 @@ PSAgraphics::box.psa(continuous = lalonde$age,
 
 
 
-```r
+``` r
 PSAgraphics::cat.psa(categorical = lalonde$nodegr, 
 					 treatment = lalonde$treat, 
 					 strata = lalonde$lr_strata, 
@@ -196,7 +196,7 @@ PSAgraphics::cat.psa(categorical = lalonde$nodegr,
 ## Phase II: Estimate Effects
 
 
-```r
+``` r
 PSAgraphics::loess.psa(response = log(lalonde$re78 + 1),
 					   treatment = lalonde$treat,
 					   propensity = lalonde$lr_ps)
@@ -229,7 +229,7 @@ PSAgraphics::loess.psa(response = log(lalonde$re78 + 1),
 ```
 
 
-```r
+``` r
 psa::loess_plot(ps = lalonde$lr_ps,
 				outcome = log(lalonde$re78 + 1),
 				treatment = lalonde$treat == 1,
@@ -247,7 +247,7 @@ psa::loess_plot(ps = lalonde$lr_ps,
 
 
 
-```r
+``` r
 PSAgraphics::circ.psa(response = log(lalonde$re78 + 1), 
 					  treatment = lalonde$treat == 1, 
 					  strata = lalonde$lr_strata5)
@@ -293,14 +293,14 @@ Now that we have established there is a statistically significant effect of the 
 ### Estimate Propensity Scores (classification tree)
 
 
-```r
+``` r
 library(tree)
 tree_out <- tree::tree(lalonde_formu,
 					   data = lalonde)
 ```
 
 
-```r
+``` r
 plot(tree_out); text(tree_out)
 ```
 
@@ -311,7 +311,7 @@ plot(tree_out); text(tree_out)
 
 
 
-```r
+``` r
 lalonde$tree_ps <- predict(tree_out)
 table(lalonde$tree_ps, lalonde$treat, useNA = 'ifany')
 ```
@@ -327,7 +327,7 @@ table(lalonde$tree_ps, lalonde$treat, useNA = 'ifany')
 ##   1                   0   6
 ```
 
-```r
+``` r
 lalonde$tree_strata <- predict(tree_out, type = 'where')
 table(lalonde$tree_strata, lalonde$treat, useNA = 'ifany')
 ```

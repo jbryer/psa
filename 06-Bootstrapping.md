@@ -6,7 +6,7 @@ editor_options:
 # Bootstrapping {#chapter-bootstrapping}
 
 
-```r
+``` r
 library(PSAboot)
 
 boot.matching.1to3 <- function(Tr, Y, X, X.trans, formu, ...) {
@@ -24,71 +24,12 @@ boot_out <- PSAboot(Tr = lalonde$treat == 1,
 							  'Matching' = boot.matching,
 							  'Matching-1-to-3' = boot.matching.1to3,
 							  'MatchIt' = boot.matchit) )
-```
 
-```r
 summary(boot_out)
 ```
 
-```
-## Stratification Results:
-##    Complete estimate = 1658
-##    Complete CI = [242, 3074]
-##    Bootstrap pooled estimate = 1476
-##    Bootstrap weighted pooled estimate = 1461
-##    Bootstrap pooled CI = [66.5, 2885]
-##    59% of bootstrap samples have confidence intervals that do not span zero.
-##       59% positive.
-##       0% negative.
-## ctree Results:
-##    Complete estimate = 1598
-##    Complete CI = [-6.62, 3203]
-##    Bootstrap pooled estimate = 1465
-##    Bootstrap weighted pooled estimate = 1472
-##    Bootstrap pooled CI = [172, 2758]
-##    38.1% of bootstrap samples have confidence intervals that do not span zero.
-##       38.1% positive.
-##       0% negative.
-## rpart Results:
-##    Complete estimate = 1332
-##    Complete CI = [-295, 2959]
-##    Bootstrap pooled estimate = 1429
-##    Bootstrap weighted pooled estimate = 1442
-##    Bootstrap pooled CI = [-136, 2993]
-##    32% of bootstrap samples have confidence intervals that do not span zero.
-##       32% positive.
-##       0% negative.
-## Matching Results:
-##    Complete estimate = 861
-##    Complete CI = [234, 1487]
-##    Bootstrap pooled estimate = 1429
-##    Bootstrap weighted pooled estimate = 1396
-##    Bootstrap pooled CI = [-339, 3196]
-##    86% of bootstrap samples have confidence intervals that do not span zero.
-##       85% positive.
-##       1% negative.
-## Matching-1-to-3 Results:
-##    Complete estimate = 1536
-##    Complete CI = [1089, 1983]
-##    Bootstrap pooled estimate = 1450
-##    Bootstrap weighted pooled estimate = 1400
-##    Bootstrap pooled CI = [-135, 3034]
-##    90% of bootstrap samples have confidence intervals that do not span zero.
-##       90% positive.
-##       0% negative.
-## MatchIt Results:
-##    Complete estimate = 1772
-##    Complete CI = [370, 3174]
-##    Bootstrap pooled estimate = 1684
-##    Bootstrap weighted pooled estimate = 1637
-##    Bootstrap pooled CI = [260, 3108]
-##    67% of bootstrap samples have confidence intervals that do not span zero.
-##       67% positive.
-##       0% negative.
-```
 
-
-```r
+``` r
 plot(boot_out)
 ```
 
@@ -98,7 +39,7 @@ plot(boot_out)
 </div>
 
 
-```r
+``` r
 boxplot(boot_out)
 ```
 
@@ -106,14 +47,14 @@ boxplot(boot_out)
 
 
 
-```r
+``` r
 matrixplot(boot_out)
 ```
 
 <img src="06-Bootstrapping_files/figure-html/psaboot-matrixplot-1.png" width="100%" style="display: block; margin: auto;" />
 
 
-```r
+``` r
 boot_balance <- balance(boot_out)
 boot_balance
 ```
@@ -124,39 +65,28 @@ boot_balance
 
 ```
 ## 0.04
-
 ## 0.08
-
 ## 0.05
-
 ## 0.06
-
 ## 0.01
-
 ## 0.06
-
 ## 0.04
-
 ##  NA
-
 ## 0.07
-
 ## 0.07
-
 ## 0.05
-
 ## 0.08
 ```
 
 
-```r
+``` r
 plot(boot_balance)
 ```
 
 <img src="06-Bootstrapping_files/figure-html/psaboot-balance-plot-1.png" width="100%" style="display: block; margin: auto;" />
 
 
-```r
+``` r
 boxplot(boot_balance) + geom_hline(yintercept=.1, color='red')
 ```
 
@@ -165,232 +95,129 @@ boxplot(boot_balance) + geom_hline(yintercept=.1, color='red')
 Details are available within the returned object
 
 
-```r
+``` r
 boot_balance$unadjusted
 ```
 
 ```
 ## 3.51
-
 ## 5.46
-
 ## 1.12
-
 ## 1.16
-
 ## 0.66
-
 ## 0.89
-
 ## 0.39
-
 ## 0.44
-
 ## 0.72
-
 ## 0.49
 ```
 
-```r
+``` r
 boot_balance$complete
 ```
 
 ```
 ## 0.04
-
 ## 0.00
-
 ## 0.00
-
 ## 0.01
-
 ## 0.00
-
 ## 0.16
-
 ## 0.03
-
 ## 0.16
-
 ## 0.05
-
 ## 0.04
-
 ## 0.02
-
 ## 0.06
-
 ## 0.09
-
 ## 0.15
-
 ## 0.14
-
 ## 0.04
-
 ## 0.01
-
 ## 0.02
-
 ## 0.04
-
 ## 0.05
-
 ## 0.08
-
 ## 0.04
-
 ## 0.00
-
 ## 0.09
-
 ## 0.02
-
 ## 0.08
-
 ## 0.10
-
 ## 0.09
-
 ## 0.01
-
 ## 0.02
-
 ## 0.03
-
 ## 0.08
-
 ## 0.02
-
 ## 0.09
-
 ## 0.02
-
 ## 0.07
-
 ## 0.00
-
 ## 0.09
-
 ## 0.05
-
 ## 0.06
-
 ## 0.00
-
 ## 0.00
-
 ## 0.03
-
 ## 0.09
-
 ## 0.01
-
 ## 0.07
-
 ## 0.01
-
 ## 0.04
-
 ## 0.06
-
 ## 0.06
-
 ## 0.06
-
 ## 0.02
-
 ## 0.05
-
 ## 0.08
-
 ## 0.03
-
 ## 0.03
-
 ## 0.01
-
 ## 0.10
-
 ## 0.00
-
 ## 0.05
 ```
 
-```r
+``` r
 boot_balance$pooled |> head()
 ```
 
 ```
 ## 0.02
-
 ## 0.03
-
 ## 0.04
-
 ## 0.03
-
 ## 0.04
-
 ## 0.05
-
 ## 0.07
-
 ## 0.09
-
 ## 0.12
-
 ##  NA
-
 ## 0.06
-
 ## 0.12
-
 ## 0.05
-
 ## 0.09
-
 ## 0.08
-
 ## 0.11
-
 ## 0.08
-
 ## 0.07
-
 ## 0.06
-
 ## 0.07
-
 ## 0.03
-
 ## 0.07
-
 ## 0.05
-
 ## 0.06
-
 ## 0.04
-
 ## 0.03
-
 ## 0.03
-
 ## 0.08
-
 ## 0.03
-
 ## 0.05
-
 ## 0.08
-
 ## 0.10
-
 ## 0.09
-
 ## 0.07
-
 ## 0.10
-
 ## 0.10
 ```

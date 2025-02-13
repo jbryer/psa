@@ -2,7 +2,7 @@
 
 
 
-```r
+``` r
 require(Matching)
 require(mice)
 data(lalonde, package='Matching')
@@ -10,7 +10,7 @@ data(lalonde, package='Matching')
 
 
 
-```r
+``` r
 Tr <- lalonde$treat
 Y <- lalonde$re78
 X <- lalonde[,c('age','educ','black','hisp','married','nodegr','re74','re75')]
@@ -50,7 +50,7 @@ summary(lalonde.glm)
 Create a copy of the covariates to simulate missing at random (`mar`) and not missing at random (`nmar`).
 
 
-```r
+``` r
 lalonde.mar <- X
 lalonde.nmar <- X
 
@@ -66,7 +66,7 @@ control.rows <- which(lalonde$treat == 0)
 Add missingness to the existing data. For the not missing at random data treatment units will have twice as many missing values as the control group.
 
 
-```r
+``` r
 set.seed(2112)
 for(i in missing.cols) {
 	lalonde.mar[sample(nrow(lalonde), nrow(lalonde) * missing.rate), i] <- NA
@@ -79,7 +79,7 @@ for(i in missing.cols) {
 The proportion of missing values for the first covariate
 
 
-```r
+``` r
 prop.table(table(is.na(lalonde.mar[,missing.cols[1]]), lalonde$treat, useNA='ifany'))
 ```
 
@@ -90,7 +90,7 @@ prop.table(table(is.na(lalonde.mar[,missing.cols[1]]), lalonde$treat, useNA='ifa
 ##   TRUE  0.12134831 0.07865169
 ```
 
-```r
+``` r
 prop.table(table(is.na(lalonde.nmar[,missing.cols[1]]), lalonde$treat, useNA='ifany'))
 ```
 
@@ -104,7 +104,7 @@ prop.table(table(is.na(lalonde.nmar[,missing.cols[1]]), lalonde$treat, useNA='if
 Create a shadow matrix. This is a logical vector where each cell is TRUE if the value is missing in the original data frame.
 
 
-```r
+``` r
 shadow.matrix.mar <- as.data.frame(is.na(lalonde.mar))
 shadow.matrix.nmar <- as.data.frame(is.na(lalonde.nmar))
 ```
@@ -112,14 +112,14 @@ shadow.matrix.nmar <- as.data.frame(is.na(lalonde.nmar))
 Change the column names to include "_miss" in their name.
 
 
-```r
+``` r
 names(shadow.matrix.mar) <- names(shadow.matrix.nmar) <- paste0(names(shadow.matrix.mar), '_miss')
 ```
 
 Impute the missing values using the mice package
 
 
-```r
+``` r
 set.seed(2112)
 mice.mar <- mice(lalonde.mar, m=1)
 ```
@@ -134,7 +134,7 @@ mice.mar <- mice(lalonde.mar, m=1)
 ##   5   1  nodegr  re75
 ```
 
-```r
+``` r
 mice.nmar <- mice(lalonde.nmar, m=1)
 ```
 
@@ -151,7 +151,7 @@ mice.nmar <- mice(lalonde.nmar, m=1)
 Get the imputed data set.
 
 
-```r
+``` r
 complete.mar <- complete(mice.mar)
 complete.nmar <- complete(mice.nmar)
 ```
@@ -159,7 +159,7 @@ complete.nmar <- complete(mice.nmar)
 Estimate the propensity scores using logistic regression.
 
 
-```r
+``` r
 lalonde.mar.glm <- glm(treat~., data=cbind(treat=Tr, complete.mar, shadow.matrix.mar))
 lalonde.nmar.glm <- glm(treat~., data=cbind(treat=Tr, complete.nmar, shadow.matrix.nmar))
 ```
@@ -167,7 +167,7 @@ lalonde.nmar.glm <- glm(treat~., data=cbind(treat=Tr, complete.nmar, shadow.matr
 We see that the two indicator columns from the shadow matrix are statistically significant predictors suggesting that the data is not missing at random.
 
 
-```r
+``` r
 summary(lalonde.mar.glm)
 ```
 
@@ -208,7 +208,7 @@ summary(lalonde.mar.glm)
 ## Number of Fisher Scoring iterations: 2
 ```
 
-```r
+``` r
 summary(lalonde.nmar.glm)
 ```
 
