@@ -1,96 +1,305 @@
 # Non-Binary Treatments {#chapter-non-binary}
 
 
+# Introduction
+
+Consider two treatments, $Tr_1$ and $Tr_2$, and a control, $C$. We estimate propensity scores with three separate logistic regression models where model one predicts $Tr_1$ with $C$, model two predicts $Tr_2$ with $C$, and model three predicts $Tr_1$ with $Tr_2$. The triangle plot in Figure \@ref(fig:triangleplot) depicts the fitted values (i.e. propensity scores) from the three models on each edge of the triangle. Since each unit has a propensity score in two of the three models, their scores are connected. We can then calculate three distances between propensity scores for each possible matched triplet using the three models. Given those distances, the matched triplets with the smallest standardized distance (i.e. $D_{x,y} = \frac{| PS_{x} - PS_{y} |}{sd(PS)}$) are retained. Several methods for determining which matched triplets to retain are provided with the possibility of the researcher to implement their own. The black lines in Figure \@ref(fig:triangleplot) represent one matched triplet (i.e. one row in the returned data frame).
+
+Propensity score analysis of two groups typically use dependent sample *t*-tests [@Austin2010]. The analogue for matched triplets include repeated measures ANOVA and the Freidman Rank Sum Test. The `TriMatch` package provides utility functions for conducting and visualizing these statistical tests. Moreover, a set of functions extending `PSAgraphics` [@HelmreichPruzek2008] for matched triplets to check covariate balance are provided.
+
+## The `TriMatch` Algorithm
+
+The `trips` and `trimatch` functions are used to estimate the propensity scores and find the best matched triplets, respectively. 
+
+
+A. Propensity scores are estimated for three models using logistic regression.
+$${ PS }_{ 1 }=e({ x }_{ { T }_{ 1 }C })=Pr(z=1|{ X }_{ { T }_{ 1 }C })$$
+$${ PS }_{ 2 }=e({ x }_{ { T }_{ 2 }C })=Pr(z=1|{ X}_{ { T }_{ 2 }C })$$
+$${ PS }_{ 3 }=e({ x }_{ { T }_{ 2 }{ T }_{ 1 } })=Pr(z=1|{ X }_{ { T }_{ 2 }{ T }_{ 1 } })$$
+
+B. Match order is determined. The default is to start with the larger of the two treatments, followed the second treatment, and lastly the control group. However, the match order is configurable vis-a-vis the `match.order` parameter.
+
+C. Three distance matrices are calculated, $D_1$, $D_2$, and $D_3$ corresponding to the propensity scores estimated in step \@ref(item:ps). That is, $D_1$ is a $n_{Tr_1}$ x $n_{Tr_2}$  matrix where $D_1[x,y]$ is the standardized distance between $PS_1[x]$ and $PS_1[y]$.
+
+D. Distances greater than the caliper, 0.25 by default as recommended by [@RosenbaumRubin1985], are eliminated. The caliper is specified in standard units so 0.25 corresponds to one-quarter of one standard deviation.
+
+E. If partial exact matching is desired, three logical matrices are created with the same dimensions as the distance matrices calculated in step \@ref(item:distance). That is, position $x,y$ in the matrix is true if the covariate(s) to match exactly on between unit $x$ and $y$ match exactly. Distances where exact there are not exact matches are eliminated.
+
+F. For the remaining units, all possible combinations of matched triplets are formed and a total standardized distance is calculated.
+
+
+The result of the above procedure is the equivalent of caliper matching in the two group case. That is, all possible matches within a specified caliper are retained. This can be achieved by specifying `method = NULL` parameter to the `trimatch` function. Two additional methods are provided to reduce the number of matched triplets. The `maximumTreat` method attempts to reduce the number of duplicate treatment units. This is analogous to matching without replacement in the two group case. However, treatment 1 units may be matched to two different treatment 2 units if that treatment 2 unit would otherwise not be matched. The `OneToN` method will allow the user to specify exactly how many times each treatment 1 and treatment 2 may be reused. 
+
+# Effects of Tutoring on Course Grades
+
+In the first example we will utilize observational data obtained to evaluate the effectiveness of tutoring services on course grades. Treatment students consisted of those students who used tutoring services while enrolled in a online writing course between 2008 and 2011. A comparison group was identified as students enrolled in a course section with a student who used tutoring services. The treatment group was then divided into two based upon the number of times they utilized tutoring services. "Novice" users are those who used the services once and "regular" users are those who used services two or more times. Covariates available for estimating propensity scores are gender, ethnicity, military status, English second language learner, educational level for mother and father, age at the beginning of the course, employment level at college enrollment, income level at college enrollment, number of transfer credits, and GPA at the start of the course.
+
 ```{r}
-require(TriMatch)
+names(tutoring)
+```
 
-data(tutoring)
-str(tutoring)
+The courses represented here are structured such that the variation from section-to-section is minimal. However, the differences between courses is substantial and therefore we will utilize partial exact matching so that all matched students will have taken the same course.
 
-table(tutoring$treat)
+```{r}
+table(tutoring$treat, tutoring$Course, useNA="ifany")
+```
+
+The first step of analysis is to estimate the propensity scores. The `trips` function will estimate three propensity score models, $PS_1$, $PS_2$, and $PS_3$ as described above. Note that when specifying the formula the dependent variable, or treatment indicator, is not included. The `trips` function will replace the dependent variable as it estimates the three logistic regression models.
+
+```{r}
+formu <- ~ Gender + Ethnicity + Military + ESL + EdMother + EdFather + 
+Age + Employment + Income + Transfer + GPA
+tutoring.tpsa <- trips(tutoring, tutoring$treat, formu)
+```
+
+Figure \@ref(fig:triangleplot) is a triangle plot that depicts the propensity scores from the three models. Since each student has two propensity scores, their scores are connected with a line. The black line in Figure \@ref(fig:triangleplot) represents one matched triplet estimated below.
+
+```{r}
+plot(tutoring.tpsa)
+```
+
+The default for `trimatch` is to use the `maximumTreat` method retaining each treatment unit once with treatment one units matched more than once only if the corresponding treatment two unit would not be matched otherwise.
+
+```{r}
+tutoring.matched <- trimatch(tutoring.tpsa, exact=tutoring[,c("Course")])
+```
+
+Setting the `method` parameter to `NULL` will result in caliper matching. All matched triplets within the specified caliper are retained. This will result in the largest number of matched triplets.
+
+```{r}
+tutoring.matched.caliper <- trimatch(tutoring.tpsa, 
+exact=tutoring[,c("Course")], method=NULL)
+```
+
+Lastly, we will use the `OneToN` method to retain a 2-to-1-to-n and 3-to-2-n matches.
+
+```{r}
+tutoring.matched.2to1 <- trimatch(tutoring.tpsa, 
+exact=tutoring[,c("Course")], method=OneToN, M1=2, M2=1)
+tutoring.matched.3to2 <- trimatch(tutoring.tpsa, 
+exact=tutoring[,c("Course")], 
+method=OneToN, M1=3, M2=2)
+```
+
+```{r triangleplot, fig.cap = 'Traingle Plot'}
+print(plot(tutoring.matched, rows=c(50), line.alpha=1, draw.segments=TRUE))
+```
+
+## Examining Unmatched Students
+
+The different methods for retaining matched triplets address the issue of overrepresentation of treatment units. In this example there four times as many control units as treatment units (the ratio is larger when considering the treatments separately). These methods fall on a spectrum where each treatment unit is used minimally (`maximumTreat` method) or all units are used (caliper matching). [@Rosenbaum2012] suggests testing hypothesis more than once and it is our general recommendation to utilize multiple methods. Functions to help present and compare the results from multiple methods are provided and discussed below.
+
+The `unmatched` function will return the rows of students who were not matched. The `summary` function will provide information about how many students within each group were not matched. As shown below, the caliper matching will match the most students. In this particular example, in fact, the only substantial difference in the unmatched students is with the control group. All methods fail to match 37 treatment one students. This is due to the fact that there is not another student within the specified caliper that match exactly on the course.
+
+```{r}
+summary(unmatched(tutoring.matched))
 ```
 
 ```{r}
-# Histogram of unadjusted grades
-tmp <- as.data.frame(prop.table(table(tutoring$treat, tutoring$Grade), 1))
-ggplot(tmp, aes(x=Var2, y=Freq, fill=Var1)) + 
-	geom_bar(position='dodge', stat='identity') +
-	scale_y_continuous(labels = percent_format()) +
-	xlab('Grade') + ylab('Percent') + scale_colour_hue('Treatment')
+summary(unmatched(tutoring.matched.caliper))
 ```
 
-```{r, cache=TRUE}
-## Phase I
-
-# Note that the dependent variable is not included in the formula. The TriMatch
-# functions will replace the dependent variable depending on which pair is
-# being modeled.
-tutoring.formu <- ~ Gender + Ethnicity + Military + ESL + EdMother + EdFather + 
-	Age + Employment + Income + Transfer + GPA
-
-# trips will estimate the propensity scores for each pairing of groups
-tutoring.tpsa <- trips(tutoring, tutoring$treat, tutoring.formu)
-
-plot(tutoring.tpsa, sample=c(200))
-
-# trimatch finds matched triplets.
-tutoring.matched <- trimatch(tutoring.tpsa)
-
-# Partial exact matching
-tutoring.matched2 <- trimatch(tutoring.tpsa, exact=tutoring$Level)
-
-# Plotting the results of trimatch is a subset of the triangle plot with only
-# points that were matched. There is also an additional parameter, rows, that
-# will overlay matched triplets.
-plot(tutoring.matched, rows=1, line.alpha=1, draw.segments=TRUE)
-
-## Examine the unmatched students
-unmatched <- unmatched(tutoring.matched)
-summary(unmatched)
-plot(unmatched)
-
-## Check balance
-multibalance.plot(tutoring.tpsa)
-
-balance.plot(tutoring.matched, tutoring$Age, label='Age')
-balance.plot(tutoring.matched, tutoring$Military, label='Military')
-
-# Create a grid of figures.
-bplots <- balance.plot(tutoring.matched, tutoring[,all.vars(tutoring.formu)], 
-					   legend.position='none', 
-					   x.axis.labels=c('C','T1','T1'), x.axis.angle=0)
-bplots[['Military']] # We can plot one at at time.
-summary(bplots) # Create a data frame with the statistical results
-plot(bplots, cols=3, byrow=FALSE)
-
-## Phase II
-# The summary function performs a number of statistical tests including Friedman
-# rank sum test, repeated measures ANOVA, and if one or both of those tests have
-# p values less than 0.5 (the default, but configurable), then a pairwise Wilcox
-# test and three paired t-tests will also be performed.
-(sout <- summary(tutoring.matched, tutoring$Grade))
-ls(sout)
-
-# TODO: boxdiff.plot(tutoring.matched, tutoring$Grade, ordering=c('Treatment2','Treatment1','Control'))
-parallel.plot(tutoring.matched, tutoring$Grade)
-
-# The Loess plot is imperfect with three sets of propensity scores. There is a
-# model parameter to specify which model to use. Once we a model is selected
-# we have propensity scores for two of the three groups. We impute a propensity
-# score on that model's scale for the third group as the midpoint between
-# the other two propensity scores that unit was matched to.
-loess3.plot(tutoring.matched, tutoring$Grade, se=FALSE, method='loess')
-# Turn on 95% confidence interval (see also the level parameter)
-loess3.plot(tutoring.matched, tutoring$Grade, se=TRUE, method='loess')
-# We can also pass other parameters to the loess function.
-loess3.plot(tutoring.matched, tutoring$Grade, se=TRUE, method='loess', span=1)
-# This is a busy plot, but since all the lines are practically vertical, the
-# distance between each pair of propensity scores is minimal.
-loess3.plot(tutoring.matched, tutoring$Grade, se=FALSE, method='loess', 
-			plot.connections=TRUE)
-
-# The merge function will add the outcome to the matched triplet data frame.
-# This is useful for other approaches to analyzing the matched triplets.
-tmatch.out <- merge(tutoring.matched, tutoring$Grade)
-head(tmatch.out)
+```{r}
+summary(unmatched(tutoring.matched.2to1))
 ```
+
+```{r}
+summary(unmatched(tutoring.matched.3to2))
+```
+
+
+## Checking Balance
+
+The eventual strength of propensity score methods is dependent on how well balance is achieved. [@HelmreichPruzek2008] introduced graphical approaches to evaluating balance. We provide functions that extend that framework to matching of three groups. Figure \@ref(fig:multibalance) is a multiple covariate balance plot that plots the absolute effect size of each covariate before and after adjustment. In this example, the figure suggests that reasonable balance has been achieved across all covariates and across all three models since effect sizes are smaller than the unadjusted in most cases and relatively small.
+
+```{r multibalance, fig.cap = 'Multiple Covariate Balance Plot of Absolute Standardized Effect Sizes Before and After Propensity Score Adjustment'}
+print(multibalance.plot(tutoring.tpsa) + ggtitle("Covariate Balance Plot"))
+```
+
+Figure \@ref(fig:balance) is the results of the `balance.plot` function. This function will provide a bar chart for categorical covariates and box plots for quantitative covariates, individually or in a grid.
+
+```{r balance, fig.cap = 'Covariate Balance Plots', cache = TRUE}
+bplots <- balance.plot(tutoring.matched, tutoring[,all.vars(formu)], 
+		legend.position="none", x.axis.labels=c("C","T1","T1"), x.axis.angle=0)
+print(plot(bplots, cols=3, byrow=FALSE))
+```
+
+
+## Phase II: Estimating Effects of Tutoring on Course Grades
+
+In phase two of propensity score analysis we wish to compare our outcome of interest, course grade in this example, across the matches. A custom `merge` function is provided to merge an outcome from the original data frame to the results of `trimatch`. This merge function will add three columns with the outcome for each of the three groups.
+
+```{r}
+matched.out <- merge(tutoring.matched, tutoring$Grade)
+names(matched.out)
+head(matched.out)
+```
+
+Although the `merge` function is convenient for conducting your own analysis, the `summary` function will perform the most common analyses including Friedman Rank Sum test and repeated measures ANOVA. If either of those tests produce a *p* value less than the specified threshold (0.05 by default), then the `summary` function will also perform and return Wilcoxon signed rank test and three separate dependent sample *t*-tests see [@Austin2010] for discussion of dependent versus independent *t*-tests.
+
+```{r}
+s1 <- summary(tutoring.matched, tutoring$Grade)
+names(s1)
+s1$friedman.test
+s1$t.tests
+```
+
+The `print` method will accept multiple object returned by `summary` so to combine them into a single table output. Note that each parameter must be named and that name will be used to identify the row containing those results.
+
+```{r}
+s2 <- summary(tutoring.matched.caliper, tutoring$Grade)
+s3 <- summary(tutoring.matched.2to1, tutoring$Grade)
+s4 <- summary(tutoring.matched.3to2, tutoring$Grade)
+
+print("Max Treat"=s1, "Caliper"=s2, "2-to-1"=s3, "3-to-2"=s4)
+```
+
+```{r boxplots, fig.cap = 'Boxplot of Differences', fig.show = 'hold', out.width = '30%'}
+boxdiff.plot(tutoring.matched, tutoring$Grade, 
+			 ordering=c("Treat2","Treat1","Control")) + 
+	ggtitle("Maximum Treatment Matching")
+boxdiff.plot(tutoring.matched.caliper, tutoring$Grade, 
+			 ordering=c("Treat2","Treat1","Control")) +
+	ggtitle("Caliper Matching")
+boxdiff.plot(tutoring.matched.2to1, tutoring$Grade, 
+			 ordering=c("Treat2","Treat1","Control")) +
+	ggtitle("2-to-1-to-n Matching")
+```
+
+
+Another useful visualization for presenting the results is the Loess plot. In Figure \@ref(fig:loess) we plot the propensity scores on the *x*-axis and the outcome (grade in this example) on the *y*-axis. A Loess regression line is then overlaid.^[We utilize the `geom_smooth` geometry in the `ggplot2` package that provides other smoothing functions including linear modeling (`lm`), generalized linear modeling (`glm`), and robust generalized additive models (`gam`). See the documentation for the `stat_smooth` function in `ggplot2`.] Since there are three propensity score scales, the `plot.loess3` function will use the propensity scores from the model predicting treatment one from treatment two. Propensity scores for the control group are then imputed by taking the mean of the propensity scores of the two treatment units that control was matched to. It should be noted that if a control unit is matched to two different sets of treatment units, then that control unit will have two propensity scores. Which propensity score scale is utilized can be explicitly specified using the `model` parameter.
+
+
+```{r loess, fig.cap = 'Loess Plot for Caliper Matching'}
+loess3.plot(tutoring.matched.caliper, tutoring$Grade, ylab="Grade", 
+			points.alpha=.1, method="loess")
+```
+
+# Effects of Smoking on Medical Expenditures
+
+In this example^[This example is included as a demo in the package. Type `demo(nmes)` in R to start the demo.]  we will utilize the National Medical Expenditure Study [@nmes] to estimate the effects of smoking on medical expenditures. This dataset was first used by [@Johnson2003] to estimate the effects of smoking on diseases, and then the effect of diseases on medical expenditures. [@ImaiVanDyk2004] developed an a method to generalize the propensity score, called a p-score, to directly estimate the effects of smoking on medical expenditures. More specifically, they defined a quantitative treatment variable, pack year, defined as:
+
+$$packyear = \frac{\text{number of cigarettes per day}}{20} \times \text{number of years smoked}$$
+
+Our approach is designed to match three separate groups and not a continuous treatment. We will address two research questions: (1) What are the effects of smoking status (i.e. never smoked, former smoker, and current smoker) on medical expenditures? and (2) What are the effects of lifetime smoking on medical expenditures? Figure \@ref(fig:packyearsAndTotalExp) represent the relationship between these two different treatments^[Note that the control group in both instances are people who never smoked and is omitted from this figure.]. This figure reveals several, perhaps counterintuitive, facts. First, the unadjusted total medical expenditures for former smokers is higher than current smokers. Secondly, the distribution of $log(packyear)$ overlap substantial between former and current smokers. To dichotomize the pack year smoking variable, we will split on the median of pack year, labeled moderate smokers (i.e. $packyear \le median(packyear)$) and heavy smokers (i.e. $packyear > median(packyear)$).
+
+```{r}
+data(nmes)
+nmes <- subset(nmes, select = c(packyears, smoke, LASTAGE, MALE, RACE3, beltuse, educate, marital, SREGION, POVSTALB, HSQACCWT, TOTALEXP))
+```
+
+Both [@Johnson2003] and [@ImaiVanDyk2004] conducted a complete-case analysis and Johnson et al. reported that multiple imputation did not substantially affect their results.
+
+```{r}
+nmes <- na.omit(nmes)
+```
+
+Since many participants had zero medical expenditures, we will add one to the total expenditures before log transforming the variable. We will then calculate the median of pack year and create a new treatment variable, `smoke2`, for moderate and heavy smokers with non-smokers.
+
+```{r}
+nmes$smoke <- factor(nmes$smoke, levels=c(0,1,2), labels=c("Never","Smoker","Former"))
+nmes$LogTotalExp <- log(nmes$TOTALEXP + 1)
+(medPY <- median(nmes[nmes$smoke != "Never",]$packyears))
+table(nmes$smoke, nmes$packyears > medPY)
+nmes$smoke2 <- ifelse(nmes$smoke == "Never", "Never", 
+ifelse(nmes$packyears > 17, "Heavy", "Moderate"))
+table(nmes$smoke, nmes$smoke2, useNA="ifany")
+```
+
+
+
+```{r packyearsAndTotalExp, fig.cap = 'Relationship Between Pack Year and Total Expenditures by Current Smoking Status', fig.show = 'hold', out.width = '50%'}
+ggplot(nmes[nmes$smoke != "Never",], aes(x=log(packyears+1), color=smoke, fill=smoke)) +
+	  	geom_density(alpha=.1) + 
+	  	theme(legend.position="none", plot.margin=rep(unit(0, "cm"), 4)) +
+	  	xlab("") + ylab("Density")
+ggplot(nmes[nmes$smoke != "Never",], aes(x=log(packyears+1), y=LogTotalExp, color=smoke, fill=smoke)) + 
+	  	geom_point(alpha=.2) + 
+	  	geom_smooth(method="loess", formula = y ~ x) +
+	  	scale_color_hue("") + scale_fill_hue("") +
+	  	theme(legend.position=c(.9,1), plot.margin=rep(unit(0, "cm"), 4)) + 
+	  	xlab("log(Pack Year)") + ylab("log(Total Expenditures)")
+```
+
+Imai and van Dyk observed that there appeared to be a relationship between age and medical expenditures. We will create a new categorical age variable using quintiles to use for partial exact matching. This serves two purposes, first it ensures balance on this critical covariate (note that we will also exactly match on gender and ethnicity) and two, decrease the search space for matched triplets therefore increasing the efficiency of the matching algorithm. The possible disadvantage of exact matching is that too many treated units will not be matched. We will examine unmatched treatment units below.
+
+```{r}
+nmes$LastAge5 <- cut(nmes$LASTAGE, 
+breaks=quantile(nmes$LASTAGE, probs=seq(0,1,1/5)),
+include.lowest=TRUE, orderd_result=TRUE)
+```
+
+Define our model to estimate the propensity scores.
+
+```{r}
+formu <- ~ LASTAGE + MALE + RACE3 + beltuse + educate + marital + 
+SREGION + POVSTALB
+```
+
+Estimate propensity scores for our two different treatments. Figure \@ref(fig:nmestriangleplot) provides triangle plots for both models.
+
+```{r}
+tpsa.smoke <- trips(nmes, nmes$smoke, formu)
+tpsa.packyears <- trips(nmes, nmes$smoke2, formu)
+```
+
+```{r nmestriangleplot, fig.cap = 'Triangle Plots for NMES', fig.show = 'hold', out.width = '50%'}
+p.smoke <- plot(tpsa.smoke, sample=c(.05), edge.alpha=.1) + ggtitle("Treatment Variable: Current Smoking Status")
+p.packyears <- plot(tpsa.packyears, sample=c(.05), edge.alpha=.1) + ggtitle("Treatment Variable: Lifetime Smoking Frequency")
+p.smoke
+p.packyears
+```
+
+Create two sets of matched triplets for our two treatments.
+
+```{r, cache = TRUE}
+tmatch.smoke <- trimatch(tpsa.smoke, 
+exact=nmes[,c("LastAge5","MALE","RACE3")])
+tmatch.packyears <- trimatch(tpsa.packyears, 
+exact=nmes[,c("LastAge5","MALE","RACE3")])
+```
+
+The following summary of the unmatched rows show that more than 96% of the treatment units were matched in both models.
+
+```{r}
+summary(unmatched(tmatch.smoke))
+summary(unmatched(tmatch.packyears))
+```
+
+Figure \@ref(fig:nmesbalance) is a multiple covariate balance plot for the two treatments. It shows that the absolute effect sizes after adjustment is better for all covariates. The demo included in the `TriMatch` package provides functions to create individual balance plots for each covaraite.
+
+```{r nmesbalance, fig.cap = 'Multiple Covariate Balance Plots for NMES', fig.show = 'hold', out.width = '50%'}
+p.smoke <- multibalance.plot(tpsa.smoke) + ggtitle("Treatment Variable: Current Smoking Status")
+p.packyears <- multibalance.plot(tpsa.packyears) + ggtitle("Treatment Variable: Lifetime Smoking Frequency")
+p.smoke
+p.packyears
+```
+
+## Phase II: Estimating Effects of Smoking on Medical Expenditures
+
+For both treatment regimes we used the `maximumTreat` method for finding matched triplets that will retain each treatment unit once with the possibility of using treatment units twice in cases where a treatment unit would not otherwise be matched. The Friedman Rank Sum Test and repeated measures ANOVA indicate there a statistically significant difference in both treatment regimes. Figure \@ref(fig:nmesboxplots) provides box plots of the differences for the two treatment regimes. For the current smoking status treatment, the results indicate that smoker's actually spend less than former and non-smokers. However, as [@ImaiVanDyk2004] explain, the sample of smokers includes only survivors and should be considered when interpreting these results. 
+
+Imai and van Dyk's analysis used pack year as treatment indicator. Our dichotomizing of pack year into moderate and heavy smokers more closely adheres to their approach. The results with this treatment regime indicate that smokers, both moderate and heavy, have higher medical expenditures than non-smokers. However, there is no statistically significant difference between heavy and moderate smokers in medical expenditures. 
+
+```{r nmesboxplots, fig.cap = 'Boxplot of Differences for NMES', fig.show = 'hold', out.width = '50%'}
+boxdiff.plot(tmatch.smoke, nmes$LogTotalExp, ordering=c("Smoker","Former","Never")) + 
+	ggtitle("Treatment Variable: Current Smoking Status")
+boxdiff.plot(tmatch.packyears, nmes$LogTotalExp, ordering=c("Heavy","Moderate","Never")) +
+	ggtitle("Treatment Variable: Lifetime Smoking Frequency")
+```
+
+```{r}
+sum.smoke <- summary(tmatch.smoke, nmes$LogTotalExp, 
+ordering=c("Smoker","Former","Never"))
+sum.packyears <- summary(tmatch.packyears, nmes$LogTotalExp, 
+ordering=c("Heavy","Moderate","Never"))
+print("Current Smoking Status" = sum.smoke, "Smoking Frequency" = sum.packyears)
+```
+
+```{r}
+sum.smoke$t.tests
+sum.packyears$t.test
+```
+
+
+

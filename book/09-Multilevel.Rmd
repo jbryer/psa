@@ -5,71 +5,90 @@ editor_options:
 
 # Multilevel PSA {#chapter-multilevelpsa}
 
+## Introduction
 
-```{r}
-library(multilevelPSA)
-library(grid)
+Given the large amount of data to be summarized, the use of graphics are an integral component of representing the results. Pruzek and Helmreich (2009) introduced a class of graphics for visualizing dependent sample tests (see also Pruzek & Helmreich, 2010; Danielak, Pruzek, Doane, Helmreich, & Bryer, 2011). This framework was then extended for propensity score methods using stratification (Helmreich & Pruzek, 2009). In particular, the representation of confidence intervals relative to the unit line (i.e. the line y=x) provided a new way of determining whether there is a statistically significant diﬀerence between two groups. The `multilevelPSA` package provides a number of graphing functions that extend these frameworks for multilevel PSA. The figure below represents a multilevel PSA assessment plot with annotations. This graphic represents the results of comparing private and public schools in North America using the Programme of International Student Assessment (PISA; Organisation for Economic Co-Operation and Development, 2009). The PISA data to create this graphic are included in the `multilevelPSA` package and a more detailed description of how to create this graphic are discussed in the next section. Additionally, the use of PISA makes more visible certain features of the graphics used. As discussed in chapters four and five, the diﬀerences between charter and traditional public schools is minimal and therefore some features of the figures are less apparent. The following section focuses on the features of this graphic.
 
-data(pisana)
-data(pisa.colnames)
-data(pisa.psa.cols)
-str(pisana)
+In the figure below, the *x*-axis corresponds to math scores for private schools and the y-axis corresponds to public school maths cores. Each colored circle (a) is a country with its size corresponding to the number of students sampled within each country. Each country is projected to the lower left, parallel to the unit line, such that a tick mark is placed on the line with slope -1 (b). These tick marks represent the distribution of diﬀerences between private and public schools across countries. Diﬀerences are aggregated (and weighted by size) across countries. For math, the overall adjusted mean for private schools is 487, and the overall adjusted mean for public schools is 459 and represented by the horizontal (c) and vertical (d) blue lines, respectively. The dashed blue line parallel to the unit line (e) corresponds to the overall adjusted mean diﬀerence and likewise, the dashed green lines (f) correspond to the confidence interval. Lastly, rug plots along the right and top edges of the graphic (g) correspond to the distribution of each country’s overall mean private and public school math scores, respectively.
 
-table(pisana$CNT, pisana$PUBPRIV, useNA='ifany')
-prop.table(table(pisana$CNT, pisana$PUBPRIV, useNA='ifany'), 1) * 100
-```
+The figure represents a large amount of data and provides insight into the data and results. The figure provides overall results that would be present in a traditional table, for instance the fact that the green dashed lines do not span the unit line (i.e. y = x) indicates that there is a statistically significant diﬀerence between the two groups. However additional information is diﬃcult to convey in tabular format. For example, the rug plots indicate that the spread in the performance of both private and public schools across countries is large. Also observe that Canada, which has the largest PISA scores for both groups, also has the largest diﬀerence (in favor of private schools) as represented by the larger distance from the unit line.
 
-```{r, echo=FALSE, fig.cap='Annotated multilevel PSA assessment plot. This plot compares private schools (x- axis) against public schools (y-axis) for North America from the Programme of International Student Assessment.'}
+```{r, echo=FALSE, out.width='90%', fig.align='center', fig.cap='Annotated multilevel PSA assessment plot. This plot compares private schools (x- axis) against public schools (y-axis) for North America from the Programme of International Student Assessment.'}
 knitr::include_graphics('figures/AnnotatedCircPlot.png')
 ```
 
-Phase I
+## Working Example
 
-Use conditional inference trees from the party package
+The `multilevelPSA` package includes North American data from the Programme of International Student Assessment (PISA; Organisation for Economic Co-Operation and Development, 2009). This data is made freely available for research and is utilized here so that the R code is reproducible9. This example compares the performance of private and public schools clustered by country. Note that PISA provide five plausible values for the academic scores since students complete a subset of the total assessment. For simplicity, the math score used for analysis is the average of these five plausible scores.
 
-```{r, cache=TRUE}
-mlctree <- mlpsa.ctree(pisana[,c('CNT','PUBPRIV',pisa.psa.cols)], 
-					   formula=PUBPRIV ~ ., level2='CNT')
-pisana.party <- getStrata(mlctree, pisana, level2='CNT')
+```{r setup, message=FALSE}
+library(multilevelPSA)
+library(party)
 ```
 
-```{r multilevelpsa-treeplot, fig.cap='Tree heat map showing relative importance of covariates used in each tree'}
-tree.plot(mlctree, level2Col=pisana$CNT, 
-		  colLabels=pisa.colnames[,c('Variable','ShortDesc')])
+```{r load-data, message=FALSE}
+data(pisana)
+data(pisa.psa.cols)
+pisana$MathScore <- apply(pisana[,paste0('PV', 1:5, 'MATH')], 1, sum) / 5
 ```
+
+The `mlpsa.ctree` function performs phase I of the propensity score analysis using classification trees, specifically using the `ctree` function in the party package. The getStrata function returns a data frame with a number of rows equivalent to the original data frame indicating the stratum for each student.
+
+```{r ctree, message=FALSE, results='hide'}
+mlpsa <- mlpsa.ctree(pisana[,c('CNT', 'PUBPRIV', pisa.psa.cols)], 
+                     formula = PUBPRIV ~ ., 
+                     level2 = 'CNT')
+mlpsa.df <- getStrata(mlpsa, pisana, level2 = 'CNT')
+```
+
+Similarly, the `mlpsa.logistic` estimates propensity scores using logistic regression. The `getPropensityScores` function returns a data frame with a number of rows equivalent to the original data frame.
+
+```{r logistic-regressions, warning=FALSE, results='hide'}
+mlpsa.lr <- mlpsa.logistic(pisana[,c('CNT', 'PUBPRIV', pisa.psa.cols)], 
+                           formula = PUBPRIV ~ ., 
+                           level2 = 'CNT')
+mlpsa.lr.df <- getPropensityScores(mlpsa.lr, nStrata = 5)
+```
+
+```{r logistic-regression-results}
+head(mlpsa.lr.df)
+```
+
+The `covariate.balance` function calculates balance statistics for each covariate by estimating the eﬀect of each covariate before and after adjustment. The results can be converted to a data frame to view numeric results or the `plot` function provides a balance plot. This figure depicts the eﬀect size of each covariate before (blue triangle) and after (red circle) propensity score adjustment. As shown here, the eﬀect size for nearly all covariates is smaller than the unadjusted eﬀect size. The few exceptions are for covariates where the unadjusted eﬀect size was already small. There is no established threshold for what is considered a suﬃciently small eﬀect size. In general, I recommend adjusted eﬀect sizes less than 0.1 which reflect less than 1% of variance explained.
+
+```{r covariate-balance, warning=FALSE, fig.cap='Multilevel PSA balance plot for PISA. The eﬀect sizes (standardized mean diﬀerences) for each covariate are provided before PSA adjustment (blue triangles) and after PSA adjustment (red circles).', fig.width=6, fig.height=8, out.width='100%'}
+cv.bal <- covariate.balance(covariates = pisana[,pisa.psa.cols],
+                            treatment = pisana$PUBPRIV,
+                            level2 = pisana$CNT,
+                            strata = mlpsa.df$strata)
+head(as.data.frame(cv.bal))
+plot(cv.bal)
+```
+
+The `mlpsa` function performs phase II of propensity score analysis and requires four parameters: the response variable, treatment indicator, stratum, and clustering indicator. The `minN` parameter (which defaults to five) indicates what the minimum stratum size is to be included in the analysis. For this example, 463, or less than one percent of students were removed because the stratum (or leaf node for classification trees) did not contain at least five students from both the treatment and control groups.
 
 ```{r}
-#NOTE: This is not entirely correct but is sufficient for visualization purposes
-#      See mitools package for combining multiple plausible values.
-pisana.party$mathscore <- apply(pisana.party[,paste0('PV',1:5,'MATH')],1,sum)/5
-pisana.party$readscore <- apply(pisana.party[,paste0('PV',1:5,'READ')],1,sum)/5
-pisana.party$sciescore <- apply(pisana.party[,paste0('PV',1:5,'SCIE')],1,sum)/5
+results.psa.math <- mlpsa(response = mlpsa.df$MathScore,
+                          treatment = mlpsa.df$PUBPRIV,
+                          strata = mlpsa.df$strata,
+                          level2 = mlpsa.df$CNT)
 ```
 
-Phase II
+The `summary` function provides the overall treatment estimates as well as level one and two summaries.
 
 ```{r}
-results.psa.math <- mlpsa(response = pisana.party$mathscore, 
-						  treatment = pisana.party$PUBPRIV, 
-						  strata = pisana.party$strata, 
-						  level2 = pisana.party$CNT, minN=5)
-# summary(results.psa.math)
-results.psa.math$level2.summary[,c('level2','n','Private','Private.n','Public',
-								   'Public.n','diffwtd','ci.min','ci.max','df')]
-
-# Confidence interval
-results.psa.math$overall.ci
-# Effect Size
-results.psa.math$overall.ci / sd(pisana.party$mathscore)
-
+summary(results.psa.math)
 ```
 
+The `plot` function creates the multilevel assessment plot. Here it is depicted with side panels showing the distribution of math scores for all strata for public school students to the left and private school students below. These panels can be plotted separately using the `mlpsa.circ.plot` and mlpsa.distribution.plot functions.
 
-```{r multilevelpsa-plot, fig.cap='Multilevel PSA assessment plot'}
+```{r psa-circ-plot, fig.cap='Multilevel PSA assessment plot for PISA. The main panel provides the adjusted mean for private (x-axis) and public (y-axis) for each country. The left and lower panels provide the mean for each stratum for the public and private students, respectively. The overall adjusted mean diﬀerence is represented by the dashed blue line and the 95% confidence interval by the dashed green lines. There is a statistically significant diﬀerence between private and public school student performance as evidenced by the confidence interval not spanning zero (i.e. not crossing the unit line y=x.', fig.width=6, fig.height=6, out.width='100%'}
 plot(results.psa.math)
 ```
 
+Lastly, the `mlpsa.difference.plot` function plots the overall diﬀerences. The `sd` parameter is optional, but if specified, the x-axis can be interpreted as standardized eﬀect sizes.
 
-```{r multilevelpsa-difference-plot, fig.cap='Multilevel PSA difference plot'}
-mlpsa.difference.plot(results.psa.math)
+```{r difference-plot, fig.cap='Multilevel PSA diﬀerence plot for PISA. Each blue dot corresponds to the eﬀect size (standardized mean diﬀerence) for each country. The vertical blue line corresponds to the overall eﬀect size for all countries. The green lines correspond to the 95% confidence intervals. The dashed green lines Bonferroni-Sidak (c.f. Abdi, 2007) adjusted confidence intervals. The size of each dot is proportional to the sample size within each country.', fig.width=6, fig.height=2, out.width='100%'}
+mlpsa.difference.plot(results.psa.math, 
+                      sd = mean(mlpsa.df$MathScore, na.rm=TRUE))
 ```
