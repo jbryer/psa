@@ -1,7 +1,7 @@
 --- 
 title: "Applied Propensity Score Analysis with R"
 author: "Jason Bryer, Ph.D."
-date: "2025-02-13"
+date: "2025-04-04"
 site: bookdown::bookdown_site
 documentclass: book
 url: https://psa.bryer.org
@@ -14,7 +14,7 @@ bibliography: [book.bib, packages.bib]
 
 # Preface {-}
 
-Last updated: February 13, 2025
+Last updated: April 04, 2025
 
 <a href="https://psa.bryer.org" target="_blank"><img src="figures/cover.png" width="40%" style="float:right; padding:10px" style="display: block; margin: auto 0 auto auto;" /></a>
 
@@ -49,15 +49,15 @@ devtools::session_info()
 ```
 ## ─ Session info ───────────────────────────────────────────────────────────────
 ##  setting  value
-##  version  R version 4.4.2 (2024-10-31)
-##  os       Ubuntu 24.04.1 LTS
+##  version  R version 4.4.3 (2025-02-28)
+##  os       Ubuntu 24.04.2 LTS
 ##  system   x86_64, linux-gnu
 ##  ui       X11
 ##  language (EN)
 ##  collate  C.UTF-8
 ##  ctype    C.UTF-8
 ##  tz       UTC
-##  date     2025-02-13
+##  date     2025-04-04
 ##  pandoc   3.1.11 @ /opt/hostedtoolcache/pandoc/3.1.11/x64/ (via rmarkdown)
 ##  quarto   NA
 ## 
@@ -66,13 +66,13 @@ devtools::session_info()
 ##  abind           1.4-8      2024-09-12 [1] RSPM (R 4.4.0)
 ##  backports       1.5.0      2024-05-23 [1] RSPM (R 4.4.0)
 ##  bookdown        0.42       2025-01-07 [1] RSPM (R 4.4.0)
-##  boot            1.3-31     2024-08-28 [2] CRAN (R 4.4.2)
+##  boot            1.3-31     2024-08-28 [2] CRAN (R 4.4.3)
 ##  bslib           0.9.0      2025-01-30 [1] RSPM (R 4.4.0)
 ##  cachem          1.1.0      2024-05-16 [1] RSPM (R 4.4.0)
 ##  car           * 3.1-3      2024-09-27 [1] RSPM (R 4.4.0)
 ##  carData       * 3.0-5      2022-01-06 [1] RSPM (R 4.4.0)
-##  cli             3.6.4      2025-02-13 [1] CRAN (R 4.4.2)
-##  codetools       0.2-20     2024-03-31 [2] CRAN (R 4.4.2)
+##  cli             3.6.4      2025-02-13 [1] RSPM (R 4.4.0)
+##  codetools       0.2-20     2024-03-31 [2] CRAN (R 4.4.3)
 ##  coin            1.4-3      2023-09-27 [1] RSPM (R 4.4.0)
 ##  colorspace      2.1-1      2024-07-26 [1] RSPM (R 4.4.0)
 ##  devtools        2.4.5      2022-10-11 [1] RSPM (R 4.4.0)
@@ -90,29 +90,29 @@ devtools::session_info()
 ##  ggthemes        5.1.0      2024-02-10 [1] RSPM (R 4.4.0)
 ##  glue            1.8.0      2024-09-30 [1] RSPM (R 4.4.0)
 ##  granova       * 2.2        2023-03-22 [1] RSPM (R 4.4.0)
-##  granovaGG     * 1.4.1.9000 2025-02-13 [1] Github (briandk/granovaGG@7014d74)
+##  granovaGG     * 1.4.1.9000 2025-04-04 [1] Github (briandk/granovaGG@7014d74)
 ##  gridExtra       2.3        2017-09-09 [1] RSPM (R 4.4.0)
 ##  gtable          0.3.6      2024-10-25 [1] RSPM (R 4.4.0)
 ##  htmltools       0.5.8.1    2024-04-04 [1] RSPM (R 4.4.0)
 ##  htmlwidgets     1.6.4      2023-12-06 [1] RSPM (R 4.4.0)
 ##  httpuv          1.6.15     2024-03-26 [1] RSPM (R 4.4.0)
 ##  jquerylib       0.1.4      2021-04-26 [1] RSPM (R 4.4.0)
-##  jsonlite        1.8.9      2024-09-20 [1] RSPM (R 4.4.0)
-##  knitr         * 1.49       2024-11-08 [1] RSPM (R 4.4.0)
+##  jsonlite        2.0.0      2025-03-27 [1] RSPM (R 4.4.0)
+##  knitr         * 1.50       2025-03-16 [1] RSPM (R 4.4.0)
 ##  later           1.4.1      2024-11-27 [1] RSPM (R 4.4.0)
-##  lattice         0.22-6     2024-03-20 [2] CRAN (R 4.4.2)
+##  lattice         0.22-6     2024-03-20 [2] CRAN (R 4.4.3)
 ##  libcoin         1.0-10     2023-09-27 [1] RSPM (R 4.4.0)
 ##  lifecycle       1.0.4      2023-11-07 [1] RSPM (R 4.4.0)
-##  lme4            1.1-36     2025-01-11 [1] RSPM (R 4.4.0)
+##  lme4            1.1-37     2025-03-26 [1] RSPM (R 4.4.0)
 ##  magrittr        2.0.3      2022-03-30 [1] RSPM (R 4.4.0)
-##  MASS          * 7.3-61     2024-06-13 [2] CRAN (R 4.4.2)
+##  MASS          * 7.3-64     2025-01-04 [2] CRAN (R 4.4.3)
 ##  Matching      * 4.10-15    2024-10-14 [1] RSPM (R 4.4.0)
-##  MatchIt       * 4.7.0      2025-01-12 [1] RSPM (R 4.4.0)
-##  Matrix          1.7-1      2024-10-18 [2] CRAN (R 4.4.2)
+##  MatchIt       * 4.7.1      2025-03-10 [1] RSPM (R 4.4.0)
+##  Matrix          1.7-2      2025-01-23 [2] CRAN (R 4.4.3)
 ##  matrixStats     1.5.0      2025-01-07 [1] RSPM (R 4.4.0)
 ##  memoise         2.0.1      2021-11-26 [1] RSPM (R 4.4.0)
-##  mgcv            1.9-1      2023-12-21 [2] CRAN (R 4.4.2)
-##  mime            0.12       2021-09-28 [1] RSPM (R 4.4.0)
+##  mgcv            1.9-1      2023-12-21 [2] CRAN (R 4.4.3)
+##  mime            0.13       2025-03-17 [1] RSPM (R 4.4.0)
 ##  miniUI          0.1.1.1    2018-05-18 [1] RSPM (R 4.4.0)
 ##  minqa           1.2.8      2024-08-17 [1] RSPM (R 4.4.0)
 ##  mnormt          2.1.1      2022-09-26 [1] RSPM (R 4.4.0)
@@ -121,58 +121,58 @@ devtools::session_info()
 ##  multilevelPSA * 1.2.5      2018-03-22 [1] RSPM (R 4.4.0)
 ##  munsell         0.5.1      2024-04-01 [1] RSPM (R 4.4.0)
 ##  mvtnorm         1.3-3      2025-01-10 [1] RSPM (R 4.4.0)
-##  nlme            3.1-166    2024-08-14 [2] CRAN (R 4.4.2)
-##  nloptr          2.1.1      2024-06-25 [1] RSPM (R 4.4.0)
+##  nlme            3.1-167    2025-01-27 [2] CRAN (R 4.4.3)
+##  nloptr          2.2.1      2025-03-17 [1] RSPM (R 4.4.0)
 ##  party           1.3-18     2025-01-29 [1] RSPM (R 4.4.0)
 ##  pillar          1.10.1     2025-01-07 [1] RSPM (R 4.4.0)
-##  pkgbuild        1.4.6      2025-01-16 [1] RSPM (R 4.4.0)
+##  pkgbuild        1.4.7      2025-03-24 [1] RSPM (R 4.4.0)
 ##  pkgconfig       2.0.3      2019-09-22 [1] RSPM (R 4.4.0)
 ##  pkgload         1.4.0      2024-06-28 [1] RSPM (R 4.4.0)
 ##  plyr            1.8.9      2023-10-02 [1] RSPM (R 4.4.0)
 ##  profvis         0.4.0      2024-09-20 [1] RSPM (R 4.4.0)
 ##  promises        1.3.2      2024-11-28 [1] RSPM (R 4.4.0)
-##  PSAboot       * 1.3.8      2025-02-13 [1] Github (jbryer/PSAboot@f5d73cd)
+##  PSAboot       * 1.3.8      2025-04-04 [1] Github (jbryer/PSAboot@f5d73cd)
 ##  PSAgraphics   * 2.1.3      2024-03-05 [1] RSPM (R 4.4.0)
-##  psych           2.4.12     2024-12-23 [1] RSPM (R 4.4.0)
+##  psych           2.5.3      2025-03-21 [1] RSPM (R 4.4.0)
 ##  purrr           1.0.4      2025-02-05 [1] RSPM (R 4.4.0)
-##  R6              2.6.0      2025-02-12 [1] RSPM (R 4.4.0)
+##  R6              2.6.1      2025-02-15 [1] RSPM (R 4.4.0)
 ##  randomForest    4.7-1.2    2024-09-22 [1] RSPM (R 4.4.0)
 ##  rbibutils       2.3        2024-10-04 [1] RSPM (R 4.4.0)
 ##  RColorBrewer    1.1-3      2022-04-03 [1] RSPM (R 4.4.0)
 ##  Rcpp            1.0.14     2025-01-12 [1] RSPM (R 4.4.0)
-##  Rdpack          2.6.2      2024-11-15 [1] RSPM (R 4.4.0)
+##  Rdpack          2.6.3      2025-03-16 [1] RSPM (R 4.4.0)
 ##  reformulas      0.4.0      2024-11-03 [1] RSPM (R 4.4.0)
 ##  remotes         2.5.0      2024-03-17 [1] RSPM (R 4.4.0)
 ##  reshape         0.8.9      2022-04-12 [1] RSPM (R 4.4.0)
 ##  reshape2      * 1.4.4      2020-04-09 [1] RSPM (R 4.4.0)
 ##  rlang           1.1.5      2025-01-17 [1] RSPM (R 4.4.0)
 ##  rmarkdown       2.29       2024-11-04 [1] RSPM (R 4.4.0)
-##  rpart         * 4.1.23     2023-12-05 [2] CRAN (R 4.4.2)
+##  rpart         * 4.1.24     2025-01-07 [2] CRAN (R 4.4.3)
 ##  sandwich        3.1-1      2024-09-15 [1] RSPM (R 4.4.0)
 ##  sass            0.4.9      2024-03-15 [1] RSPM (R 4.4.0)
 ##  scales        * 1.3.0      2023-11-28 [1] RSPM (R 4.4.0)
 ##  sessioninfo     1.2.3      2025-02-05 [1] RSPM (R 4.4.0)
 ##  shiny           1.10.0     2024-12-14 [1] RSPM (R 4.4.0)
-##  stringi         1.8.4      2024-05-06 [1] RSPM (R 4.4.0)
+##  stringi         1.8.7      2025-03-27 [1] RSPM (R 4.4.0)
 ##  stringr         1.5.1      2023-11-14 [1] RSPM (R 4.4.0)
 ##  strucchange     1.5-4      2024-09-02 [1] RSPM (R 4.4.0)
-##  survival        3.7-0      2024-06-05 [2] CRAN (R 4.4.2)
+##  survival        3.8-3      2024-12-17 [2] CRAN (R 4.4.3)
 ##  TH.data         1.1-3      2025-01-17 [1] RSPM (R 4.4.0)
 ##  tibble          3.2.1      2023-03-20 [1] RSPM (R 4.4.0)
 ##  tidyselect      1.2.1      2024-03-11 [1] RSPM (R 4.4.0)
-##  TriMatch      * 0.9.9      2017-12-06 [1] RSPM (R 4.4.0)
+##  TriMatch      * 1.0.0      2025-04-03 [1] RSPM (R 4.4.0)
 ##  urlchecker      1.0.1      2021-11-30 [1] RSPM (R 4.4.0)
 ##  usethis         3.1.0      2024-11-26 [1] RSPM (R 4.4.0)
 ##  vctrs           0.6.5      2023-12-01 [1] RSPM (R 4.4.0)
 ##  withr           3.0.2      2024-10-28 [1] RSPM (R 4.4.0)
-##  xfun            0.50       2025-01-07 [1] RSPM (R 4.4.0)
-##  xml2            1.3.6      2023-12-04 [1] RSPM (R 4.4.0)
+##  xfun            0.52       2025-04-02 [1] RSPM (R 4.4.0)
+##  xml2            1.3.8      2025-03-14 [1] RSPM (R 4.4.0)
 ##  xtable        * 1.8-4      2019-04-21 [1] RSPM (R 4.4.0)
 ##  yaml            2.3.10     2024-07-26 [1] RSPM (R 4.4.0)
-##  zoo             1.8-12     2023-04-13 [1] RSPM (R 4.4.0)
+##  zoo             1.8-13     2025-02-22 [1] RSPM (R 4.4.0)
 ## 
 ##  [1] /home/runner/work/_temp/Library
-##  [2] /opt/R/4.4.2/lib/R/library
+##  [2] /opt/R/4.4.3/lib/R/library
 ##  * ── Packages attached to the search path.
 ## 
 ## ──────────────────────────────────────────────────────────────────────────────

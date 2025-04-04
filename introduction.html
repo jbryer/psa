@@ -4,18 +4,18 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Chapter 8 Non-Binary Treatments | Applied Propensity Score Analysis with R</title>
+<title>Chapter 9 Introduction | Applied Propensity Score Analysis with R</title>
 <meta name="author" content="Jason Bryer, Ph.D.">
-<meta name="description" content="An introduction to conducting propensity score analysis with R.">
+<meta name="description" content="Consider two treatments, \(Tr_1\) and \(Tr_2\), and a control, \(C\). We estimate propensity scores with three separate logistic regression models where model one predicts \(Tr_1\) with \(C\),...">
 <meta name="generator" content="bookdown 0.42 with bs4_book()">
-<meta property="og:title" content="Chapter 8 Non-Binary Treatments | Applied Propensity Score Analysis with R">
+<meta property="og:title" content="Chapter 9 Introduction | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
-<meta property="og:url" content="https://psa.bryer.org/chapter-non-binary.html">
+<meta property="og:url" content="https://psa.bryer.org/introduction.html">
 <meta property="og:image" content="https://psa.bryer.org/images/cover.png">
-<meta property="og:description" content="An introduction to conducting propensity score analysis with R.">
+<meta property="og:description" content="Consider two treatments, \(Tr_1\) and \(Tr_2\), and a control, \(C\). We estimate propensity scores with three separate logistic regression models where model one predicts \(Tr_1\) with \(C\),...">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Chapter 8 Non-Binary Treatments | Applied Propensity Score Analysis with R">
-<meta name="twitter:description" content="An introduction to conducting propensity score analysis with R.">
+<meta name="twitter:title" content="Chapter 9 Introduction | Applied Propensity Score Analysis with R">
+<meta name="twitter:description" content="Consider two treatments, \(Tr_1\) and \(Tr_2\), and a control, \(C\). We estimate propensity scores with three separate logistic regression models where model one predicts \(Tr_1\) with \(C\),...">
 <meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
@@ -77,8 +77,8 @@
 <li><a class="" href="chapter-sensitivity.html"><span class="header-section-number">5</span> Sensitivity Analysis</a></li>
 <li><a class="" href="chapter-bootstrapping.html"><span class="header-section-number">6</span> Bootstrapping</a></li>
 <li><a class="" href="chapter-missing.html"><span class="header-section-number">7</span> Missing Data</a></li>
-<li><a class="active" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
-<li><a class="" href="introduction.html"><span class="header-section-number">9</span> Introduction</a></li>
+<li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
+<li><a class="active" href="introduction.html"><span class="header-section-number">9</span> Introduction</a></li>
 <li><a class="" href="effects-of-tutoring-on-course-grades.html"><span class="header-section-number">10</span> Effects of Tutoring on Course Grades</a></li>
 <li><a class="" href="effects-of-smoking-on-medical-expenditures.html"><span class="header-section-number">11</span> Effects of Smoking on Medical Expenditures</a></li>
 <li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">12</span> Multilevel PSA</a></li>
@@ -94,17 +94,38 @@
         </div>
       </nav>
 </div>
-  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="chapter-non-binary" class="section level1" number="8">
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="introduction" class="section level1" number="9">
 <h1>
-<span class="header-section-number">8</span> Non-Binary Treatments<a class="anchor" aria-label="anchor" href="#chapter-non-binary"><i class="fas fa-link"></i></a>
+<span class="header-section-number">9</span> Introduction<a class="anchor" aria-label="anchor" href="#introduction"><i class="fas fa-link"></i></a>
 </h1>
+<p>Consider two treatments, <span class="math inline">\(Tr_1\)</span> and <span class="math inline">\(Tr_2\)</span>, and a control, <span class="math inline">\(C\)</span>. We estimate propensity scores with three separate logistic regression models where model one predicts <span class="math inline">\(Tr_1\)</span> with <span class="math inline">\(C\)</span>, model two predicts <span class="math inline">\(Tr_2\)</span> with <span class="math inline">\(C\)</span>, and model three predicts <span class="math inline">\(Tr_1\)</span> with <span class="math inline">\(Tr_2\)</span>. The triangle plot in Figure <a href="effects-of-tutoring-on-course-grades.html#fig:triangleplot">10.1</a> depicts the fitted values (i.e. propensity scores) from the three models on each edge of the triangle. Since each unit has a propensity score in two of the three models, their scores are connected. We can then calculate three distances between propensity scores for each possible matched triplet using the three models. Given those distances, the matched triplets with the smallest standardized distance (i.e. <span class="math inline">\(D_{x,y} = \frac{| PS_{x} - PS_{y} |}{sd(PS)}\)</span>) are retained. Several methods for determining which matched triplets to retain are provided with the possibility of the researcher to implement their own. The black lines in Figure <a href="effects-of-tutoring-on-course-grades.html#fig:triangleplot">10.1</a> represent one matched triplet (i.e. one row in the returned data frame).</p>
+<p>Propensity score analysis of two groups typically use dependent sample <em>t</em>-tests <span class="citation">(Austin 2010)</span>. The analogue for matched triplets include repeated measures ANOVA and the Freidman Rank Sum Test. The <code>TriMatch</code> package provides utility functions for conducting and visualizing these statistical tests. Moreover, a set of functions extending <code>PSAgraphics</code> <span class="citation">(J. E. Helmreich and Pruzek 2009)</span> for matched triplets to check covariate balance are provided.</p>
+<div id="the-trimatch-algorithm" class="section level2" number="9.1">
+<h2>
+<span class="header-section-number">9.1</span> The <code>TriMatch</code> Algorithm<a class="anchor" aria-label="anchor" href="#the-trimatch-algorithm"><i class="fas fa-link"></i></a>
+</h2>
+<p>The <code>trips</code> and <code>trimatch</code> functions are used to estimate the propensity scores and find the best matched triplets, respectively.</p>
+<p>A. Propensity scores are estimated for three models using logistic regression.
+<span class="math display">\[{ PS }_{ 1 }=e({ x }_{ { T }_{ 1 }C })=Pr(z=1|{ X }_{ { T }_{ 1 }C })\]</span>
+<span class="math display">\[{ PS }_{ 2 }=e({ x }_{ { T }_{ 2 }C })=Pr(z=1|{ X}_{ { T }_{ 2 }C })\]</span>
+<span class="math display">\[{ PS }_{ 3 }=e({ x }_{ { T }_{ 2 }{ T }_{ 1 } })=Pr(z=1|{ X }_{ { T }_{ 2 }{ T }_{ 1 } })\]</span></p>
+<p>B. Match order is determined. The default is to start with the larger of the two treatments, followed the second treatment, and lastly the control group. However, the match order is configurable vis-a-vis the <code>match.order</code> parameter.</p>
+<p>C. Three distance matrices are calculated, <span class="math inline">\(D_1\)</span>, <span class="math inline">\(D_2\)</span>, and <span class="math inline">\(D_3\)</span> corresponding to the propensity scores estimated in step <a href="#item:ps"><strong>??</strong></a>. That is, <span class="math inline">\(D_1\)</span> is a <span class="math inline">\(n_{Tr_1}\)</span> x <span class="math inline">\(n_{Tr_2}\)</span> matrix where <span class="math inline">\(D_1[x,y]\)</span> is the standardized distance between <span class="math inline">\(PS_1[x]\)</span> and <span class="math inline">\(PS_1[y]\)</span>.</p>
+<p>D. Distances greater than the caliper, 0.25 by default as recommended by <span class="citation">(Rosenbaum and Rubin 1985)</span>, are eliminated. The caliper is specified in standard units so 0.25 corresponds to one-quarter of one standard deviation.</p>
+<p>E. If partial exact matching is desired, three logical matrices are created with the same dimensions as the distance matrices calculated in step <a href="#item:distance"><strong>??</strong></a>. That is, position <span class="math inline">\(x,y\)</span> in the matrix is true if the covariate(s) to match exactly on between unit <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> match exactly. Distances where exact there are not exact matches are eliminated.</p>
+<p>F. For the remaining units, all possible combinations of matched triplets are formed and a total standardized distance is calculated.</p>
+<p>The result of the above procedure is the equivalent of caliper matching in the two group case. That is, all possible matches within a specified caliper are retained. This can be achieved by specifying <code>method = NULL</code> parameter to the <code>trimatch</code> function. Two additional methods are provided to reduce the number of matched triplets. The <code>maximumTreat</code> method attempts to reduce the number of duplicate treatment units. This is analogous to matching without replacement in the two group case. However, treatment 1 units may be matched to two different treatment 2 units if that treatment 2 unit would otherwise not be matched. The <code>OneToN</code> method will allow the user to specify exactly how many times each treatment 1 and treatment 2 may be reused.</p>
+</div>
 </div>
   <div class="chapter-nav">
-<div class="prev"><a href="chapter-missing.html"><span class="header-section-number">7</span> Missing Data</a></div>
-<div class="next"><a href="introduction.html"><span class="header-section-number">9</span> Introduction</a></div>
+<div class="prev"><a href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></div>
+<div class="next"><a href="effects-of-tutoring-on-course-grades.html"><span class="header-section-number">10</span> Effects of Tutoring on Course Grades</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>In this chapter</h2>
-      <ul class="nav navbar-nav"><li><a class="nav-link" href="#chapter-non-binary"><span class="header-section-number">8</span> Non-Binary Treatments</a></li></ul>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#introduction"><span class="header-section-number">9</span> Introduction</a></li>
+<li><a class="nav-link" href="#the-trimatch-algorithm"><span class="header-section-number">9.1</span> The TriMatch Algorithm</a></li>
+</ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">

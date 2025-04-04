@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 11 Effects of Smoking on Medical Expenditures | Applied Propensity Score Analysis with R</title>
+<meta name="author" content="Jason Bryer, Ph.D.">
+<meta name="description" content="In this example5 we will utilize the National Medical Expenditure Study (National Center For Health Services Research 1987) to estimate the effects of smoking on medical expenditures. This dataset...">
+<meta name="generator" content="bookdown 0.42 with bs4_book()">
+<meta property="og:title" content="Chapter 11 Effects of Smoking on Medical Expenditures | Applied Propensity Score Analysis with R">
+<meta property="og:type" content="book">
+<meta property="og:url" content="https://psa.bryer.org/effects-of-smoking-on-medical-expenditures.html">
+<meta property="og:image" content="https://psa.bryer.org/images/cover.png">
+<meta property="og:description" content="In this example5 we will utilize the National Medical Expenditure Study (National Center For Health Services Research 1987) to estimate the effects of smoking on medical expenditures. This dataset...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 11 Effects of Smoking on Medical Expenditures | Applied Propensity Score Analysis with R">
+<meta name="twitter:description" content="In this example5 we will utilize the National Medical Expenditure Study (National Center For Health Services Research 1987) to estimate the effects of smoking on medical expenditures. This dataset...">
+<meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.9.0/transition.js"></script><script src="libs/bs3compat-0.9.0/tabs.js"></script><script src="libs/bs3compat-0.9.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Applied Propensity Score Analysis with R</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Preface</a></li>
+<li><a class="" href="chapter-introduction.html"><span class="header-section-number">1</span> Introduction</a></li>
+<li><a class="" href="chapter-stratification.html"><span class="header-section-number">2</span> Stratification</a></li>
+<li><a class="" href="chapter-matching.html"><span class="header-section-number">3</span> Matching</a></li>
+<li><a class="" href="chapter-weighting.html"><span class="header-section-number">4</span> Weighting</a></li>
+<li><a class="" href="chapter-sensitivity.html"><span class="header-section-number">5</span> Sensitivity Analysis</a></li>
+<li><a class="" href="chapter-bootstrapping.html"><span class="header-section-number">6</span> Bootstrapping</a></li>
+<li><a class="" href="chapter-missing.html"><span class="header-section-number">7</span> Missing Data</a></li>
+<li><a class="" href="chapter-non-binary.html"><span class="header-section-number">8</span> Non-Binary Treatments</a></li>
+<li><a class="" href="introduction.html"><span class="header-section-number">9</span> Introduction</a></li>
+<li><a class="" href="effects-of-tutoring-on-course-grades.html"><span class="header-section-number">10</span> Effects of Tutoring on Course Grades</a></li>
+<li><a class="active" href="effects-of-smoking-on-medical-expenditures.html"><span class="header-section-number">11</span> Effects of Smoking on Medical Expenditures</a></li>
+<li><a class="" href="chapter-multilevelpsa.html"><span class="header-section-number">12</span> Multilevel PSA</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-shiny.html"><span class="header-section-number">A</span> Shiny Applications</a></li>
+<li><a class="" href="appendix-psranges.html"><span class="header-section-number">B</span> Propensity Score Ranges</a></li>
+<li><a class="" href="appendix-psmodels.html"><span class="header-section-number">C</span> Methods for Estimating Propensity Scores</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/jbryer/psa">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="effects-of-smoking-on-medical-expenditures" class="section level1" number="11">
+<h1>
+<span class="header-section-number">11</span> Effects of Smoking on Medical Expenditures<a class="anchor" aria-label="anchor" href="#effects-of-smoking-on-medical-expenditures"><i class="fas fa-link"></i></a>
+</h1>
+<p>In this example<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;This example is included as a demo in the package. Type &lt;code&gt;demo(nmes)&lt;/code&gt; in R to start the demo.&lt;/p&gt;"><sup>5</sup></a> we will utilize the National Medical Expenditure Study <span class="citation">(National Center For Health Services Research 1987)</span> to estimate the effects of smoking on medical expenditures. This dataset was first used by <span class="citation">(Johnson et al. 2003)</span> to estimate the effects of smoking on diseases, and then the effect of diseases on medical expenditures. <span class="citation">(Imai and Dyk 2004b)</span> developed an a method to generalize the propensity score, called a p-score, to directly estimate the effects of smoking on medical expenditures. More specifically, they defined a quantitative treatment variable, pack year, defined as:</p>
+<p><span class="math display">\[packyear = \frac{\text{number of cigarettes per day}}{20} \times \text{number of years smoked}\]</span></p>
+<p>Our approach is designed to match three separate groups and not a continuous treatment. We will address two research questions: (1) What are the effects of smoking status (i.e. never smoked, former smoker, and current smoker) on medical expenditures? and (2) What are the effects of lifetime smoking on medical expenditures? Figure <a href="effects-of-smoking-on-medical-expenditures.html#fig:packyearsAndTotalExp">11.1</a> represent the relationship between these two different treatments<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Note that the control group in both instances are people who never smoked and is omitted from this figure.&lt;/p&gt;"><sup>6</sup></a>. This figure reveals several, perhaps counterintuitive, facts. First, the unadjusted total medical expenditures for former smokers is higher than current smokers. Secondly, the distribution of <span class="math inline">\(log(packyear)\)</span> overlap substantial between former and current smokers. To dichotomize the pack year smoking variable, we will split on the median of pack year, labeled moderate smokers (i.e. <span class="math inline">\(packyear \le median(packyear)\)</span>) and heavy smokers (i.e. <span class="math inline">\(packyear &gt; median(packyear)\)</span>).</p>
+<div class="sourceCode" id="cb162"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">)</span></span>
+<span><span class="va">nmes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">nmes</span>, select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">packyears</span>, <span class="va">smoke</span>, <span class="va">LASTAGE</span>, <span class="va">MALE</span>, <span class="va">RACE3</span>, <span class="va">beltuse</span>, <span class="va">educate</span>, <span class="va">marital</span>, <span class="va">SREGION</span>, <span class="va">POVSTALB</span>, <span class="va">HSQACCWT</span>, <span class="va">TOTALEXP</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Both <span class="citation">(Johnson et al. 2003)</span> and <span class="citation">(Imai and Dyk 2004b)</span> conducted a complete-case analysis and Johnson et al. reported that multiple imputation did not substantially affect their results.</p>
+<div class="sourceCode" id="cb163"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nmes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">)</span></span></code></pre></div>
+<p>Since many participants had zero medical expenditures, we will add one to the total expenditures before log transforming the variable. We will then calculate the median of pack year and create a new treatment variable, <code>smoke2</code>, for moderate and heavy smokers with non-smokers.</p>
+<div class="sourceCode" id="cb164"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nmes</span><span class="op">$</span><span class="va">smoke</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">$</span><span class="va">smoke</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>, labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Never"</span>,<span class="st">"Smoker"</span>,<span class="st">"Former"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">nmes</span><span class="op">$</span><span class="va">LogTotalExp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">$</span><span class="va">TOTALEXP</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">medPY</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html">median</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">[</span><span class="va">nmes</span><span class="op">$</span><span class="va">smoke</span> <span class="op">!=</span> <span class="st">"Never"</span>,<span class="op">]</span><span class="op">$</span><span class="va">packyears</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code>## 17.00</code></pre>
+<div class="sourceCode" id="cb166"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">$</span><span class="va">smoke</span>, <span class="va">nmes</span><span class="op">$</span><span class="va">packyears</span> <span class="op">&gt;</span> <span class="va">medPY</span><span class="op">)</span></span></code></pre></div>
+<pre><code>##         
+##          FALSE TRUE
+##   Never   9802    0
+##   Smoker  2571 2901
+##   Former  2209 1869</code></pre>
+<div class="sourceCode" id="cb168"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nmes</span><span class="op">$</span><span class="va">smoke2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">$</span><span class="va">smoke</span> <span class="op">==</span> <span class="st">"Never"</span>, <span class="st">"Never"</span>, </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">$</span><span class="va">packyears</span> <span class="op">&gt;</span> <span class="fl">17</span>, <span class="st">"Heavy"</span>, <span class="st">"Moderate"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">$</span><span class="va">smoke</span>, <span class="va">nmes</span><span class="op">$</span><span class="va">smoke2</span>, useNA<span class="op">=</span><span class="st">"ifany"</span><span class="op">)</span></span></code></pre></div>
+<pre><code>##         
+##          Heavy Moderate Never
+##   Never      0        0  9802
+##   Smoker  2901     2571     0
+##   Former  1869     2209     0</code></pre>
+<div class="sourceCode" id="cb170"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">[</span><span class="va">nmes</span><span class="op">$</span><span class="va">smoke</span> <span class="op">!=</span> <span class="st">"Never"</span>,<span class="op">]</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">packyears</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span>, color<span class="op">=</span><span class="va">smoke</span>, fill<span class="op">=</span><span class="va">smoke</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span>alpha<span class="op">=</span><span class="fl">.1</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"none"</span>, plot.margin<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"cm"</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Density"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">[</span><span class="va">nmes</span><span class="op">$</span><span class="va">smoke</span> <span class="op">!=</span> <span class="st">"Never"</span>,<span class="op">]</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">packyears</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span>, y<span class="op">=</span><span class="va">LogTotalExp</span>, color<span class="op">=</span><span class="va">smoke</span>, fill<span class="op">=</span><span class="va">smoke</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>alpha<span class="op">=</span><span class="fl">.2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span>method<span class="op">=</span><span class="st">"loess"</span>, formula <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">x</span><span class="op">)</span> <span class="op">+</span></span>
+<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_color_hue</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_hue.html">scale_fill_hue</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
+<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">.9</span>,<span class="fl">1</span><span class="op">)</span>, plot.margin<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"cm"</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>        <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"log(Pack Year)"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"log(Total Expenditures)"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:packyearsAndTotalExp"></span>
+<img src="08-TriMatch_files/figure-html/packyearsAndTotalExp-1.png" alt="Relationship Between Pack Year and Total Expenditures by Current Smoking Status" width="50%"><img src="08-TriMatch_files/figure-html/packyearsAndTotalExp-2.png" alt="Relationship Between Pack Year and Total Expenditures by Current Smoking Status" width="50%"><p class="caption">
+Figure 11.1: Relationship Between Pack Year and Total Expenditures by Current Smoking Status
+</p>
+</div>
+<p>Imai and van Dyk observed that there appeared to be a relationship between age and medical expenditures. We will create a new categorical age variable using quintiles to use for partial exact matching. This serves two purposes, first it ensures balance on this critical covariate (note that we will also exactly match on gender and ethnicity) and two, decrease the search space for matched triplets therefore increasing the efficiency of the matching algorithm. The possible disadvantage of exact matching is that too many treated units will not be matched. We will examine unmatched treatment units below.</p>
+<div class="sourceCode" id="cb171"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nmes</span><span class="op">$</span><span class="va">LastAge5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">$</span><span class="va">LASTAGE</span>, </span>
+<span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">$</span><span class="va">LASTAGE</span>, probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>include.lowest<span class="op">=</span><span class="cn">TRUE</span>, orderd_result<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Define our model to estimate the propensity scores.</p>
+<div class="sourceCode" id="cb172"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">formu</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="va">LASTAGE</span> <span class="op">+</span> <span class="va">MALE</span> <span class="op">+</span> <span class="va">RACE3</span> <span class="op">+</span> <span class="va">beltuse</span> <span class="op">+</span> <span class="va">educate</span> <span class="op">+</span> <span class="va">marital</span> <span class="op">+</span> </span>
+<span><span class="va">SREGION</span> <span class="op">+</span> <span class="va">POVSTALB</span></span></code></pre></div>
+<p>Estimate propensity scores for our two different treatments. Figure <a href="effects-of-smoking-on-medical-expenditures.html#fig:nmestriangleplot">11.2</a> provides triangle plots for both models.</p>
+<div class="sourceCode" id="cb173"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tpsa.smoke</span> <span class="op">&lt;-</span> <span class="fu">trips</span><span class="op">(</span><span class="va">nmes</span>, <span class="va">nmes</span><span class="op">$</span><span class="va">smoke</span>, <span class="va">formu</span><span class="op">)</span></span>
+<span><span class="va">tpsa.packyears</span> <span class="op">&lt;-</span> <span class="fu">trips</span><span class="op">(</span><span class="va">nmes</span>, <span class="va">nmes</span><span class="op">$</span><span class="va">smoke2</span>, <span class="va">formu</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb174"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p.smoke</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">tpsa.smoke</span>, sample<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">.05</span><span class="op">)</span>, edge.alpha<span class="op">=</span><span class="fl">.1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Treatment Variable: Current Smoking Status"</span><span class="op">)</span></span>
+<span><span class="va">p.packyears</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">tpsa.packyears</span>, sample<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">.05</span><span class="op">)</span>, edge.alpha<span class="op">=</span><span class="fl">.1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Treatment Variable: Lifetime Smoking Frequency"</span><span class="op">)</span></span>
+<span><span class="va">p.smoke</span></span>
+<span><span class="va">p.packyears</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:nmestriangleplot"></span>
+<img src="08-TriMatch_files/figure-html/nmestriangleplot-1.png" alt="Triangle Plots for NMES" width="50%"><img src="08-TriMatch_files/figure-html/nmestriangleplot-2.png" alt="Triangle Plots for NMES" width="50%"><p class="caption">
+Figure 11.2: Triangle Plots for NMES
+</p>
+</div>
+<p>Create two sets of matched triplets for our two treatments.</p>
+<div class="sourceCode" id="cb175"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tmatch.smoke</span> <span class="op">&lt;-</span> <span class="fu">trimatch</span><span class="op">(</span><span class="va">tpsa.smoke</span>, </span>
+<span>exact<span class="op">=</span><span class="va">nmes</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LastAge5"</span>,<span class="st">"MALE"</span>,<span class="st">"RACE3"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">tmatch.packyears</span> <span class="op">&lt;-</span> <span class="fu">trimatch</span><span class="op">(</span><span class="va">tpsa.packyears</span>, </span>
+<span>exact<span class="op">=</span><span class="va">nmes</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LastAge5"</span>,<span class="st">"MALE"</span>,<span class="st">"RACE3"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p>The following summary of the unmatched rows show that more than 96% of the treatment units were matched in both models.</p>
+<div class="sourceCode" id="cb176"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu">unmatched</span><span class="op">(</span><span class="va">tmatch.smoke</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code>## 7048 (36.4%) of 19352 total data points were not matched.
+## Unmatched by treatment:
+##        Never       Smoker       Former 
+## 6804 (69.4%)   142 (2.6%)   102 (2.5%)</code></pre>
+<div class="sourceCode" id="cb178"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu">unmatched</span><span class="op">(</span><span class="va">tmatch.packyears</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code>## 7532 (38.9%) of 19352 total data points were not matched.
+## Unmatched by treatment:
+##        Heavy     Moderate        Never 
+##  181 (3.79%)  323 (6.76%) 7028 (71.7%)</code></pre>
+<p>Figure <a href="effects-of-smoking-on-medical-expenditures.html#fig:nmesbalance">11.3</a> is a multiple covariate balance plot for the two treatments. It shows that the absolute effect sizes after adjustment is better for all covariates. The demo included in the <code>TriMatch</code> package provides functions to create individual balance plots for each covaraite.</p>
+<div class="sourceCode" id="cb180"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p.smoke</span> <span class="op">&lt;-</span> <span class="fu">multibalance.plot</span><span class="op">(</span><span class="va">tpsa.smoke</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Treatment Variable: Current Smoking Status"</span><span class="op">)</span></span>
+<span><span class="va">p.packyears</span> <span class="op">&lt;-</span> <span class="fu">multibalance.plot</span><span class="op">(</span><span class="va">tpsa.packyears</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Treatment Variable: Lifetime Smoking Frequency"</span><span class="op">)</span></span>
+<span><span class="va">p.smoke</span></span>
+<span><span class="va">p.packyears</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:nmesbalance"></span>
+<img src="08-TriMatch_files/figure-html/nmesbalance-1.png" alt="Multiple Covariate Balance Plots for NMES" width="50%"><img src="08-TriMatch_files/figure-html/nmesbalance-2.png" alt="Multiple Covariate Balance Plots for NMES" width="50%"><p class="caption">
+Figure 11.3: Multiple Covariate Balance Plots for NMES
+</p>
+</div>
+<div id="phase-ii-estimating-effects-of-smoking-on-medical-expenditures" class="section level2" number="11.1">
+<h2>
+<span class="header-section-number">11.1</span> Phase II: Estimating Effects of Smoking on Medical Expenditures<a class="anchor" aria-label="anchor" href="#phase-ii-estimating-effects-of-smoking-on-medical-expenditures"><i class="fas fa-link"></i></a>
+</h2>
+<p>For both treatment regimes we used the <code>maximumTreat</code> method for finding matched triplets that will retain each treatment unit once with the possibility of using treatment units twice in cases where a treatment unit would not otherwise be matched. The Friedman Rank Sum Test and repeated measures ANOVA indicate there a statistically significant difference in both treatment regimes. Figure <a href="effects-of-smoking-on-medical-expenditures.html#fig:nmesboxplots">11.4</a> provides box plots of the differences for the two treatment regimes. For the current smoking status treatment, the results indicate that smoker’s actually spend less than former and non-smokers. However, as <span class="citation">(Imai and Dyk 2004b)</span> explain, the sample of smokers includes only survivors and should be considered when interpreting these results.</p>
+<p>Imai and van Dyk’s analysis used pack year as treatment indicator. Our dichotomizing of pack year into moderate and heavy smokers more closely adheres to their approach. The results with this treatment regime indicate that smokers, both moderate and heavy, have higher medical expenditures than non-smokers. However, there is no statistically significant difference between heavy and moderate smokers in medical expenditures.</p>
+<div class="sourceCode" id="cb181"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">boxdiff.plot</span><span class="op">(</span><span class="va">tmatch.smoke</span>, <span class="va">nmes</span><span class="op">$</span><span class="va">LogTotalExp</span>, ordering<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Smoker"</span>,<span class="st">"Former"</span>,<span class="st">"Never"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Treatment Variable: Current Smoking Status"</span><span class="op">)</span></span>
+<span><span class="fu">boxdiff.plot</span><span class="op">(</span><span class="va">tmatch.packyears</span>, <span class="va">nmes</span><span class="op">$</span><span class="va">LogTotalExp</span>, ordering<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Heavy"</span>,<span class="st">"Moderate"</span>,<span class="st">"Never"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Treatment Variable: Lifetime Smoking Frequency"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:nmesboxplots"></span>
+<img src="08-TriMatch_files/figure-html/nmesboxplots-1.png" alt="Boxplot of Differences for NMES" width="50%"><img src="08-TriMatch_files/figure-html/nmesboxplots-2.png" alt="Boxplot of Differences for NMES" width="50%"><p class="caption">
+Figure 11.4: Boxplot of Differences for NMES
+</p>
+</div>
+<div class="sourceCode" id="cb182"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sum.smoke</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">tmatch.smoke</span>, <span class="va">nmes</span><span class="op">$</span><span class="va">LogTotalExp</span>, </span>
+<span>ordering<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Smoker"</span>,<span class="st">"Former"</span>,<span class="st">"Never"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sum.packyears</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">tmatch.packyears</span>, <span class="va">nmes</span><span class="op">$</span><span class="va">LogTotalExp</span>, </span>
+<span>ordering<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Heavy"</span>,<span class="st">"Moderate"</span>,<span class="st">"Never"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">"Current Smoking Status"</span> <span class="op">=</span> <span class="va">sum.smoke</span>, <span class="st">"Smoking Frequency"</span> <span class="op">=</span> <span class="va">sum.packyears</span><span class="op">)</span></span></code></pre></div>
+<pre><code>##                   Method Friedman.chi2   Friedman.p     rmANOVA.F    rmANOVA.p
+## 1 Current Smoking Status      88.92973 4.888274e-20 ***  74.75344 4.985672e-33
+## 2      Smoking Frequency      33.73246 4.732484e-08 ***  13.72351 1.110186e-06
+##      
+## 1 ***
+## 2 ***</code></pre>
+<div class="sourceCode" id="cb184"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sum.smoke</span><span class="op">$</span><span class="va">t.tests</span></span></code></pre></div>
+<pre><code>##              Treatments          t   df      p.value sig  mean.diff     ci.min
+## 1 Smoker.out-Former.out -11.606558 7407 7.053664e-31 *** -0.4777939 -0.5584907
+## 2  Smoker.out-Never.out  -2.644559 7407 8.196991e-03  ** -0.1114564 -0.1940737
+## 3  Former.out-Never.out   9.321687 7407 1.483073e-20 ***  0.3663375  0.2892994
+##        ci.max
+## 1 -0.39709714
+## 2 -0.02883914
+## 3  0.44337570</code></pre>
+<div class="sourceCode" id="cb186"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sum.packyears</span><span class="op">$</span><span class="va">t.test</span></span></code></pre></div>
+<pre><code>##               Treatments          t   df      p.value sig   mean.diff
+## 1 Heavy.out-Moderate.out -0.3063659 7507 7.593345e-01     -0.01251173
+## 2    Heavy.out-Never.out  4.3264245 7507 1.535124e-05 ***  0.17925216
+## 3 Moderate.out-Never.out  4.7239231 7507 2.355422e-06 ***  0.19176389
+##        ci.min     ci.max
+## 1 -0.09256793 0.06754447
+## 2  0.09803395 0.26047036
+## 3  0.11218788 0.27133989</code></pre>
+
+</div>
+</div>
+
+  <div class="chapter-nav">
+<div class="prev"><a href="effects-of-tutoring-on-course-grades.html"><span class="header-section-number">10</span> Effects of Tutoring on Course Grades</a></div>
+<div class="next"><a href="chapter-multilevelpsa.html"><span class="header-section-number">12</span> Multilevel PSA</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>In this chapter</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#effects-of-smoking-on-medical-expenditures"><span class="header-section-number">11</span> Effects of Smoking on Medical Expenditures</a></li>
+<li><a class="nav-link" href="#phase-ii-estimating-effects-of-smoking-on-medical-expenditures"><span class="header-section-number">11.1</span> Phase II: Estimating Effects of Smoking on Medical Expenditures</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/jbryer/psa/blob/master/book/08-TriMatch.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/jbryer/psa/edit/master/book/08-TriMatch.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a href="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml"><img src="https://github.com/jbryer/psa/actions/workflows/bookdown.yaml/badge.svg" alt="Bookdown Status"></a></li>
+          <li><a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" border="0" alt="Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2025-04-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>
