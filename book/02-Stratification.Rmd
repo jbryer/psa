@@ -16,7 +16,7 @@ editor_options:
 Propensity score stratification leverages propensity scores so we can define strata (or groups) that roughly equivalent on all the observed covariates. Although it is reasonable to start with chapter \@ref(chapter-matching) on matching, stratification is an important method and even if you prefer to use a matching method, stratification will most often be used in order to evaluate balance. 
 
 
-```{r, echo=FALS, include=FALSE}
+```{r, echo=TRUE, include=FALSE}
 # Create a simulated dataset
 set.seed(2112) 
 n <- 1000

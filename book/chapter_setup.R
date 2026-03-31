@@ -28,7 +28,7 @@ knitr::opts_chunk$set(fig.width = 12,
 					  message = FALSE)
 
 # Set ggplot2 theme
-theme_update(panel.background = element_rect(size=1, color='grey70', fill=NA) )
+theme_update(panel.background = element_rect(linewidth=1, color='grey70', fill=NA) )
 
 palette2 <- c('#fc8d62', '#66c2a5')
 palette3 <- c('#fc8d62', '#66c2a5', '#8da0cb')
