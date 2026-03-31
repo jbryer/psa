@@ -43,7 +43,8 @@ jobs:
       - name: Build site
         run: |
           # install.packages('devtools')
-          devtools::install(upgrade = 'never', build_vignettes = FALSE, dependencies = 'Enhances')
+          # devtools::install(upgrade = 'never', build_vignettes = FALSE, dependencies = 'Enhances')
+          devtools::install(upgrade = 'never')
           setwd('book')
           bookdown::render_book()
         shell: Rscript {0}
