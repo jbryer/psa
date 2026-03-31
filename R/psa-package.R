@@ -6,7 +6,6 @@ utils::globalVariables(c('grid.layout','grid.newpage','pushViewport','viewport',
 #' Applied Propensity Score Analysis with R
 #' 
 #' @name psa-package
-#' @docType package
 #' @title Applied Propensity Score Analysis with R
 #' @author \email{jason@@bryer.org}
 #' @keywords package psa matching propensity score analysis
@@ -22,7 +21,7 @@ utils::globalVariables(c('grid.layout','grid.newpage','pushViewport','viewport',
 #' @importFrom cowplot plot_grid
 #' @importFrom stats binomial density fitted fivenum glm median model.matrix quantile sd t.test
 #' @import mice
-NA
+"_PACKAGE"
 
 #' Student data file.
 #' 

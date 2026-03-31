@@ -2,10 +2,19 @@
 % Please edit documentation in R/psa-package.R
 \docType{package}
 \name{psa-package}
+\alias{psa}
 \alias{psa-package}
 \title{Applied Propensity Score Analysis with R}
 \description{
 Applied Propensity Score Analysis with R
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{http://github.com/jbryer/psa}
+  \item Report bugs at \url{https://github.com/jbryer/psa/issues}
+}
+
 }
 \author{
 \email{jason@bryer.org}

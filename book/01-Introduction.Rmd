@@ -244,7 +244,7 @@ X <- mvtnorm::rmvnorm(n,
 					  sigma = matrix(c(2, 1, 1,
 					  				   1, 1, 1,
 					  				   1, 1, 1), ncol = 3) )
-dat <- tibble(
+dat <- tibble::tibble(
 	x1 = X[, 1],
 	x2 = X[, 2],
 	x3 = X[, 3] > 0,
@@ -255,7 +255,7 @@ dat <- tibble(
 t_result <- t.test(outcome ~ treatment, data = dat)
 ```
 
-Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous (treatment or control). Very often logistic regression is used, but with the advances in predictive models we have an ever increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis we will use a simulated dataset with three pre-treatment covariates, `x1` and `x2` which are continuous and `x3` which is categorical, a treatment indicator, and an outcome variable with a treatment effect of `r treatment_effect`. Figure \@ref(fig:sim-scatter) is a scatter plot of the simulated data.^[This simulated dataset is adapted from a [blog post](https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html) by [Lucy D’Agostino McGowan](https://www.lucymcgowan.com)]
+Propensity scores are the conditional probability of being in the treatment given a set of observed covariates In practice we use statistical models where the dependent variable is dichotomous (treatment or control). Very often logistic regression is used, but with the advances in predictive models we have an ever increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis we will use a simulated dataset with three pre-treatment covariates, `x1` and `x2` which are continuous and `x3` which is categorical, a treatment indicator, and an outcome variable with a treatment effect of `r treatment_effect`. Figure \@ref(fig:sim-scatter) is a scatter plot of the simulated data.^[This simulated dataset is adapted from a [blog post](https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html) by [Lucy D’Agostino McGowan](https://www.lucymcgowan.com)]
 
 ```{r sim-scatter, echo=FALSE, fig.cap = 'Scatterplot of simulated datatset', fig.height=5}
 ggplot(dat, aes(x = x1, y = x2, shape = x3, color = factor(treatment))) + 
