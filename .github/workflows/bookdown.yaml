@@ -31,7 +31,7 @@ jobs:
 
       - name: Install R Packages
         run: |
-          install.packages(c('cowplot', 'dplyr', 'ggplot2', 'grid', 'Matching', 'MatchIt', 'mice', 'plyr', 'psych', 'remotes', 'reshape2', 'shiny'))
+          install.packages(c('ez', 'cowplot', 'dplyr', 'ggplot2', 'grid', 'Matching', 'MatchIt', 'mice', 'plyr', 'psych', 'remotes', 'reshape2', 'shiny'))
           install.packages(c('bookdown', 'devtools', 'granova', 'GGally', 'multilevelPSA', 'PSAgraphics', 'rgenoud', 'scholar', 'rbounds', 'tree', 'TriMatch', 'badger', 'BART', 'randomForest', 'stargazer', 'gdata'))
           remotes::install_github('briandk/granovaGG')
           remotes::install_github('jbryer/PSAboot')
@@ -42,7 +42,7 @@ jobs:
 
       - name: Build site
         run: |
-          # install.packages('devtools')
+          install.packages('devtools')
           devtools::install(upgrade = 'never', build_vignettes = FALSE, dependencies = 'Enhances')
           setwd('book')
           bookdown::render_book()
