@@ -5,6 +5,7 @@ source('data-raw/psa_citations.R') # Build the psa_citations data file
 
 usethis::use_tidy_description()
 devtools::document()
+devtools::install()
 devtools::install(upgrade = 'never')
 devtools::install(upgrade = 'never', build_vignettes = TRUE)
 devtools::build()

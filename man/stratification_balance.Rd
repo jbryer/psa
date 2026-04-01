@@ -57,21 +57,25 @@ X <- mvtnorm::rmvnorm(n,
  					 sigma = matrix(c(2, 1, 1,
  					   				  1, 1, 1,
  					   				  1, 1, 1), ncol = 3) )
-dat <- tibble::tibble(
+thedata <- data.frame(
 	 x1 = X[, 1],
 	 x2 = X[, 2],
-	 x3 = X[, 3] > 0,
-	 treatment = as.numeric(- 0.5 + 0.25 * x1 + 0.75 * x2 + 0.05 * x3 + rnorm(n, 0, 1) > 0),
-	 outcome = treatment_effect * treatment + rnorm(n, 0, 1)
+	 x3 = X[, 3] > 0
 )
+thedata$treatment = as.numeric(- 0.5 + 
+                               0.25 * thedata$x1 + 
+                               0.75 * thedata$x2 + 
+                               0.05 * thedata$x3 + 
+                               rnorm(n, 0, 1) > 0)
+thedata$outcome = treatment_effect * thedata$treatment + rnorm(n, 0, 1)
 
 # Estimate the propensity scores
-lr_out <- glm(treatment ~ x1 + x2 + x3, data = dat, family = binomial(link = 'logit'))
+lr_out <- glm(treatment ~ x1 + x2 + x3, data = thedata, family = binomial(link = 'logit'))
 
 diff_out <- stratification_balance(
-	covariates = dat[,1:3],
-	treatment = dat$treatment,
-	ps = fitted(lr_out)
+	   covariates = thedata[,1:3],
+	   treatment = thedata$treatment,
+	   ps = fitted(lr_out)
 )
 
 # Note that any place where the mean_difference is NA indicates that one of the groups
@@ -80,10 +84,10 @@ summary(diff_out)
 
 cochran_bias_reduction <-  c(.64, .79, .86, .90)
 plot(diff_out) +
- 	geom_hline(yintercept = 1 - cochran_bias_reduction, linetype = 2) +
- 	annotate(geom = 'text', label = paste0(100 * cochran_bias_reduction, '\%'), 
- 			 x = 1, y = 1 - cochran_bias_reduction,
- 			 vjust = -0.2, hjust = -0.1, size = 3)
+ 	ggplot2::geom_hline(yintercept = 1 - cochran_bias_reduction, linetype = 2) +
+ 	ggplot2::annotate(geom = 'text', label = paste0(100 * cochran_bias_reduction, '\%'), 
+ 			          x = 1, y = 1 - cochran_bias_reduction,
+ 			          vjust = -0.2, hjust = -0.1, size = 3)
 
 }
 \references{
