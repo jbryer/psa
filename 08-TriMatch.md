@@ -77,7 +77,7 @@ Figure \@ref(fig:triangleplot) is a triangle plot that depicts the propensity sc
 plot(tutoring.tpsa)
 ```
 
-<img src="08-TriMatch_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="08-TriMatch_files/figure-html/unnamed-chunk-4-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 The default for `trimatch` is to use the `maximumTreat` method retaining each treatment unit once with treatment one units matched more than once only if the corresponding treatment two unit would not be matched otherwise.
 

@@ -175,7 +175,7 @@ Phase one of propensity score analysis is a cyclical process where propensity sc
 
 
 
-Propensity scores are the conditional probability of being in the treatment given a set of observed covaraites. In practice we use statistical models where the dependent variable is dichotomous (treatment or control). Very often logistic regression is used, but with the advances in predictive models we have an ever increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis we will use a simulated dataset with three pre-treatment covariates, `x1` and `x2` which are continuous and `x3` which is categorical, a treatment indicator, and an outcome variable with a treatment effect of 1.5. Figure \@ref(fig:sim-scatter) is a scatter plot of the simulated data.^[This simulated dataset is adapted from a [blog post](https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html) by [Lucy D’Agostino McGowan](https://www.lucymcgowan.com)]
+Propensity scores are the conditional probability of being in the treatment given a set of observed covariates In practice we use statistical models where the dependent variable is dichotomous (treatment or control). Very often logistic regression is used, but with the advances in predictive models we have an ever increasing number of model choices including classification trees, Bayesian models, ensemble such as random forests, and many more. To demonstrate the main features of propensity score analysis we will use a simulated dataset with three pre-treatment covariates, `x1` and `x2` which are continuous and `x3` which is categorical, a treatment indicator, and an outcome variable with a treatment effect of 1.5. Figure \@ref(fig:sim-scatter) is a scatter plot of the simulated data.^[This simulated dataset is adapted from a [blog post](https://livefreeordichotomize.com/posts/2019-01-17-understanding-propensity-score-weighting/index.html) by [Lucy D’Agostino McGowan](https://www.lucymcgowan.com)]
 
 <div class="figure" style="text-align: center">
 <img src="01-Introduction_files/figure-html/sim-scatter-1.png" alt="Scatterplot of simulated datatset" width="100%" />
@@ -376,7 +376,7 @@ Sensitivity analysis is only well defined for matching methods. @Rosenbaum2012 p
 
 ## R Packages
 
-R is a statistical software language designed to be extended vis-à-vis packages. As of April 04, 2025, there are currently 22,256 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend [*R for Data Science*](https://r4ds.had.co.nz) [@Wickham2016] as an excellent introduction to R. This book will make use of a number of R 
+R is a statistical software language designed to be extended vis-à-vis packages. As of April 01, 2026, there are currently 23,491 packages available on [CRAN](https://cran.r-project.org). Given the ease by which R can be extended, it has become the tool of choice for conducting propensity score analysis. If you are new to R I highly recommend [*R for Data Science*](https://r4ds.had.co.nz) [@Wickham2016] as an excellent introduction to R. This book will make use of a number of R 
 
 
 * [`MatchIt`](http://gking.harvard.edu/gking/matchit) [@R-MatchIt] Nonparametric Preprocessing for Parametric Causal Inference

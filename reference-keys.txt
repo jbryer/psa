@@ -31,10 +31,10 @@ eq:eqatc
 fig:atc-hist
 eq:eqatm
 fig:acm-hist
-fig:unnamed-chunk-7
 fig:unnamed-chunk-8
-fig:unnamed-chunk-12
+fig:unnamed-chunk-9
 fig:unnamed-chunk-13
+fig:unnamed-chunk-14
 fig:introduction-logistic
 fig:unnamed-chunk-3
 eq:eqcalcte

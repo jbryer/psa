@@ -43,7 +43,7 @@ plot(boot_out)
 boxplot(boot_out)
 ```
 
-<img src="06-Bootstrapping_files/figure-html/psaboot-boxplot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="06-Bootstrapping_files/figure-html/psaboot-boxplot-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 
 
@@ -51,7 +51,7 @@ boxplot(boot_out)
 matrixplot(boot_out)
 ```
 
-<img src="06-Bootstrapping_files/figure-html/psaboot-matrixplot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="06-Bootstrapping_files/figure-html/psaboot-matrixplot-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 
 ``` r
@@ -83,14 +83,14 @@ boot_balance
 plot(boot_balance)
 ```
 
-<img src="06-Bootstrapping_files/figure-html/psaboot-balance-plot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="06-Bootstrapping_files/figure-html/psaboot-balance-plot-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 
 ``` r
 boxplot(boot_balance) + geom_hline(yintercept=.1, color='red')
 ```
 
-<img src="06-Bootstrapping_files/figure-html/psaboot-balance-boxplot-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="06-Bootstrapping_files/figure-html/psaboot-balance-boxplot-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 Details are available within the returned object
 

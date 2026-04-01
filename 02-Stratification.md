@@ -15,9 +15,12 @@ editor_options:
 
 Propensity score stratification leverages propensity scores so we can define strata (or groups) that roughly equivalent on all the observed covariates. Although it is reasonable to start with chapter \@ref(chapter-matching) on matching, stratification is an important method and even if you prefer to use a matching method, stratification will most often be used in order to evaluate balance. 
 
+
+
+
 ## Phase I: Estimate Propensity Scores (Logistic regression)
 
-To begin let's estimate propensity scores using logistic regression with the National Supported Work Demonostration (`lalonde`) dataset [@Lalonde1986]. Here, we are using the final model specification used by @DehejiaWahba1999. 
+To begin let's estimate propensity scores using logistic regression with the National Supported Work Demonstration (`lalonde`) dataset [@Lalonde1986]. Here, we are using the final model specification used by @DehejiaWahba1999. 
 
 
 ``` r
@@ -84,7 +87,7 @@ ggplot(lalonde, aes(x = lr_ps, color = as.logical(treat))) +
 	xlab('Propensity Score')
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-5-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 
 
@@ -132,15 +135,15 @@ table(lalonde$treat, lalonde$lr_strata5)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="02-Stratification_files/figure-html/unnamed-chunk-7-1.png" alt="Distribution of propensity scores with strata breaks" width="100%" />
-<p class="caption">(\#fig:unnamed-chunk-7)Distribution of propensity scores with strata breaks</p>
+<img src="02-Stratification_files/figure-html/unnamed-chunk-8-1.png" alt="Distribution of propensity scores with strata breaks" width="100%" />
+<p class="caption">(\#fig:unnamed-chunk-8)Distribution of propensity scores with strata breaks</p>
 </div>
 
 
 
 <div class="figure" style="text-align: center">
-<img src="02-Stratification_files/figure-html/unnamed-chunk-8-1.png" alt="Scatter plot of propensity scores and log of real earnings 1978 by treatment with strata breaks" width="100%" />
-<p class="caption">(\#fig:unnamed-chunk-8)Scatter plot of propensity scores and log of real earnings 1978 by treatment with strata breaks</p>
+<img src="02-Stratification_files/figure-html/unnamed-chunk-9-1.png" alt="Scatter plot of propensity scores and log of real earnings 1978 by treatment with strata breaks" width="100%" />
+<p class="caption">(\#fig:unnamed-chunk-9)Scatter plot of propensity scores and log of real earnings 1978 by treatment with strata breaks</p>
 </div>
 
 
@@ -156,7 +159,7 @@ PSAgraphics::cv.bal.psa(covariates = covars,
 						strata = lalonde$lr_strata)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-10-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 
 
@@ -169,7 +172,7 @@ PSAgraphics::box.psa(continuous = lalonde$age,
 					 balance = FALSE)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-11-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 
 
@@ -181,16 +184,16 @@ PSAgraphics::cat.psa(categorical = lalonde$nodegr,
 					 balance = FALSE)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-12-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 <div class="figure" style="text-align: center">
-<img src="02-Stratification_files/figure-html/unnamed-chunk-12-1.png" alt="Covariate balance plots for categorical variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-12-2.png" alt="Covariate balance plots for categorical variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-12-3.png" alt="Covariate balance plots for categorical variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-12-4.png" alt="Covariate balance plots for categorical variables" width="50%" />
-<p class="caption">(\#fig:unnamed-chunk-12)Covariate balance plots for categorical variables</p>
+<img src="02-Stratification_files/figure-html/unnamed-chunk-13-1.png" alt="Covariate balance plots for categorical variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-13-2.png" alt="Covariate balance plots for categorical variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-13-3.png" alt="Covariate balance plots for categorical variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-13-4.png" alt="Covariate balance plots for categorical variables" width="50%" />
+<p class="caption">(\#fig:unnamed-chunk-13)Covariate balance plots for categorical variables</p>
 </div>
 
 <div class="figure" style="text-align: center">
-<img src="02-Stratification_files/figure-html/unnamed-chunk-13-1.png" alt="Covariate balance plots for numeric variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-13-2.png" alt="Covariate balance plots for numeric variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-13-3.png" alt="Covariate balance plots for numeric variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-13-4.png" alt="Covariate balance plots for numeric variables" width="50%" />
-<p class="caption">(\#fig:unnamed-chunk-13)Covariate balance plots for numeric variables</p>
+<img src="02-Stratification_files/figure-html/unnamed-chunk-14-1.png" alt="Covariate balance plots for numeric variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-14-2.png" alt="Covariate balance plots for numeric variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-14-3.png" alt="Covariate balance plots for numeric variables" width="50%" /><img src="02-Stratification_files/figure-html/unnamed-chunk-14-4.png" alt="Covariate balance plots for numeric variables" width="50%" />
+<p class="caption">(\#fig:unnamed-chunk-14)Covariate balance plots for numeric variables</p>
 </div>
 
 ## Phase II: Estimate Effects
@@ -202,7 +205,7 @@ PSAgraphics::loess.psa(response = log(lalonde$re78 + 1),
 					   propensity = lalonde$lr_ps)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-15-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 ```
 ## $ATE
@@ -243,7 +246,7 @@ psa::loess_plot(ps = lalonde$lr_ps,
 				method = 'loess')
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-16-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 
 
@@ -253,7 +256,7 @@ PSAgraphics::circ.psa(response = log(lalonde$re78 + 1),
 					  strata = lalonde$lr_strata5)
 ```
 
-<img src="02-Stratification_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" />
+<img src="02-Stratification_files/figure-html/unnamed-chunk-17-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 ```
 ## $summary.strata
