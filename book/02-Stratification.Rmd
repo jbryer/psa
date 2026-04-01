@@ -18,6 +18,7 @@ Propensity score stratification leverages propensity scores so we can define str
 
 ```{r, echo=TRUE, include=FALSE}
 # Create a simulated dataset
+library(psa)
 set.seed(2112) 
 n <- 1000
 treatment_effect <- 1.5
