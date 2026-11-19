@@ -104,6 +104,7 @@ stratification_balance <- function(
 #' @return a data frame with the average difference/balance for each covariate and stratification size.
 #' @method summary stratification_balance
 #' @importFrom dplyr group_by summarise
+#' @export
 summary.stratification_balance <- function(object, ...) {
 	object |>
 		dplyr::group_by(n_strata, covariate) |>
@@ -116,6 +117,7 @@ summary.stratification_balance <- function(object, ...) {
 #' @return a ggplot2 expression.
 #' @method plot stratification_balance
 #' @import ggplot2
+#' @export
 plot.stratification_balance <- function(x, ...) {
 	diff_out_sum <- summary(x, ...)
 	ggplot(diff_out_sum, aes(x = .data$n_strata, 

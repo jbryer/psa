@@ -5,7 +5,10 @@
 \alias{students}
 \title{Student data file.}
 \format{
-a data frame with 374 ovservations of 17 variables.
+a data frame with 374 observations of 17 variables.
+}
+\usage{
+students
 }
 \description{
 Student data file.

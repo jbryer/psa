@@ -10,11 +10,16 @@
 zeroGrob <- function() .zeroGrob
 
 .zeroGrob <- grob(cl = "zeroGrob", name = "NULL")
-widthDetails.zeroGrob <-
-	heightDetails.zeroGrob <- 
-	grobWidth.zeroGrob <- 
-	grobHeight.zeroGrob <- function(x) unit(0, "cm")
+#' @exportS3Method grid::widthDetails
+widthDetails.zeroGrob <- function(x) unit(0, "cm")
+#' @exportS3Method grid::heightDetails
+heightDetails.zeroGrob <- function(x) unit(0, "cm")
+#' @exportS3Method grid::grobWidth
+grobWidth.zeroGrob <- function(x) unit(0, "cm")
+#' @exportS3Method grid::grobHeight
+grobHeight.zeroGrob <- function(x) unit(0, "cm")
 
+#' @exportS3Method grid::drawDetails
 drawDetails.zeroGrob <- function(x, recording) {}
 
 is.zero <- function(x) is.null(x) || inherits(x, "zeroGrob")

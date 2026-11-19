@@ -7,6 +7,9 @@
 \format{
 a data frame with 1,381 observations of 17 variables.
 }
+\usage{
+tutoring
+}
 \description{
 Data from a study examining the effects of tutoring on English grades.
 }

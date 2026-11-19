@@ -8,6 +8,9 @@ and Google Scholar database.}
 \format{
 a data frame with 92 observations of 4 variables.
 }
+\usage{
+psa_citations
+}
 \description{
 Number of articles related to propensity score analysis in the Web of Science
 and Google Scholar database.
