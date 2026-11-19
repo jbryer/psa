@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Chapter 11 Effects of Smoking on Medical Expenditures | Applied Propensity Score Analysis with R</title>
 <meta name="author" content="Jason Bryer, Ph.D.">
 <meta name="description" content="In this example5 we will utilize the National Medical Expenditure Study (National Center For Health Services Research 1987) to estimate the effects of smoking on medical expenditures. This dataset...">
-<meta name="generator" content="bookdown 0.46 with bs4_book()">
+<meta name="generator" content="bookdown 0.48 with bs4_book()">
 <meta property="og:title" content="Chapter 11 Effects of Smoking on Medical Expenditures | Applied Propensity Score Analysis with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://psa.bryer.org/effects-of-smoking-on-medical-expenditures.html">
@@ -19,7 +18,7 @@
 <meta name="twitter:image" content="https://psa.bryer.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.10.0/transition.js"></script><script src="libs/bs3compat-0.10.0/tabs.js"></script><script src="libs/bs3compat-0.10.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.12.0/transition.js"></script><script src="libs/bs3compat-0.12.0/tabs.js"></script><script src="libs/bs3compat-0.12.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
     
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
@@ -29,7 +28,6 @@
     div.csl-bib-body { }
     div.csl-entry {
       clear: both;
-          margin-bottom: 0em;
         }
     .hanging div.csl-entry {
       margin-left:2em;
@@ -98,13 +96,13 @@
 <h1>
 <span class="header-section-number">11</span> Effects of Smoking on Medical Expenditures<a class="anchor" aria-label="anchor" href="#effects-of-smoking-on-medical-expenditures"><i class="fas fa-link"></i></a>
 </h1>
-<p>In this example<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;This example is included as a demo in the package. Type &lt;code&gt;demo(nmes)&lt;/code&gt; in R to start the demo.&lt;/p&gt;"><sup>5</sup></a> we will utilize the National Medical Expenditure Study <span class="citation">(National Center For Health Services Research 1987)</span> to estimate the effects of smoking on medical expenditures. This dataset was first used by <span class="citation">(Johnson et al. 2003)</span> to estimate the effects of smoking on diseases, and then the effect of diseases on medical expenditures. <span class="citation">(Imai and Dyk 2004b)</span> developed an a method to generalize the propensity score, called a p-score, to directly estimate the effects of smoking on medical expenditures. More specifically, they defined a quantitative treatment variable, pack year, defined as:</p>
+<p>In this example<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;This example is included as a demo in the package. Type &lt;code&gt;demo(nmes)&lt;/code&gt; in R to start the demo.&lt;/p&gt;"><sup>5</sup></a> we will utilize the National Medical Expenditure Study <span class="citation">(National Center For Health Services Research 1987)</span> to estimate the effects of smoking on medical expenditures. This dataset was first used by <span class="citation">(Johnson et al. 2003)</span> to estimate the effects of smoking on diseases, and then the effect of diseases on medical expenditures. <span class="citation">(Imai and David A. van Dyk 2004b)</span> developed an a method to generalize the propensity score, called a p-score, to directly estimate the effects of smoking on medical expenditures. More specifically, they defined a quantitative treatment variable, pack year, defined as:</p>
 <p><span class="math display">\[packyear = \frac{\text{number of cigarettes per day}}{20} \times \text{number of years smoked}\]</span></p>
 <p>Our approach is designed to match three separate groups and not a continuous treatment. We will address two research questions: (1) What are the effects of smoking status (i.e. never smoked, former smoker, and current smoker) on medical expenditures? and (2) What are the effects of lifetime smoking on medical expenditures? Figure <a href="effects-of-smoking-on-medical-expenditures.html#fig:packyearsAndTotalExp">11.1</a> represent the relationship between these two different treatments<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Note that the control group in both instances are people who never smoked and is omitted from this figure.&lt;/p&gt;"><sup>6</sup></a>. This figure reveals several, perhaps counterintuitive, facts. First, the unadjusted total medical expenditures for former smokers is higher than current smokers. Secondly, the distribution of <span class="math inline">\(log(packyear)\)</span> overlap substantial between former and current smokers. To dichotomize the pack year smoking variable, we will split on the median of pack year, labeled moderate smokers (i.e. <span class="math inline">\(packyear \le median(packyear)\)</span>) and heavy smokers (i.e. <span class="math inline">\(packyear &gt; median(packyear)\)</span>).</p>
 <div class="sourceCode" id="cb162"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">)</span></span>
 <span><span class="va">nmes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">nmes</span>, select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">packyears</span>, <span class="va">smoke</span>, <span class="va">LASTAGE</span>, <span class="va">MALE</span>, <span class="va">RACE3</span>, <span class="va">beltuse</span>, <span class="va">educate</span>, <span class="va">marital</span>, <span class="va">SREGION</span>, <span class="va">POVSTALB</span>, <span class="va">HSQACCWT</span>, <span class="va">TOTALEXP</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Both <span class="citation">(Johnson et al. 2003)</span> and <span class="citation">(Imai and Dyk 2004b)</span> conducted a complete-case analysis and Johnson et al. reported that multiple imputation did not substantially affect their results.</p>
+<p>Both <span class="citation">(Johnson et al. 2003)</span> and <span class="citation">(Imai and David A. van Dyk 2004b)</span> conducted a complete-case analysis and Johnson et al. reported that multiple imputation did not substantially affect their results.</p>
 <div class="sourceCode" id="cb163"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nmes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">nmes</span><span class="op">)</span></span></code></pre></div>
 <p>Since many participants had zero medical expenditures, we will add one to the total expenditures before log transforming the variable. We will then calculate the median of pack year and create a new treatment variable, <code>smoke2</code>, for moderate and heavy smokers with non-smokers.</p>
@@ -179,10 +177,10 @@ Figure 11.2: Triangle Plots for NMES
 <p>The following summary of the unmatched rows show that more than 96% of the treatment units were matched in both models.</p>
 <div class="sourceCode" id="cb176"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu">unmatched</span><span class="op">(</span><span class="va">tmatch.smoke</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code>## 7048 (36.4%) of 19352 total data points were not matched.
+<pre><code>## 7049 (36.4%) of 19352 total data points were not matched.
 ## Unmatched by treatment:
 ##        Never       Smoker       Former 
-## 6804 (69.4%)   142 (2.6%)   102 (2.5%)</code></pre>
+## 6805 (69.4%)   142 (2.6%)   102 (2.5%)</code></pre>
 <div class="sourceCode" id="cb178"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu">unmatched</span><span class="op">(</span><span class="va">tmatch.packyears</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code>## 7532 (38.9%) of 19352 total data points were not matched.
@@ -205,7 +203,7 @@ Figure 11.3: Multiple Covariate Balance Plots for NMES
 <h2>
 <span class="header-section-number">11.1</span> Phase II: Estimating Effects of Smoking on Medical Expenditures<a class="anchor" aria-label="anchor" href="#phase-ii-estimating-effects-of-smoking-on-medical-expenditures"><i class="fas fa-link"></i></a>
 </h2>
-<p>For both treatment regimes we used the <code>maximumTreat</code> method for finding matched triplets that will retain each treatment unit once with the possibility of using treatment units twice in cases where a treatment unit would not otherwise be matched. The Friedman Rank Sum Test and repeated measures ANOVA indicate there a statistically significant difference in both treatment regimes. Figure <a href="effects-of-smoking-on-medical-expenditures.html#fig:nmesboxplots">11.4</a> provides box plots of the differences for the two treatment regimes. For the current smoking status treatment, the results indicate that smoker’s actually spend less than former and non-smokers. However, as <span class="citation">(Imai and Dyk 2004b)</span> explain, the sample of smokers includes only survivors and should be considered when interpreting these results.</p>
+<p>For both treatment regimes we used the <code>maximumTreat</code> method for finding matched triplets that will retain each treatment unit once with the possibility of using treatment units twice in cases where a treatment unit would not otherwise be matched. The Friedman Rank Sum Test and repeated measures ANOVA indicate there a statistically significant difference in both treatment regimes. Figure <a href="effects-of-smoking-on-medical-expenditures.html#fig:nmesboxplots">11.4</a> provides box plots of the differences for the two treatment regimes. For the current smoking status treatment, the results indicate that smoker’s actually spend less than former and non-smokers. However, as <span class="citation">(Imai and David A. van Dyk 2004b)</span> explain, the sample of smokers includes only survivors and should be considered when interpreting these results.</p>
 <p>Imai and van Dyk’s analysis used pack year as treatment indicator. Our dichotomizing of pack year into moderate and heavy smokers more closely adheres to their approach. The results with this treatment regime indicate that smokers, both moderate and heavy, have higher medical expenditures than non-smokers. However, there is no statistically significant difference between heavy and moderate smokers in medical expenditures.</p>
 <div class="sourceCode" id="cb181"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">boxdiff.plot</span><span class="op">(</span><span class="va">tmatch.smoke</span>, <span class="va">nmes</span><span class="op">$</span><span class="va">LogTotalExp</span>, ordering<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Smoker"</span>,<span class="st">"Former"</span>,<span class="st">"Never"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -285,7 +283,7 @@ Figure 11.4: Boxplot of Differences for NMES
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2026-04-01.</p>
+    <p>"<strong>Applied Propensity Score Analysis with R</strong>" was written by Jason Bryer, Ph.D.. It was last built on 2026-11-19.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

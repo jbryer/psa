@@ -74,15 +74,15 @@ rbounds::hlsens(x = Y[mgen1$index.treated],
 ## 
 ##  Rosenbaum Sensitivity Test for Hodges-Lehmann Point Estimate 
 ##  
-## Unconfounded estimate ....  1431.4 
+## Unconfounded estimate ....  1183.975 
 ## 
 ##  Gamma Lower bound Upper bound
-##    1.0  1.4314e+03      1431.4
-##    1.1  7.9320e+02      1547.1
-##    1.2  4.9780e+02      1901.1
-##    1.3  2.0850e+02      2162.1
-##    1.4 -3.4140e-05      2441.0
-##    1.5 -2.1990e+02      2694.4
+##    1.0 1184.000000      1184.0
+##    1.1  793.170000      1547.2
+##    1.2  497.770000      1901.2
+##    1.3  208.470000      2162.1
+##    1.4   -0.025072      2441.0
+##    1.5 -219.930000      2694.4
 ## 
 ##  Note: Gamma is Odds of Differential Assignment To
 ##  Treatment Due to Unobserved Factors 

@@ -468,10 +468,10 @@ summary(unmatched(tmatch.smoke))
 ```
 
 ```
-## 7048 (36.4%) of 19352 total data points were not matched.
+## 7049 (36.4%) of 19352 total data points were not matched.
 ## Unmatched by treatment:
 ##        Never       Smoker       Former 
-## 6804 (69.4%)   142 (2.6%)   102 (2.5%)
+## 6805 (69.4%)   142 (2.6%)   102 (2.5%)
 ```
 
 ``` r
